@@ -50,15 +50,13 @@ const TeamMember = ({
         <p className="text-gray-500 mb-3">{role}</p>
         
         <div className="relative">
-          <p className={`text-gray-700 mb-4 transition-all duration-300 ${
+          <p className={`text-white mb-4 transition-all duration-300 ${
             isExpanded ? '' : 'line-clamp-3'
           }`}>
             {bio}
           </p>
           
-          {bio.length > 140 && !isExpanded && (
-            <div className="absolute bottom-0 left-0 w-full h-8 bg-gradient-to-t from-white to-transparent" />
-          )}
+          {/* Removed the white gradient div that was here */}
           
           {bio.length > 140 && (
             <button

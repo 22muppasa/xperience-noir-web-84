@@ -84,13 +84,13 @@ const Navbar = () => {
                 size="sm"
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label="Toggle menu"
-                className={`h-10 w-10 p-1 rounded-full ${
+                className={`h-16 w-16 p-1 rounded-full flex items-center justify-center ${
                   isDarkMode || isHomePage 
                     ? 'text-white hover:bg-white/20' 
                     : 'hover:bg-black/5'
                 }`}
               >
-                {isOpen ? <X size={20} /> : <Menu size={20} />}
+                {isOpen ? <X size={24} /> : <Menu size={24} />}
               </Button>
             </div>
           </div>
@@ -125,18 +125,18 @@ const Navbar = () => {
             size="icon"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
-            className={`h-12 w-12 rounded-full shadow-lg ${
+            className={`h-16 w-16 rounded-full shadow-lg flex items-center justify-center ${
               isDarkMode || isHomePage 
                 ? 'bg-black border-white/20 hover:bg-black/80 text-white' 
                 : 'bg-white border-black/10 hover:bg-gray-100 text-black'
             }`}
           >
-            {isOpen ? <X size={20} /> : <Menu size={20} />}
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
           </Button>
           
           {/* Mobile Navigation Menu */}
           {isOpen && (
-            <div className={`absolute top-14 right-0 w-64 mt-2 ${getBgColor()} shadow-lg rounded-lg border animate-fade-in overflow-hidden`}>
+            <div className={`absolute top-16 right-0 w-64 mt-2 ${getBgColor()} shadow-lg rounded-lg border animate-fade-in overflow-hidden`}>
               <div className="py-4 flex flex-col space-y-2">
                 <Link 
                   to="/" 

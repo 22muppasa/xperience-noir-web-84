@@ -462,7 +462,7 @@
       hsla(0 0% 100% / 1) 0%,
       hsla(0 0% 100% / var(--active, 0)) 120%
     );
-    color: white;
+    color: white !important;
   }
 
   .animated-button:is(:hover, :focus-visible) {

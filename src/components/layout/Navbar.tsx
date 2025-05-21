@@ -23,6 +23,7 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Split the navigation items into two groups for left and right sides
   const navLinks = [
     { name: 'Programs', path: '/programs' },
     { name: 'Consulting', path: '/consulting' },
@@ -34,28 +35,27 @@ const Navbar = () => {
     { name: 'Contact', path: '/contact' }
   ];
 
+  const midpoint = Math.ceil(navLinks.length / 2);
+  const leftNavLinks = navLinks.slice(0, midpoint);
+  const rightNavLinks = navLinks.slice(midpoint);
+
   return (
     <div className="fixed top-0 z-50 w-full flex justify-center pt-4 px-4">
       <nav
-        className={`w-full max-w-6xl transition-all duration-300 rounded-2xl ${
+        className={`w-full max-w-6xl transition-all duration-300 rounded-lg ${
           isHomePage
             ? scrolled 
-              ? 'bg-black/40 backdrop-blur-md shadow-lg' 
-              : 'bg-black/20 backdrop-blur-sm'
+              ? 'bg-black shadow-lg' 
+              : 'bg-black'
             : scrolled 
-              ? 'bg-white/90 backdrop-blur-md shadow-lg' 
-              : 'bg-white/80 backdrop-blur-sm'
+              ? 'bg-white shadow-lg' 
+              : 'bg-white'
         }`}
       >
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <Link to="/" className="text-xl font-semibold">
-            <span className="sr-only">XPerience</span>
-            <img src="/placeholder.svg" alt="XPerience Logo" className={`h-8 ${isHomePage ? 'filter brightness-0 invert' : ''}`} />
-          </Link>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-6">
-            {navLinks.map((link) => (
+          {/* Left navigation items - visible only on desktop and when not scrolled */}
+          <div className={`hidden ${scrolled ? 'lg:hidden' : 'lg:flex'} items-center space-x-6 flex-1 justify-end`}>
+            {leftNavLinks.map((link) => (
               <Link
                 key={link.name}
                 to={link.path}
@@ -68,8 +68,34 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Mobile Navigation Button */}
-          <div className="md:hidden">
+          {/* Logo - centered */}
+          <Link 
+            to="/" 
+            className={`text-xl font-semibold ${scrolled ? 'flex-1 lg:flex-none' : ''}`}
+          >
+            <span className="sr-only">XPerience</span>
+            <div className="flex justify-center">
+              <img src="/placeholder.svg" alt="XPerience Logo" className={`h-8 ${isHomePage ? 'filter brightness-0 invert' : ''}`} />
+            </div>
+          </Link>
+
+          {/* Right navigation items - visible only on desktop and when not scrolled */}
+          <div className={`hidden ${scrolled ? 'lg:hidden' : 'lg:flex'} items-center space-x-6 flex-1 justify-start`}>
+            {rightNavLinks.map((link) => (
+              <Link
+                key={link.name}
+                to={link.path}
+                className={`text-sm font-medium button-hover ${
+                  isHomePage ? 'text-white hover:text-white/70' : 'hover:text-black/70'
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
+          </div>
+
+          {/* Mobile Navigation Button - visible on mobile or when scrolled */}
+          <div className={`${scrolled ? '' : 'md:hidden lg:hidden'} flex justify-end flex-1 lg:flex-none`}>
             <Button
               variant="ghost"
               size="sm"
@@ -88,7 +114,7 @@ const Navbar = () => {
 
         {/* Mobile Navigation Menu */}
         {isOpen && (
-          <div className={`md:hidden ${isHomePage ? 'bg-black/50' : 'bg-white'} border-t animate-fade-in rounded-b-2xl overflow-hidden`}>
+          <div className={`md:hidden ${isHomePage ? 'bg-black' : 'bg-white'} border-t animate-fade-in rounded-b-lg overflow-hidden`}>
             <div className="container py-4 flex flex-col space-y-4">
               {navLinks.map((link) => (
                 <Link

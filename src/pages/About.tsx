@@ -1,18 +1,16 @@
+
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import TeamMember from '@/components/ui/TeamMember';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
-import { UserRound } from 'lucide-react';
 
 const teamMembers = [
   {
     id: 1,
-    name: "Lorem Ipsum",
+    name: "Alexandra Chen",
     role: "Founder & CEO",
     bio: "Alexandra has over 15 years of experience in tech education. Before founding XPerience, she led digital transformation initiatives at major tech companies and educational institutions. She's passionate about making technology education accessible to everyone.",
-    image: "",
-    icon: <UserRound className="h-full w-full p-8 text-gray-300" />,
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&h=600&q=80",
     socialLinks: {
       linkedin: "https://linkedin.com",
       twitter: "https://twitter.com",
@@ -21,11 +19,10 @@ const teamMembers = [
   },
   {
     id: 2,
-    name: "Lorem Ipsum",
+    name: "Marcus Johnson",
     role: "Head of Education",
     bio: "With a background in computer science education and curriculum development, Marcus oversees all educational programs at XPerience. He previously taught at leading universities and believes in the power of practical, hands-on learning.",
-    image: "",
-    icon: <UserRound className="h-full w-full p-8 text-gray-300" />,
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&h=600&q=80",
     socialLinks: {
       linkedin: "https://linkedin.com",
       email: "marcus@xperience.com"
@@ -33,11 +30,10 @@ const teamMembers = [
   },
   {
     id: 3,
-    name: "Lorem Ipsum",
+    name: "Sophia Patel",
     role: "Director of Consulting",
     bio: "Sophia brings extensive expertise in web development and digital strategy to lead our consulting division. Her client portfolio includes startups, nonprofits, and Fortune 500 companies seeking digital transformation.",
-    image: "",
-    icon: <UserRound className="h-full w-full p-8 text-gray-300" />,
+    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&h=600&q=80",
     socialLinks: {
       linkedin: "https://linkedin.com",
       twitter: "https://twitter.com",
@@ -46,11 +42,10 @@ const teamMembers = [
   },
   {
     id: 4,
-    name: "Lorem Ipsum",
+    name: "David Williams",
     role: "Community Impact Manager",
     bio: "David coordinates our nonprofit partnerships and community initiatives. His background in social work and tech education helps create meaningful programs that serve underrepresented communities.",
-    image: "",
-    icon: <UserRound className="h-full w-full p-8 text-gray-300" />,
+    image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=500&h=600&q=80",
     socialLinks: {
       linkedin: "https://linkedin.com",
       email: "david@xperience.com"
@@ -232,7 +227,6 @@ const About = () => {
                 role={member.role}
                 bio={member.bio}
                 image={member.image}
-                icon={member.icon}
                 socialLinks={member.socialLinks}
               />
             ))}

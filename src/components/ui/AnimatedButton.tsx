@@ -46,8 +46,9 @@ const AnimatedButton = ({
             color: sparkleColor,
             style: invertOnHover ? { 
               color: sparkleColor,
-              // Add custom properties to style object instead of using data attributes
-              '--hover-color': 'white',
+              // Fix: Use proper syntax for CSS custom properties in React
+              // The correct way is to use camelCase with the 'var' prefix
+              ['--hover-color' as string]: 'white',
             } : undefined,
             strokeWidth: 1.5
           })

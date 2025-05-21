@@ -1,10 +1,16 @@
-
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { motion } from '@react-spring/web';
+import { animated, useSpring } from '@react-spring/web';
 import { ArrowRight, Code, PenSquare } from 'lucide-react';
 
 const Index = () => {
+  // Replace motion with animated from react-spring
+  const fadeIn = useSpring({
+    from: { opacity: 0, transform: 'translateY(10px)' },
+    to: { opacity: 1, transform: 'translateY(0)' },
+    config: { duration: 500 }
+  });
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
@@ -35,13 +41,13 @@ const Index = () => {
                 </Button>
               </div>
             </div>
-            <div className="relative h-96 lg:h-full animate-fade-in animate-delay-200">
+            <animated.div style={fadeIn} className="relative h-96 lg:h-full">
               <img 
                 src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b"
                 alt="Digital Experience" 
                 className="absolute inset-0 w-full h-full object-cover rounded-lg"
               />
-            </div>
+            </animated.div>
           </div>
         </div>
       </section>

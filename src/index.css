@@ -1,5 +1,3 @@
-
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -168,8 +166,8 @@
     position: absolute;
     inset: -145%;
     rotate: -45deg;
-    --c: #fa0;
-    --c1: #f00;
+    --c: #ffffff; /* Changed from #fa0 (orange) to white */
+    --c1: #888888; /* Changed from #f00 (red) to grey */
     background-image: radial-gradient(4px 100px at 0px 235px, var(--c), #0000),
       radial-gradient(4px 100px at 300px 235px, var(--c), #0000),
       radial-gradient(3px 4px at 150px 117.5px, var(--c1) 100%, #0000 150%),

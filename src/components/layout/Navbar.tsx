@@ -54,7 +54,7 @@ const Navbar = () => {
       >
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           {/* Left navigation items - visible only on desktop and when not scrolled */}
-          <div className={`hidden ${scrolled ? 'lg:hidden' : 'lg:flex'} items-center space-x-6 flex-1 justify-end`}>
+          <div className={`hidden ${scrolled ? 'lg:hidden' : 'lg:flex'} items-center space-x-10 flex-1 justify-end`}>
             {leftNavLinks.map((link) => (
               <Link
                 key={link.name}
@@ -68,10 +68,10 @@ const Navbar = () => {
             ))}
           </div>
 
-          {/* Logo - centered */}
+          {/* Logo - centered with increased margin */}
           <Link 
             to="/" 
-            className={`text-xl font-semibold ${scrolled ? 'flex-1 lg:flex-none' : ''}`}
+            className={`text-xl font-semibold mx-10 ${scrolled ? 'flex-1 lg:flex-none' : ''}`}
           >
             <span className="sr-only">XPerience</span>
             <div className="flex justify-center">
@@ -80,7 +80,7 @@ const Navbar = () => {
           </Link>
 
           {/* Right navigation items - visible only on desktop and when not scrolled */}
-          <div className={`hidden ${scrolled ? 'lg:hidden' : 'lg:flex'} items-center space-x-6 flex-1 justify-start`}>
+          <div className={`hidden ${scrolled ? 'lg:hidden' : 'lg:flex'} items-center space-x-10 flex-1 justify-start`}>
             {rightNavLinks.map((link) => (
               <Link
                 key={link.name}

@@ -1,9 +1,9 @@
 
 import { Link } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
 import { animated, useSpring } from '@react-spring/web';
 import { ArrowRight, Code, PenSquare } from 'lucide-react';
 import AnimatedBackground from '@/components/ui/AnimatedBackground';
+import AnimatedButton from '@/components/ui/AnimatedButton';
 
 const Index = () => {
   // Animation for hero image
@@ -37,20 +37,24 @@ const Index = () => {
                 We empower individuals and businesses through education and consulting to thrive in the digital world.
               </p>
               <div className="flex flex-wrap gap-4 animate-fade-in animate-delay-200">
-                <Button size="lg" asChild className="group rounded-full">
-                  <Link to="/programs" className="flex items-center gap-2">
-                    <Code size={18} />
+                <Link to="/programs">
+                  <AnimatedButton 
+                    className="flex items-center gap-2" 
+                    sparkleColor="white" 
+                    textColor="white"
+                  >
                     Learn to Code
-                    <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
-                  </Link>
-                </Button>
-                <Button size="lg" variant="outline" asChild className="group rounded-full bg-white/10 border-white/20 text-white hover:bg-white/20">
-                  <Link to="/consulting" className="flex items-center gap-2">
-                    <PenSquare size={18} />
+                  </AnimatedButton>
+                </Link>
+                <Link to="/consulting">
+                  <AnimatedButton 
+                    className="flex items-center gap-2"
+                    sparkleColor="white" 
+                    textColor="white"
+                  >
                     Redesign My Site
-                    <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
-                  </Link>
-                </Button>
+                  </AnimatedButton>
+                </Link>
               </div>
             </div>
             <animated.div style={fadeIn} className="relative h-96 lg:h-full">
@@ -129,18 +133,15 @@ const Index = () => {
           <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-10">
             Whether you want to learn coding or need expert consulting for your website, we're here to help you succeed.
           </p>
-          <div className="flex flex-wrap gap-4 justify-center">
-            <Button 
-              size="lg" 
-              variant="outline" 
-              asChild 
-              className="text-white border-white hover:bg-white hover:text-black group rounded-full"
-            >
-              <Link to="/contact" className="flex items-center gap-2">
+          <div className="flex justify-center">
+            <Link to="/contact">
+              <AnimatedButton 
+                sparkleColor="white" 
+                textColor="white"
+              >
                 Get in Touch
-                <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
-              </Link>
-            </Button>
+              </AnimatedButton>
+            </Link>
           </div>
         </div>
       </section>

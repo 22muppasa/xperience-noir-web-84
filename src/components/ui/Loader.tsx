@@ -8,10 +8,10 @@ interface LoaderProps {
 
 const Loader = ({ onLoadComplete }: LoaderProps) => {
   useEffect(() => {
-    // Simulate data loading with a timer
+    // Increase the timeout to 10 seconds (10000ms)
     const timer = setTimeout(() => {
       onLoadComplete?.();
-    }, 2500);
+    }, 10000);
     
     return () => clearTimeout(timer);
   }, [onLoadComplete]);

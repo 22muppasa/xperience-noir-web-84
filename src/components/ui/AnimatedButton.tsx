@@ -22,11 +22,17 @@ const AnimatedButton = ({
   type = "button",
   icon
 }: AnimatedButtonProps) => {
+  // Determine if we should use the default (dark) or original style
+  const isOriginalStyle = sparkleColor === 'black' && textColor === 'black';
+  
   return (
     <div className="animated-button-wrapper">
       <button
         type={type}
-        className={cn("animated-button group", className)}
+        className={cn("animated-button group", 
+          isOriginalStyle ? "original-style" : "",
+          className
+        )}
         onClick={onClick}
       >
         <div className="dots_border" />

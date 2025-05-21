@@ -207,8 +207,8 @@
     position: absolute;
     inset: -145%;
     rotate: -45deg;
-    width: 400%; /* Increased from 300% to 400% to ensure wider coverage */
-    height: 400%; /* Increased from 300% to 400% to ensure wider coverage */
+    width: 2460px; /* Set to exactly 2460px as requested */
+    height: 2460px; /* Keeping height the same as width for consistent scaling */
     --c: #ffffff;
     --c1: #888888;
     background-image: radial-gradient(4px 100px at 0px 235px, var(--c), #0000),

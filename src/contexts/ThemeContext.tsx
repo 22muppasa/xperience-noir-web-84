@@ -17,7 +17,12 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
     localStorage.setItem('theme', !isDarkMode ? 'dark' : 'light');
-    document.documentElement.classList.toggle('light-mode', !isDarkMode);
+    
+    if (!isDarkMode) {
+      document.documentElement.classList.remove('light-mode');
+    } else {
+      document.documentElement.classList.add('light-mode');
+    }
   };
 
   useEffect(() => {
@@ -26,10 +31,13 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
     
     if (savedTheme) {
       setIsDarkMode(savedTheme === 'dark');
-      document.documentElement.classList.toggle('light-mode', savedTheme === 'light');
-    } else if (prefersDark) {
-      setIsDarkMode(true);
-    } else {
+      
+      if (savedTheme === 'light') {
+        document.documentElement.classList.add('light-mode');
+      } else {
+        document.documentElement.classList.remove('light-mode');
+      }
+    } else if (!prefersDark) {
       setIsDarkMode(false);
       document.documentElement.classList.add('light-mode');
     }

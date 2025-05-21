@@ -90,7 +90,7 @@ const Navbar = () => {
                     : 'hover:bg-black/5'
                 }`}
               >
-                {isOpen ? <X size={24} /> : <Menu size={24} />}
+                {isOpen ? <X size={32} /> : <Menu size={32} />}
               </Button>
             </div>
           </div>
@@ -131,7 +131,7 @@ const Navbar = () => {
                 : 'border-black/10 hover:bg-gray-100 text-black'
             }`}
           >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
+            {isOpen ? <X size={32} /> : <Menu size={32} />}
           </Button>
           
           {/* Mobile Navigation Menu */}

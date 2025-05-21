@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Linkedin, Twitter, Mail } from 'lucide-react';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface TeamMemberProps {
   name: string;
@@ -28,18 +29,23 @@ const TeamMember = ({
   
   return (
     <div className={cn(
-      "bg-white rounded-lg overflow-hidden transition-all duration-300 group hover-scale",
+      "flex flex-col items-center text-center",
       className
     )}>
-      <div className="aspect-[4/5] overflow-hidden">
-        <img 
+      {/* Circular image */}
+      <Avatar className="h-40 w-40 mb-4">
+        <AvatarImage 
           src={image} 
           alt={name}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          className="object-cover transition-transform duration-700 hover:scale-105"
         />
-      </div>
+        <AvatarFallback className="bg-gray-100 text-gray-400">
+          {name.split(' ').map(n => n[0]).join('')}
+        </AvatarFallback>
+      </Avatar>
       
-      <div className="p-6">
+      {/* Text content */}
+      <div className="w-full">
         <h3 className="text-xl font-medium">{name}</h3>
         <p className="text-gray-500 mb-3">{role}</p>
         
@@ -65,7 +71,7 @@ const TeamMember = ({
         </div>
         
         {socialLinks && (
-          <div className="flex gap-3 mt-4">
+          <div className="flex justify-center gap-3 mt-4">
             {socialLinks.linkedin && (
               <a 
                 href={socialLinks.linkedin}

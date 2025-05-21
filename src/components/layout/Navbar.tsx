@@ -1,8 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
+import { Menu } from 'lucide-react';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -49,23 +49,6 @@ const Navbar = () => {
     return isHomePage ? 'bg-black' : 'bg-white';
   };
 
-  // Modern hamburger icon component
-  const HamburgerIcon = ({ isOpen }: { isOpen: boolean }) => {
-    return (
-      <div className="w-6 h-6 relative flex flex-col justify-center items-center">
-        <span className={`block w-full h-0.5 rounded-full transition-all duration-300 ${
-          isDarkMode || isHomePage ? 'bg-white' : 'bg-black'
-        } ${isOpen ? 'absolute rotate-45' : 'mb-1.5'}`}></span>
-        <span className={`block w-full h-0.5 rounded-full transition-all duration-300 ${
-          isDarkMode || isHomePage ? 'bg-white' : 'bg-black'
-        } ${isOpen ? 'opacity-0' : ''}`}></span>
-        <span className={`block w-full h-0.5 rounded-full transition-all duration-300 ${
-          isDarkMode || isHomePage ? 'bg-white' : 'bg-black'
-        } ${isOpen ? 'absolute -rotate-45' : 'mt-1.5'}`}></span>
-      </div>
-    );
-  };
-
   return (
     <div className="fixed top-0 z-50 w-full flex justify-center pt-4 px-4">
       {/* Full navbar when not scrolled */}
@@ -106,7 +89,11 @@ const Navbar = () => {
                     : 'hover:bg-black/5'
                 }`}
               >
-                <HamburgerIcon isOpen={isOpen} />
+                <Menu 
+                  size={32} 
+                  strokeWidth={1.75} 
+                  className={`transition-transform duration-300 ${isOpen ? 'rotate-90' : ''}`}
+                />
               </Button>
             </div>
           </div>
@@ -147,7 +134,11 @@ const Navbar = () => {
                 : 'border-black/10 hover:bg-gray-100 text-black'
             }`}
           >
-            <HamburgerIcon isOpen={isOpen} />
+            <Menu 
+              size={32} 
+              strokeWidth={1.75} 
+              className={`transition-transform duration-300 ${isOpen ? 'rotate-90' : ''}`}
+            />
           </Button>
           
           {/* Mobile Navigation Menu */}

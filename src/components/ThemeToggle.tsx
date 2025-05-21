@@ -3,7 +3,6 @@ import React from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { motion } from '@react-spring/web';
 
 const ThemeToggle = () => {
   const { isDarkMode, toggleTheme } = useTheme();

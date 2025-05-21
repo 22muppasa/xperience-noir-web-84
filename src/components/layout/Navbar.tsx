@@ -71,12 +71,11 @@ const Navbar = () => {
           {/* Logo - centered with increased margin */}
           <Link 
             to="/" 
-            className={`text-xl font-semibold mx-10 font-poppins ${scrolled ? 'flex-1 lg:flex-none' : ''}`}
+            className={`text-2xl font-bold mx-10 font-poppins ${scrolled ? 'flex-1 lg:flex-none' : ''} ${
+              isHomePage ? 'text-white' : 'text-black'
+            }`}
           >
-            <span className="sr-only">XPerience</span>
-            <div className="flex justify-center">
-              <img src="/placeholder.svg" alt="XPerience Logo" className={`h-8 ${isHomePage ? 'filter brightness-0 invert' : ''}`} />
-            </div>
+            <span className="tracking-tighter">XPerience</span>
           </Link>
 
           {/* Right navigation items - visible only on desktop and when not scrolled */}

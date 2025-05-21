@@ -2,12 +2,15 @@
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Linkedin, Twitter, Mail } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ReactNode } from 'react';
 
 interface TeamMemberProps {
   name: string;
   role: string;
   bio: string;
   image: string;
+  icon?: ReactNode;
   socialLinks?: {
     linkedin?: string;
     twitter?: string;
@@ -21,6 +24,7 @@ const TeamMember = ({
   role, 
   bio, 
   image, 
+  icon,
   socialLinks,
   className 
 }: TeamMemberProps) => {
@@ -31,12 +35,24 @@ const TeamMember = ({
       "bg-white rounded-lg overflow-hidden transition-all duration-300 group hover-scale",
       className
     )}>
-      <div className="aspect-[4/5] overflow-hidden">
-        <img 
-          src={image} 
-          alt={name}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-        />
+      <div className="aspect-[4/5] overflow-hidden bg-gray-100 flex items-center justify-center">
+        {image ? (
+          <img 
+            src={image} 
+            alt={name}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
+        ) : icon ? (
+          <div className="w-full h-full flex items-center justify-center bg-gray-100">
+            {icon}
+          </div>
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gray-100">
+            <Avatar className="h-32 w-32">
+              <AvatarFallback>{name.charAt(0)}</AvatarFallback>
+            </Avatar>
+          </div>
+        )}
       </div>
       
       <div className="p-6">

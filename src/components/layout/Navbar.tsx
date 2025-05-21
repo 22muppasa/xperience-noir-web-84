@@ -49,6 +49,23 @@ const Navbar = () => {
     return isHomePage ? 'bg-black' : 'bg-white';
   };
 
+  // Modern hamburger icon component
+  const HamburgerIcon = ({ isOpen }: { isOpen: boolean }) => {
+    return (
+      <div className="w-6 h-6 relative flex flex-col justify-center items-center">
+        <span className={`block w-full h-0.5 rounded-full transition-all duration-300 ${
+          isDarkMode || isHomePage ? 'bg-white' : 'bg-black'
+        } ${isOpen ? 'absolute rotate-45' : 'mb-1.5'}`}></span>
+        <span className={`block w-full h-0.5 rounded-full transition-all duration-300 ${
+          isDarkMode || isHomePage ? 'bg-white' : 'bg-black'
+        } ${isOpen ? 'opacity-0' : ''}`}></span>
+        <span className={`block w-full h-0.5 rounded-full transition-all duration-300 ${
+          isDarkMode || isHomePage ? 'bg-white' : 'bg-black'
+        } ${isOpen ? 'absolute -rotate-45' : 'mt-1.5'}`}></span>
+      </div>
+    );
+  };
+
   return (
     <div className="fixed top-0 z-50 w-full flex justify-center pt-4 px-4">
       {/* Full navbar when not scrolled */}
@@ -88,7 +105,9 @@ const Navbar = () => {
                     ? 'text-white hover:bg-white/20' 
                     : 'hover:bg-black/5'
                 }`}
-              />
+              >
+                <HamburgerIcon isOpen={isOpen} />
+              </Button>
             </div>
           </div>
 
@@ -127,7 +146,9 @@ const Navbar = () => {
                 ? 'border-white/20 hover:bg-black/80 text-white' 
                 : 'border-black/10 hover:bg-gray-100 text-black'
             }`}
-          />
+          >
+            <HamburgerIcon isOpen={isOpen} />
+          </Button>
           
           {/* Mobile Navigation Menu */}
           {isOpen && (

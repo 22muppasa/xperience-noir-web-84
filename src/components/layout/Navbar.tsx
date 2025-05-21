@@ -84,7 +84,7 @@ const Navbar = () => {
                 size="sm"
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label="Toggle menu"
-                className={`h-16 w-16 p-1 rounded-full flex items-center justify-center ${
+                className={`h-16 w-16 p-1 rounded-full flex items-center justify-center ${getBgColor()} ${
                   isDarkMode || isHomePage 
                     ? 'text-white hover:bg-white/20' 
                     : 'hover:bg-black/5'
@@ -118,17 +118,17 @@ const Navbar = () => {
           )}
         </nav>
       ) : (
-        /* Hamburger menu only when scrolled - adjusted for height */
+        /* Hamburger menu only when scrolled - adjusted for height and color */
         <div className="absolute top-4 right-4">
           <Button
             variant="outline"
             size="icon"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
-            className={`h-16 w-16 rounded-full shadow-lg flex items-center justify-center ${
+            className={`h-16 w-16 rounded-full shadow-lg flex items-center justify-center ${getBgColor()} ${
               isDarkMode || isHomePage 
-                ? 'bg-black border-white/20 hover:bg-black/80 text-white' 
-                : 'bg-white border-black/10 hover:bg-gray-100 text-black'
+                ? 'border-white/20 hover:bg-black/80 text-white' 
+                : 'border-black/10 hover:bg-gray-100 text-black'
             }`}
           >
             {isOpen ? <X size={24} /> : <Menu size={24} />}

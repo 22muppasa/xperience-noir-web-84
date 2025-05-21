@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -451,7 +450,14 @@
 
   .animated-button.invert-on-hover:is(:hover, :focus) .sparkle .path,
   .animated-button.invert-on-hover:is(:hover, :focus) .icon-color-transition {
-    color: white;
+    color: white !important;
+  }
+  
+  /* Force SVG icon color change on hover for Lucide icons */
+  .animated-button.invert-on-hover:hover .icon-color-transition,
+  .animated-button.invert-on-hover:focus .icon-color-transition {
+    color: white !important;
+    stroke: white !important;
   }
 
   .animated-button.invert-on-hover .text_button {

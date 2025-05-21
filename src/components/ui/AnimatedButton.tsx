@@ -44,6 +44,8 @@ const AnimatedButton = ({
             className: "sparkle icon-color-transition",
             size: 24,
             color: sparkleColor,
+            style: invertOnHover ? { color: sparkleColor } : undefined,
+            "data-hover-color": invertOnHover ? "white" : undefined,
             strokeWidth: 1.5
           })
         ) : (

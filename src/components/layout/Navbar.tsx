@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 
@@ -89,9 +88,7 @@ const Navbar = () => {
                     ? 'text-white hover:bg-white/20' 
                     : 'hover:bg-black/5'
                 }`}
-              >
-                {isOpen ? <X size={40} /> : <Menu size={40} />}
-              </Button>
+              />
             </div>
           </div>
 
@@ -130,9 +127,7 @@ const Navbar = () => {
                 ? 'border-white/20 hover:bg-black/80 text-white' 
                 : 'border-black/10 hover:bg-gray-100 text-black'
             }`}
-          >
-            {isOpen ? <X size={40} /> : <Menu size={40} />}
-          </Button>
+          />
           
           {/* Mobile Navigation Menu */}
           {isOpen && (

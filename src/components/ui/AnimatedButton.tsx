@@ -44,8 +44,11 @@ const AnimatedButton = ({
             className: "sparkle icon-color-transition",
             size: 24,
             color: sparkleColor,
-            style: invertOnHover ? { color: sparkleColor } : undefined,
-            "data-hover-color": invertOnHover ? "white" : undefined,
+            style: invertOnHover ? { 
+              color: sparkleColor,
+              // Add custom properties to style object instead of using data attributes
+              '--hover-color': 'white',
+            } : undefined,
             strokeWidth: 1.5
           })
         ) : (

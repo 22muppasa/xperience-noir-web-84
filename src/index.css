@@ -445,7 +445,7 @@
   
   /* Add transition for the icon color */
   .animated-button.invert-on-hover .icon-color-transition {
-    transition: color var(--transtion);
+    transition: color var(--transtion), stroke var(--transtion);
   }
 
   .animated-button.invert-on-hover:is(:hover, :focus) .sparkle .path,
@@ -456,8 +456,8 @@
   /* Force SVG icon color change on hover for Lucide icons */
   .animated-button.invert-on-hover:hover .icon-color-transition,
   .animated-button.invert-on-hover:focus .icon-color-transition {
-    color: white !important;
-    stroke: white !important;
+    color: var(--hover-color, white) !important;
+    stroke: var(--hover-color, white) !important;
   }
 
   .animated-button.invert-on-hover .text_button {

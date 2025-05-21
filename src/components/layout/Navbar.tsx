@@ -33,62 +33,66 @@ const Navbar = () => {
   ];
 
   return (
-    <nav
-      className={`fixed top-0 z-50 w-full transition-all duration-300 ${
-        scrolled ? 'bg-white/90 backdrop-blur-md shadow-sm' : 'bg-transparent'
-      }`}
-    >
-      <div className="container mx-auto flex h-16 items-center justify-between">
-        <Link to="/" className="text-xl font-semibold">
-          <span className="sr-only">XPerience</span>
-          <img src="/placeholder.svg" alt="XPerience Logo" className="h-8" />
-        </Link>
+    <div className="fixed top-0 z-50 w-full flex justify-center pt-4 px-4">
+      <nav
+        className={`w-full max-w-6xl transition-all duration-300 rounded-2xl ${
+          scrolled 
+            ? 'bg-white/90 backdrop-blur-md shadow-lg' 
+            : 'bg-white/80 backdrop-blur-sm'
+        }`}
+      >
+        <div className="container mx-auto flex h-16 items-center justify-between px-4">
+          <Link to="/" className="text-xl font-semibold">
+            <span className="sr-only">XPerience</span>
+            <img src="/placeholder.svg" alt="XPerience Logo" className="h-8" />
+          </Link>
 
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-6">
-          {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              to={link.path}
-              className="text-sm font-medium button-hover"
-            >
-              {link.name}
-            </Link>
-          ))}
-        </div>
-
-        {/* Mobile Navigation Button */}
-        <div className="md:hidden">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
-            className="p-1"
-          >
-            {isOpen ? <X size={20} /> : <Menu size={20} />}
-          </Button>
-        </div>
-      </div>
-
-      {/* Mobile Navigation Menu */}
-      {isOpen && (
-        <div className="md:hidden bg-white border-t animate-fade-in">
-          <div className="container py-4 flex flex-col space-y-4">
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-6">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 to={link.path}
-                className="px-4 py-2 text-base hover:bg-secondary rounded-md transition-colors"
-                onClick={() => setIsOpen(false)}
+                className="text-sm font-medium hover:text-black/70 button-hover"
               >
                 {link.name}
               </Link>
             ))}
           </div>
+
+          {/* Mobile Navigation Button */}
+          <div className="md:hidden">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label="Toggle menu"
+              className="p-1 rounded-full hover:bg-black/5"
+            >
+              {isOpen ? <X size={20} /> : <Menu size={20} />}
+            </Button>
+          </div>
         </div>
-      )}
-    </nav>
+
+        {/* Mobile Navigation Menu */}
+        {isOpen && (
+          <div className="md:hidden bg-white border-t animate-fade-in rounded-b-2xl overflow-hidden">
+            <div className="container py-4 flex flex-col space-y-4">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  to={link.path}
+                  className="px-4 py-2 text-base hover:bg-black/5 rounded-xl transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {link.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+      </nav>
+    </div>
   );
 };
 

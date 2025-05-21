@@ -1,20 +1,28 @@
+
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { animated, useSpring } from '@react-spring/web';
 import { ArrowRight, Code, PenSquare } from 'lucide-react';
 
 const Index = () => {
-  // Replace motion with animated from react-spring
+  // Animation for hero image
   const fadeIn = useSpring({
     from: { opacity: 0, transform: 'translateY(10px)' },
     to: { opacity: 1, transform: 'translateY(0)' },
     config: { duration: 500 }
   });
 
+  // Animation for cards
+  const cardSpring = useSpring({
+    from: { opacity: 0, transform: 'translateY(30px)' },
+    to: { opacity: 1, transform: 'translateY(0)' },
+    config: { duration: 700, delay: 300 }
+  });
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="flex flex-col justify-center min-h-[80vh] px-4 md:px-6 py-12">
+      <section className="flex flex-col justify-center min-h-[85vh] px-4 md:px-6 py-16 pt-24">
         <div className="container mx-auto max-w-6xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -25,14 +33,14 @@ const Index = () => {
                 We empower individuals and businesses through education and consulting to thrive in the digital world.
               </p>
               <div className="flex flex-wrap gap-4 animate-fade-in animate-delay-200">
-                <Button size="lg" asChild className="group">
+                <Button size="lg" asChild className="group rounded-full">
                   <Link to="/programs" className="flex items-center gap-2">
                     <Code size={18} />
                     Learn to Code
                     <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
                   </Link>
                 </Button>
-                <Button size="lg" variant="outline" asChild className="group">
+                <Button size="lg" variant="outline" asChild className="group rounded-full">
                   <Link to="/consulting" className="flex items-center gap-2">
                     <PenSquare size={18} />
                     Redesign My Site
@@ -45,7 +53,7 @@ const Index = () => {
               <img 
                 src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b"
                 alt="Digital Experience" 
-                className="absolute inset-0 w-full h-full object-cover rounded-lg"
+                className="absolute inset-0 w-full h-full object-cover rounded-3xl shadow-xl"
               />
             </animated.div>
           </div>
@@ -53,7 +61,7 @@ const Index = () => {
       </section>
       
       {/* Features Section */}
-      <section className="py-20 px-4 md:px-6 bg-gray-50">
+      <section className="py-24 px-4 md:px-6 bg-gray-50 rounded-t-[2.5rem]">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-medium mb-6">What We Offer</h2>
@@ -62,10 +70,10 @@ const Index = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <animated.div style={cardSpring} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Feature 1 */}
-            <div className="bg-white p-8 rounded-lg border hover-scale">
-              <div className="w-12 h-12 bg-black text-white flex items-center justify-center rounded-full mb-6">
+            <div className="bg-white p-8 rounded-3xl border border-gray-100 hover-scale shadow-sm">
+              <div className="w-14 h-14 bg-black text-white flex items-center justify-center rounded-2xl mb-6">
                 <Code size={24} />
               </div>
               <h3 className="text-2xl font-medium mb-4">Coding Education</h3>
@@ -78,8 +86,8 @@ const Index = () => {
             </div>
             
             {/* Feature 2 */}
-            <div className="bg-white p-8 rounded-lg border hover-scale">
-              <div className="w-12 h-12 bg-black text-white flex items-center justify-center rounded-full mb-6">
+            <div className="bg-white p-8 rounded-3xl border border-gray-100 hover-scale shadow-sm">
+              <div className="w-14 h-14 bg-black text-white flex items-center justify-center rounded-2xl mb-6">
                 <PenSquare size={24} />
               </div>
               <h3 className="text-2xl font-medium mb-4">Web Consulting</h3>
@@ -92,8 +100,8 @@ const Index = () => {
             </div>
             
             {/* Feature 3 */}
-            <div className="bg-white p-8 rounded-lg border hover-scale">
-              <div className="w-12 h-12 bg-black text-white flex items-center justify-center rounded-full mb-6">
+            <div className="bg-white p-8 rounded-3xl border border-gray-100 hover-scale shadow-sm">
+              <div className="w-14 h-14 bg-black text-white flex items-center justify-center rounded-2xl mb-6">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
                   <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
                 </svg>
@@ -106,19 +114,24 @@ const Index = () => {
                 See Our Impact
               </Link>
             </div>
-          </div>
+          </animated.div>
         </div>
       </section>
       
       {/* CTA Section */}
-      <section className="py-20 px-4 md:px-6 bg-black text-white">
-        <div className="container mx-auto max-w-6xl text-center">
-          <h2 className="text-4xl md:text-5xl font-medium mb-6">Ready to transform your digital experience?</h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
+      <section className="py-24 px-4 md:px-6 bg-black text-white rounded-b-none">
+        <div className="container mx-auto max-w-5xl text-center">
+          <h2 className="text-4xl md:text-5xl font-medium mb-8">Ready to transform your digital experience?</h2>
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-10">
             Whether you want to learn coding or need expert consulting for your website, we're here to help you succeed.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <Button size="lg" variant="outline" asChild className="text-white border-white hover:bg-white hover:text-black group">
+            <Button 
+              size="lg" 
+              variant="outline" 
+              asChild 
+              className="text-white border-white hover:bg-white hover:text-black group rounded-full"
+            >
               <Link to="/contact" className="flex items-center gap-2">
                 Get in Touch
                 <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />

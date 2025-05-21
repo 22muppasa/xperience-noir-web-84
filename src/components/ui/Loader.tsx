@@ -47,34 +47,36 @@ const Loader = () => {
              }} />
       </div>
       
-      <style jsx>{`
-        @keyframes ripple {
-          0% {
-            transform: scale(1);
-            box-shadow: rgba(0, 0, 0, 0.3) 0px 10px 10px -0px;
+      <style>
+        {`
+          @keyframes ripple {
+            0% {
+              transform: scale(1);
+              box-shadow: rgba(0, 0, 0, 0.3) 0px 10px 10px -0px;
+            }
+            50% {
+              transform: scale(1.3);
+              box-shadow: rgba(0, 0, 0, 0.3) 0px 30px 20px -0px;
+            }
+            100% {
+              transform: scale(1);
+              box-shadow: rgba(0, 0, 0, 0.3) 0px 10px 10px -0px;
+            }
           }
-          50% {
-            transform: scale(1.3);
-            box-shadow: rgba(0, 0, 0, 0.3) 0px 30px 20px -0px;
+          
+          @keyframes color-change {
+            0% {
+              fill: grey;
+            }
+            50% {
+              fill: white;
+            }
+            100% {
+              fill: grey;
+            }
           }
-          100% {
-            transform: scale(1);
-            box-shadow: rgba(0, 0, 0, 0.3) 0px 10px 10px -0px;
-          }
-        }
-        
-        @keyframes color-change {
-          0% {
-            fill: grey;
-          }
-          50% {
-            fill: white;
-          }
-          100% {
-            fill: grey;
-          }
-        }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };

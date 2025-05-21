@@ -14,31 +14,36 @@ import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
+import ThemeToggle from "./components/ThemeToggle";
+import { ThemeProvider } from "./contexts/ThemeContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Navbar />
-        <div className="pt-16"> {/* Add padding to account for fixed navbar */}
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/programs" element={<Programs />} />
-            <Route path="/consulting" element={<Consulting />} />
-            <Route path="/get-involved" element={<GetInvolved />} />
-            <Route path="/social-hub" element={<SocialHub />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </div>
-        <Footer />
-      </BrowserRouter>
-    </TooltipProvider>
+    <ThemeProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Navbar />
+          <ThemeToggle />
+          <div className="pt-16"> {/* Add padding to account for fixed navbar */}
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/programs" element={<Programs />} />
+              <Route path="/consulting" element={<Consulting />} />
+              <Route path="/get-involved" element={<GetInvolved />} />
+              <Route path="/social-hub" element={<SocialHub />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </div>
+          <Footer />
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

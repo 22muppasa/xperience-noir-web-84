@@ -59,7 +59,7 @@ const Navbar = () => {
               <Link
                 key={link.name}
                 to={link.path}
-                className={`text-sm font-medium button-hover ${
+                className={`text-sm font-medium button-hover font-poppins ${
                   isHomePage ? 'text-white hover:text-white/70' : 'hover:text-black/70'
                 }`}
               >
@@ -71,7 +71,7 @@ const Navbar = () => {
           {/* Logo - centered with increased margin */}
           <Link 
             to="/" 
-            className={`text-xl font-semibold mx-10 ${scrolled ? 'flex-1 lg:flex-none' : ''}`}
+            className={`text-xl font-semibold mx-10 font-poppins ${scrolled ? 'flex-1 lg:flex-none' : ''}`}
           >
             <span className="sr-only">XPerience</span>
             <div className="flex justify-center">
@@ -85,7 +85,7 @@ const Navbar = () => {
               <Link
                 key={link.name}
                 to={link.path}
-                className={`text-sm font-medium button-hover ${
+                className={`text-sm font-medium button-hover font-poppins ${
                   isHomePage ? 'text-white hover:text-white/70' : 'hover:text-black/70'
                 }`}
               >
@@ -120,7 +120,7 @@ const Navbar = () => {
                 <Link
                   key={link.name}
                   to={link.path}
-                  className={`px-4 py-2 text-base rounded-xl transition-colors ${
+                  className={`px-4 py-2 text-base rounded-xl transition-colors font-poppins ${
                     isHomePage 
                       ? 'text-white hover:bg-white/10' 
                       : 'hover:bg-black/5'

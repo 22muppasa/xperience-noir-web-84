@@ -6,9 +6,9 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
   
   return (
-    <footer className="bg-black text-white py-12 mt-20">
-      <div className="container mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+    <footer className="bg-black text-white py-8 md:py-12 mt-10 md:mt-20">
+      <div className="container px-4 mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
             <Link to="/" className="flex items-center mb-4">
               <span className="text-xl font-bold">XPerience</span>
@@ -64,7 +64,7 @@ const Footer = () => {
               />
               <button 
                 type="submit" 
-                className="bg-white text-black px-4 py-2 rounded text-sm font-medium hover:bg-gray-200 transition-colors"
+                className="bg-white text-black px-4 py-2 rounded text-sm font-medium hover:bg-gray-200 transition-colors whitespace-nowrap"
               >
                 Subscribe
               </button>
@@ -72,7 +72,7 @@ const Footer = () => {
           </div>
         </div>
         
-        <div className="border-t border-white/10 mt-10 pt-6 text-sm text-gray-400 flex flex-col md:flex-row justify-between items-center">
+        <div className="border-t border-white/10 mt-8 pt-6 text-sm text-gray-400 flex flex-col md:flex-row justify-between items-center">
           <p>© {currentYear} XPerience. All rights reserved.</p>
           <div className="flex gap-4 mt-4 md:mt-0">
             <Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>

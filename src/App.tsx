@@ -39,12 +39,14 @@ const App = () => {
           <Toaster />
           <Sonner />
           {loading ? (
-            <Loader />
+            <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black z-50">
+              <Loader />
+            </div>
           ) : (
             <BrowserRouter>
-              <div className="transition-colors duration-300">
+              <div className="flex flex-col min-h-screen transition-colors duration-300">
                 <Navbar />
-                <div className="pt-16"> {/* Add padding to account for fixed navbar */}
+                <div className="flex-grow pt-16 w-full"> {/* Adjusted padding and made full width */}
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/programs" element={<Programs />} />

@@ -11,27 +11,29 @@ const CompanyTimeline = () => {
   ];
 
   return (
-    <section className="py-20 px-4 md:px-6 bg-gray-50">
+    <section className="py-12 md:py-20 px-4 md:px-6 bg-gray-50">
       <div className="container mx-auto max-w-4xl">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-medium mb-6">Our Journey</h2>
-          <p className="text-lg text-gray-600">
+        <div className="text-center mb-8 md:mb-12">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-medium mb-4 md:mb-6">Our Journey</h2>
+          <p className="text-base md:text-lg text-gray-600">
             Since our founding in 2018, we've been committed to making technology education accessible and helping businesses succeed in the digital economy.
           </p>
         </div>
         
-        <div className="space-y-12">
+        <div className="space-y-8 md:space-y-12">
           {timelineEvents.map((event, index) => (
             <div key={event.year} className="relative pl-8 md:pl-0">
+              {/* Timeline line - hidden on mobile, visible on md+ screens */}
               <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 top-0 h-full w-px bg-gray-300"></div>
               
               <div className="md:grid md:grid-cols-2 md:gap-8 items-center">
                 {index % 2 === 0 ? (
                   <>
-                    <div className="md:text-right md:pr-8 relative mb-8 md:mb-0">
+                    <div className="md:text-right md:pr-8 relative mb-4 md:mb-0">
+                      {/* Timeline dot - hidden on mobile, visible on md+ screens */}
                       <div className="hidden md:block absolute right-0 top-0 transform translate-x-1/2 w-4 h-4 bg-black rounded-full"></div>
-                      <h3 className="text-xl font-medium mb-2">{event.year}</h3>
-                      <p className="text-gray-600">
+                      <h3 className="text-lg md:text-xl font-medium mb-2">{event.year}</h3>
+                      <p className="text-sm md:text-base text-gray-600">
                         {event.description}
                       </p>
                     </div>
@@ -41,9 +43,10 @@ const CompanyTimeline = () => {
                   <>
                     <div className="md:pr-8"></div>
                     <div className="md:pl-8 relative">
+                      {/* Timeline dot - hidden on mobile, visible on md+ screens */}
                       <div className="hidden md:block absolute left-0 top-0 transform -translate-x-1/2 w-4 h-4 bg-black rounded-full"></div>
-                      <h3 className="text-xl font-medium mb-2">{event.year}</h3>
-                      <p className="text-gray-600">
+                      <h3 className="text-lg md:text-xl font-medium mb-2">{event.year}</h3>
+                      <p className="text-sm md:text-base text-gray-600">
                         {event.description}
                       </p>
                     </div>

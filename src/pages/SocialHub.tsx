@@ -3,9 +3,9 @@ import SocialFeed from '@/components/ui/SocialFeed';
 
 const SocialHub = () => {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen relative">
       {/* Hero Section */}
-      <section className="py-12 md:py-20 px-4 md:px-6 bg-black text-white">
+      <section className="py-12 md:py-20 px-4 md:px-6 bg-black/80 text-white backdrop-blur-sm">
         <div className="container mx-auto max-w-6xl">
           <div className="max-w-3xl">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-medium mb-4 md:mb-6 animate-fade-in">
@@ -19,14 +19,14 @@ const SocialHub = () => {
       </section>
       
       {/* Social Feed */}
-      <section className="py-12 md:py-20 px-4 md:px-6">
+      <section className="py-12 md:py-20 px-4 md:px-6 bg-white/80 backdrop-blur-sm">
         <div className="container mx-auto max-w-6xl">
           <SocialFeed />
         </div>
       </section>
       
       {/* Newsletter Signup */}
-      <section className="py-12 md:py-20 px-4 md:px-6 bg-gray-50">
+      <section className="py-12 md:py-20 px-4 md:px-6 bg-gray-50/90 backdrop-blur-sm">
         <div className="container mx-auto max-w-3xl text-center">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-medium mb-4 md:mb-6">Stay Updated</h2>
           <p className="text-base md:text-lg text-gray-600 mb-6 md:mb-8">

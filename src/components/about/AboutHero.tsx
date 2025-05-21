@@ -6,7 +6,7 @@ const AboutHero = () => {
   const { isDarkMode } = useTheme();
   
   return (
-    <section className={`py-12 md:py-20 px-4 md:px-6 ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}`}>
+    <section className={`py-12 md:py-20 px-4 md:px-6 ${isDarkMode ? 'bg-black/80 text-white' : 'bg-white/80 text-black'} backdrop-blur-sm`}>
       <div className="container mx-auto max-w-6xl">
         <div className="max-w-3xl">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-medium mb-4 md:mb-6 animate-fade-in">

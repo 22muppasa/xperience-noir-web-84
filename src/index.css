@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 @tailwind base;
@@ -442,8 +443,14 @@
   .animated-button.invert-on-hover .sparkle .path {
     color: black;
   }
+  
+  /* Add transition for the icon color */
+  .animated-button.invert-on-hover .icon-color-transition {
+    transition: color var(--transtion);
+  }
 
-  .animated-button.invert-on-hover:is(:hover, :focus) .sparkle .path {
+  .animated-button.invert-on-hover:is(:hover, :focus) .sparkle .path,
+  .animated-button.invert-on-hover:is(:hover, :focus) .icon-color-transition {
     color: white;
   }
 

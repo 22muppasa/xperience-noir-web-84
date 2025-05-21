@@ -41,7 +41,7 @@ const AnimatedButton = ({
         <div className="dots_border" />
         {icon ? (
           React.createElement(icon, { 
-            className: "sparkle",
+            className: "sparkle icon-color-transition",
             size: 24,
             color: sparkleColor,
             strokeWidth: 1.5

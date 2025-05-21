@@ -14,7 +14,6 @@ import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
-import ThemeToggle from "./components/ThemeToggle";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
 const queryClient = new QueryClient();
@@ -28,7 +27,6 @@ const App = () => (
         <BrowserRouter>
           <div className="transition-colors duration-300">
             <Navbar />
-            <ThemeToggle />
             <div className="pt-16"> {/* Add padding to account for fixed navbar */}
               <Routes>
                 <Route path="/" element={<Index />} />

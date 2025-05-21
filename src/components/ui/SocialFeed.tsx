@@ -19,7 +19,7 @@ const mockPosts: SocialPost[] = [
   {
     id: '1',
     platform: 'linkedin',
-    content: 'We're excited to announce our new coding bootcamp starting next month! Join us for an immersive experience.',
+    content: "We're excited to announce our new coding bootcamp starting next month! Join us for an immersive experience.",
     image: 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b',
     date: '2025-04-15',
     likes: 145,
@@ -39,7 +39,7 @@ const mockPosts: SocialPost[] = [
   {
     id: '3',
     platform: 'facebook',
-    content: 'Congratulations to our latest graduates! So proud of what you've accomplished.',
+    content: "Congratulations to our latest graduates! So proud of what you've accomplished.",
     image: 'https://images.unsplash.com/photo-1527576539890-dfa815648363',
     date: '2025-05-10',
     likes: 210,
@@ -49,7 +49,7 @@ const mockPosts: SocialPost[] = [
   {
     id: '4',
     platform: 'linkedin',
-    content: 'Our team is growing! We're looking for passionate educators to join our mission.',
+    content: "Our team is growing! We're looking for passionate educators to join our mission.",
     date: '2025-05-08',
     likes: 67,
     comments: 15,

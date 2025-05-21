@@ -1,7 +1,7 @@
 
 import { Link } from 'react-router-dom';
 import { animated, useSpring } from '@react-spring/web';
-import { ArrowRight, Code, PenSquare } from 'lucide-react';
+import { ArrowRight, Code, PenSquare, Wand } from 'lucide-react';
 import AnimatedBackground from '@/components/ui/AnimatedBackground';
 import AnimatedButton from '@/components/ui/AnimatedButton';
 
@@ -42,6 +42,7 @@ const Index = () => {
                     className="flex items-center gap-2" 
                     sparkleColor="white" 
                     textColor="white"
+                    icon={Code}
                   >
                     Learn to Code
                   </AnimatedButton>
@@ -51,6 +52,7 @@ const Index = () => {
                     className="flex items-center gap-2"
                     sparkleColor="white" 
                     textColor="white"
+                    icon={PenSquare}
                   >
                     Redesign My Site
                   </AnimatedButton>
@@ -110,9 +112,7 @@ const Index = () => {
             {/* Feature 3 */}
             <div className="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20 hover-scale shadow-sm text-white">
               <div className="w-14 h-14 bg-white/20 text-white flex items-center justify-center rounded-2xl mb-6">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
-                  <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
-                </svg>
+                <Wand size={24} />
               </div>
               <h3 className="text-2xl font-medium mb-4">Community Impact</h3>
               <p className="text-gray-300 mb-6">
@@ -138,6 +138,7 @@ const Index = () => {
               <AnimatedButton 
                 sparkleColor="white" 
                 textColor="white"
+                icon={ArrowRight}
               >
                 Get in Touch
               </AnimatedButton>

@@ -11,6 +11,7 @@ interface AnimatedButtonProps {
   textColor?: string;
   type?: 'button' | 'submit' | 'reset';
   icon?: LucideIcon;
+  invertOnHover?: boolean;
 }
 
 const AnimatedButton = ({ 
@@ -20,7 +21,8 @@ const AnimatedButton = ({
   sparkleColor = "white", 
   textColor = "white",
   type = "button",
-  icon
+  icon,
+  invertOnHover = false
 }: AnimatedButtonProps) => {
   // Determine if we should use the default (dark) or original style
   const isOriginalStyle = sparkleColor === 'black' && textColor === 'black';
@@ -31,6 +33,7 @@ const AnimatedButton = ({
         type={type}
         className={cn("animated-button group", 
           isOriginalStyle ? "original-style" : "",
+          invertOnHover ? "invert-on-hover" : "",
           className
         )}
         onClick={onClick}

@@ -50,9 +50,10 @@ const Index = () => {
                 <Link to="/consulting">
                   <AnimatedButton 
                     className="flex items-center gap-2"
-                    sparkleColor="black" 
-                    textColor="black"
+                    sparkleColor="white" 
+                    textColor="white"
                     icon={PenSquare}
+                    invertOnHover={true}
                   >
                     Redesign My Site
                   </AnimatedButton>

@@ -22,6 +22,7 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
       document.documentElement.classList.remove('light-mode');
     } else {
       document.documentElement.classList.add('light-mode');
+      document.body.classList.add('light-mode'); // Add class to body element too
     }
   };
 
@@ -34,12 +35,15 @@ export const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
       
       if (savedTheme === 'light') {
         document.documentElement.classList.add('light-mode');
+        document.body.classList.add('light-mode'); // Add class to body element too
       } else {
         document.documentElement.classList.remove('light-mode');
+        document.body.classList.remove('light-mode'); // Remove from body too
       }
     } else if (!prefersDark) {
       setIsDarkMode(false);
       document.documentElement.classList.add('light-mode');
+      document.body.classList.add('light-mode'); // Add class to body element too
     }
   }, []);
 

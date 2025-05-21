@@ -26,21 +26,23 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Navbar />
-          <ThemeToggle />
-          <div className="pt-16"> {/* Add padding to account for fixed navbar */}
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/programs" element={<Programs />} />
-              <Route path="/consulting" element={<Consulting />} />
-              <Route path="/get-involved" element={<GetInvolved />} />
-              <Route path="/social-hub" element={<SocialHub />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+          <div className="transition-colors duration-300">
+            <Navbar />
+            <ThemeToggle />
+            <div className="pt-16"> {/* Add padding to account for fixed navbar */}
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/programs" element={<Programs />} />
+                <Route path="/consulting" element={<Consulting />} />
+                <Route path="/get-involved" element={<GetInvolved />} />
+                <Route path="/social-hub" element={<SocialHub />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/contact" element={<Contact />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </div>
+            <Footer />
           </div>
-          <Footer />
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>

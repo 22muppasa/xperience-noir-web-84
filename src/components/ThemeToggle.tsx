@@ -14,17 +14,17 @@ const ThemeToggle = () => {
           onClick={toggleTheme}
           variant="outline" 
           size="icon"
-          className={`h-12 w-12 rounded-l-xl rounded-r-none border-r-0 shadow-md ${
+          className={`h-12 w-12 rounded-l-xl rounded-r-none border-r-0 shadow-lg ${
             isDarkMode 
-              ? 'bg-black border-white/10 hover:bg-black/80' 
+              ? 'bg-black border-white/20 hover:bg-black/80' 
               : 'bg-white border-black/10 hover:bg-gray-100'
           }`}
           aria-label="Toggle theme"
         >
           {isDarkMode ? (
-            <Sun className="h-5 w-5 text-yellow-400" />
+            <Sun className="h-6 w-6 text-yellow-400" />
           ) : (
-            <Moon className="h-5 w-5 text-blue-700" />
+            <Moon className="h-6 w-6 text-blue-700" />
           )}
           <span className="sr-only">{isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}</span>
         </Button>

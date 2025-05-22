@@ -185,8 +185,11 @@ const Index = () => {
 }
 
 .feature-card:hover .card-text {
-  opacity: 0;
-  transition: opacity 0.3s;
+  color: white !important;
+  opacity: 1;
+  transition: all 0.3s;
+  position: relative;
+  z-index: 5;
 }
 
 .card-programs:hover::after {
@@ -246,7 +249,6 @@ const Index = () => {
 .feature-card:hover h3,
 .feature-card:hover p {
   color: white;
-  opacity: 0;
 }
 `}
         </style>

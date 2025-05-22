@@ -82,49 +82,149 @@ const Index = () => {
           </div>
           
           <animated.div style={cardSpring} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div className="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20 hover-scale shadow-sm text-white">
-              <div className="w-14 h-14 bg-white/20 text-white flex items-center justify-center rounded-2xl mb-6">
-                <Code size={24} />
+            {/* Feature Card 1 */}
+            <div className="card-wrapper">
+              <div className="feature-card">
+                <div className="icon-container">
+                  <Code size={24} />
+                </div>
+                <h3 className="text-2xl font-medium mb-4 text-white">Coding Education</h3>
+                <p className="text-gray-300 mb-6">
+                  From beginner workshops to advanced bootcamps, we teach the skills needed for the digital economy.
+                </p>
+                <Link to="/programs" className="inline-flex items-center font-medium button-hover text-white">
+                  Explore Programs
+                </Link>
               </div>
-              <h3 className="text-2xl font-medium mb-4">Coding Education</h3>
-              <p className="text-gray-300 mb-6">
-                From beginner workshops to advanced bootcamps, we teach the skills needed for the digital economy.
-              </p>
-              <Link to="/programs" className="inline-flex items-center font-medium button-hover text-white">
-                Explore Programs
-              </Link>
             </div>
             
-            {/* Feature 2 */}
-            <div className="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20 hover-scale shadow-sm text-white">
-              <div className="w-14 h-14 bg-white/20 text-white flex items-center justify-center rounded-2xl mb-6">
-                <PenSquare size={24} />
+            {/* Feature Card 2 */}
+            <div className="card-wrapper">
+              <div className="feature-card">
+                <div className="icon-container">
+                  <PenSquare size={24} />
+                </div>
+                <h3 className="text-2xl font-medium mb-4 text-white">Web Consulting</h3>
+                <p className="text-gray-300 mb-6">
+                  Our expert team helps businesses transform their online presence with modern, effective websites.
+                </p>
+                <Link to="/consulting" className="inline-flex items-center font-medium button-hover text-white">
+                  Our Process
+                </Link>
               </div>
-              <h3 className="text-2xl font-medium mb-4">Web Consulting</h3>
-              <p className="text-gray-300 mb-6">
-                Our expert team helps businesses transform their online presence with modern, effective websites.
-              </p>
-              <Link to="/consulting" className="inline-flex items-center font-medium button-hover text-white">
-                Our Process
-              </Link>
             </div>
             
-            {/* Feature 3 */}
-            <div className="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20 hover-scale shadow-sm text-white">
-              <div className="w-14 h-14 bg-white/20 text-white flex items-center justify-center rounded-2xl mb-6">
-                <Wand size={24} />
+            {/* Feature Card 3 */}
+            <div className="card-wrapper">
+              <div className="feature-card">
+                <div className="icon-container">
+                  <Wand size={24} />
+                </div>
+                <h3 className="text-2xl font-medium mb-4 text-white">Community Impact</h3>
+                <p className="text-gray-300 mb-6">
+                  We're committed to making digital skills accessible to underrepresented communities.
+                </p>
+                <Link to="/impact" className="inline-flex items-center font-medium button-hover text-white">
+                  See Our Impact
+                </Link>
               </div>
-              <h3 className="text-2xl font-medium mb-4">Community Impact</h3>
-              <p className="text-gray-300 mb-6">
-                We're committed to making digital skills accessible to underrepresented communities.
-              </p>
-              <Link to="/impact" className="inline-flex items-center font-medium button-hover text-white">
-                See Our Impact
-              </Link>
             </div>
           </animated.div>
         </div>
+
+        {/* Add the custom CSS here for the feature cards */}
+        <style>
+{`
+.card-wrapper {
+  perspective: 1000px;
+}
+
+.feature-card {
+  position: relative;
+  width: 100%;
+  min-height: 320px;
+  background: rgba(77, 196, 191, 0.8);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 2rem;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.feature-card::before,
+.feature-card::after {
+  position: absolute;
+  content: "";
+  width: 20%;
+  height: 20%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 25px;
+  font-weight: bold;
+  background-color: rgba(135, 206, 235, 0.8);
+  transition: all 0.5s;
+  z-index: 0;
+}
+
+.feature-card::before {
+  top: 0;
+  right: 0;
+  border-radius: 0 15px 0 100%;
+}
+
+.feature-card::after {
+  bottom: 0;
+  left: 0;
+  border-radius: 0 100% 0 15px;
+}
+
+.feature-card:hover::before,
+.feature-card:hover::after {
+  width: 100%;
+  height: 100%;
+  border-radius: 15px;
+  transition: all 0.5s;
+}
+
+.feature-card:nth-child(1):hover::after {
+  content: "LEARN";
+}
+
+.feature-card:nth-child(2):hover::after {
+  content: "BUILD";
+}
+
+.feature-card:nth-child(3):hover::after {
+  content: "GROW";
+}
+
+.icon-container {
+  width: 3.5rem;
+  height: 3.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 1rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.feature-card h3,
+.feature-card p,
+.feature-card a,
+.feature-card .icon-container {
+  position: relative;
+  z-index: 2;
+}
+`}
+        </style>
       </section>
       
       {/* CTA Section */}

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -93,15 +92,14 @@ const Navbar = () => {
               ))}
             </div>
 
-            {/* Mobile Menu Button - moved to the right side */}
+            {/* Mobile Menu Button - updated to match navbar height */}
             <div className="md:hidden">
               <Sheet>
                 <SheetTrigger asChild>
                   <Button
                     variant="ghost"
-                    size="sm"
                     aria-label="Menu"
-                    className={`p-1 ${
+                    className={`h-16 w-16 flex items-center justify-center ${
                       isDarkMode || isHomePage 
                         ? 'text-white hover:bg-white/20' 
                         : 'text-black hover:bg-black/5'
@@ -152,13 +150,12 @@ const Navbar = () => {
           </div>
         </nav>
       ) : (
-        /* Floating hamburger menu when scrolled */
+        /* Floating hamburger menu when scrolled - updated to be square */
         <div className="flex justify-end w-full">
           <Sheet>
             <SheetTrigger asChild>
               <Button
                 variant="outline"
-                size="icon"
                 aria-label="Menu"
                 className={`h-12 w-12 rounded-full shadow-lg flex items-center justify-center ${getBgColor()} ${
                   isDarkMode || isHomePage 

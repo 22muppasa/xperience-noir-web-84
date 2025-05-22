@@ -4,11 +4,9 @@ import { useLocation } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import Logo from '@/components/layout/Logo';
-import MobileMenu from '@/components/layout/MobileMenu';
 import DesktopNav from '@/components/layout/DesktopNav';
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const isHomePage = location.pathname === '/';
@@ -27,13 +25,6 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  // Close mobile menu when resizing to desktop
-  useEffect(() => {
-    if (!isMobile && isOpen) {
-      setIsOpen(false);
-    }
-  }, [isMobile, isOpen]);
 
   const navLinks = [
     { name: 'Programs', path: '/programs' },
@@ -72,12 +63,17 @@ const Navbar = () => {
           {/* Logo */}
           <Logo textColor={getTextColor()} />
           
-          {/* Desktop Navigation */}
-          <DesktopNav navLinks={navLinks} textColor={getTextColor()} />
-
-          {/* Mobile Menu Button */}
-          <div className="md:hidden h-full flex items-center">
-            <MobileMenu navLinks={navLinks} isHomePage={isHomePage} scrolled={scrolled} />
+          {/* Navigation - Show desktop nav regardless of screen size */}
+          <div className={`flex items-center space-x-2 md:space-x-4 lg:space-x-8 overflow-x-auto ${isMobile ? 'text-xs' : ''}`}>
+            {navLinks.map((link) => (
+              <NavLink
+                key={link.name}
+                to={link.path}
+                className={`whitespace-nowrap font-medium button-hover font-poppins ${getTextColor()} hover:opacity-80 transition-all duration-300 py-2`}
+              >
+                {link.name}
+              </NavLink>
+            ))}
           </div>
         </div>
       </nav>

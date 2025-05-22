@@ -1,7 +1,7 @@
 
 import { Link } from 'react-router-dom';
 import { animated, useSpring } from '@react-spring/web';
-import { ArrowRight, Code, PenSquare, Wand } from 'lucide-react';
+import { ArrowRight, Code, PenSquare, User } from 'lucide-react';
 import AnimatedBackground from '@/components/ui/AnimatedBackground';
 import AnimatedButton from '@/components/ui/AnimatedButton';
 
@@ -108,15 +108,15 @@ const Index = () => {
               </div>
             </Link>
             
-            {/* Feature Card 3 */}
-            <Link to="/impact" className="card-wrapper">
-              <div className="feature-card card-impact">
+            {/* Feature Card 3 - About Us (replacing Community Impact) */}
+            <Link to="/about" className="card-wrapper">
+              <div className="feature-card card-about">
                 <div className="icon-container">
-                  <Wand size={24} />
+                  <User size={24} />
                 </div>
-                <h3 className="text-2xl font-medium mb-4 text-white card-text">Community Impact</h3>
+                <h3 className="text-2xl font-medium mb-4 text-white card-text">About Us</h3>
                 <p className="text-gray-300 mb-6 card-text">
-                  We're committed to making digital skills accessible to underrepresented communities.
+                  Learn about our company, our mission and the team behind our transformative services.
                 </p>
               </div>
             </Link>
@@ -212,8 +212,8 @@ const Index = () => {
   line-height: 1.4;
 }
 
-.card-impact:hover::after {
-  content: "JOIN OUR COMMUNITY";
+.card-about:hover::after {
+  content: "MEET OUR TEAM";
   padding: 2rem;
   display: flex;
   align-items: center;

@@ -75,8 +75,8 @@ const Index = () => {
       <section className="py-24 px-4 md:px-6 bg-white/10 backdrop-blur-lg rounded-t-[2.5rem] relative z-10">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-medium mb-6 text-white">What We Offer</h2>
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-medium mb-6 text-black">What We Offer</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Our services are designed to help you succeed in today's digital landscape through education and expert consulting.
             </p>
           </div>
@@ -88,8 +88,8 @@ const Index = () => {
                 <div className="icon-container">
                   <Code size={24} />
                 </div>
-                <h3 className="text-2xl font-medium mb-4 text-white card-text">Coding Education</h3>
-                <p className="text-gray-300 mb-6 card-text">
+                <h3 className="text-2xl font-medium mb-4 text-black card-text">Coding Education</h3>
+                <p className="text-gray-600 mb-6 card-text">
                   From beginner workshops to advanced bootcamps, we teach the skills needed for the digital economy.
                 </p>
               </div>
@@ -101,8 +101,8 @@ const Index = () => {
                 <div className="icon-container">
                   <PenSquare size={24} />
                 </div>
-                <h3 className="text-2xl font-medium mb-4 text-white card-text">Web Consulting</h3>
-                <p className="text-gray-300 mb-6 card-text">
+                <h3 className="text-2xl font-medium mb-4 text-black card-text">Web Consulting</h3>
+                <p className="text-gray-600 mb-6 card-text">
                   Our expert team helps businesses transform their online presence with modern, effective websites.
                 </p>
               </div>
@@ -114,8 +114,8 @@ const Index = () => {
                 <div className="icon-container">
                   <User size={24} />
                 </div>
-                <h3 className="text-2xl font-medium mb-4 text-white card-text">About Us</h3>
-                <p className="text-gray-300 mb-6 card-text">
+                <h3 className="text-2xl font-medium mb-4 text-black card-text">About Us</h3>
+                <p className="text-gray-600 mb-6 card-text">
                   Learn about our company, our mission and the team behind our transformative services.
                 </p>
               </div>

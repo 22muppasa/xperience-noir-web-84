@@ -32,6 +32,7 @@ const MobileMenu = ({ navLinks, isHomePage, scrolled = false }: MobileMenuProps)
     return isHomePage ? 'bg-black' : 'bg-white';
   };
 
+  // Adjust button height to match navbar height
   const buttonSize = scrolled ? 'h-12 w-12' : 'h-16 w-16';
 
   return (
@@ -83,12 +84,11 @@ const MobileMenu = ({ navLinks, isHomePage, scrolled = false }: MobileMenuProps)
                 isDarkMode || isHomePage 
                   ? 'text-white hover:bg-white/10' 
                   : 'hover:bg-black/5'
-              } animate-fade-in`}
+              }`}
               onClick={() => setIsOpen(false)}
               style={{ 
-                animationDelay: `${index * 50}ms`,
                 opacity: 0,
-                animation: isOpen ? `fade-in 0.3s ease-out forwards ${index * 50}ms` : 'none'
+                animation: isOpen ? `fadeIn 300ms ease-out forwards ${index * 30}ms` : 'none'
               }}
             >
               {link.name}

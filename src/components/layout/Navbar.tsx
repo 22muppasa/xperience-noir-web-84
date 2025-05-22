@@ -4,7 +4,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Menu } from 'lucide-react';
 import { 
   Sheet,
   SheetContent,
@@ -12,6 +11,15 @@ import {
   SheetTitle,
   SheetTrigger
 } from '@/components/ui/sheet';
+
+// Custom hamburger menu icon with 3 bold lines
+const HamburgerIcon = () => (
+  <div className="flex flex-col justify-between h-5 w-6">
+    <span className="h-[3px] w-full bg-current rounded-full"></span>
+    <span className="h-[3px] w-full bg-current rounded-full"></span>
+    <span className="h-[3px] w-full bg-current rounded-full"></span>
+  </div>
+);
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -99,31 +107,44 @@ const Navbar = () => {
                         : 'text-black hover:bg-black/5'
                     }`}
                   >
-                    <Menu className="h-6 w-6" />
+                    <HamburgerIcon />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className={`${getBgColor()} overflow-y-auto`}>
-                  <SheetHeader>
-                    <SheetTitle className={`text-2xl font-bold font-poppins ${getTextColor()}`}>
-                      <Link to="/">
-                        <span className="tracking-tighter">XPerience</span>
-                      </Link>
-                    </SheetTitle>
-                  </SheetHeader>
-                  <div className="py-6 flex flex-col space-y-4">
-                    {navLinks.map((link) => (
-                      <Link
-                        key={link.name}
-                        to={link.path}
-                        className={`px-4 py-3 text-base rounded-xl transition-colors font-poppins ${
-                          isDarkMode || isHomePage 
+                <SheetContent 
+                  side="right" 
+                  className={`${isDarkMode ? 'bg-[#1A1F2C]' : (isHomePage ? 'bg-[#1A1F2C]' : 'bg-white')} 
+                  border-l ${isDarkMode || isHomePage ? 'border-white/10' : 'border-gray-200'} 
+                  overflow-y-auto p-0`}
+                >
+                  <div className="h-full flex flex-col">
+                    <SheetHeader className="p-6 border-b border-opacity-10 border-current">
+                      <SheetTitle className={`text-2xl font-bold font-poppins ${isDarkMode || isHomePage ? 'text-white' : 'text-black'}`}>
+                        <Link to="/">
+                          <span className="tracking-tighter">XPerience</span>
+                        </Link>
+                      </SheetTitle>
+                    </SheetHeader>
+                    <div className="flex-1 py-6">
+                      {navLinks.map((link, index) => (
+                        <Link
+                          key={link.name}
+                          to={link.path}
+                          className={`block px-6 py-4 text-lg font-medium transition-all duration-200 font-poppins
+                          ${index !== navLinks.length - 1 ? 'border-b border-opacity-10 border-current' : ''}
+                          ${isDarkMode || isHomePage 
                             ? 'text-white hover:bg-white/10' 
                             : 'text-black hover:bg-black/5'
-                        }`}
-                      >
-                        {link.name}
-                      </Link>
-                    ))}
+                          }`}
+                        >
+                          {link.name}
+                        </Link>
+                      ))}
+                    </div>
+                    <div className={`p-6 border-t ${isDarkMode || isHomePage ? 'border-white/10' : 'border-gray-200'}`}>
+                      <p className={`text-sm ${isDarkMode || isHomePage ? 'text-white/60' : 'text-black/60'}`}>
+                        © {new Date().getFullYear()} XPerience. All rights reserved.
+                      </p>
+                    </div>
                   </div>
                 </SheetContent>
               </Sheet>
@@ -139,37 +160,50 @@ const Navbar = () => {
                 variant="outline"
                 size="icon"
                 aria-label="Menu"
-                className={`h-16 w-16 rounded-full shadow-lg flex items-center justify-center ${getBgColor()} ${
+                className={`h-12 w-12 rounded-full shadow-lg flex items-center justify-center ${getBgColor()} ${
                   isDarkMode || isHomePage 
                     ? 'border-white/20 hover:bg-black/80 text-white' 
                     : 'border-black/10 hover:bg-gray-100 text-black'
                 }`}
               >
-                <Menu className="h-6 w-6" />
+                <HamburgerIcon />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className={`${getBgColor()} overflow-y-auto`}>
-              <SheetHeader>
-                <SheetTitle className={`text-2xl font-bold font-poppins ${getTextColor()}`}>
-                  <Link to="/">
-                    <span className="tracking-tighter">XPerience</span>
-                  </Link>
-                </SheetTitle>
-              </SheetHeader>
-              <div className="py-6 flex flex-col space-y-4">
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.name}
-                    to={link.path}
-                    className={`px-4 py-3 text-base rounded-xl transition-colors font-poppins ${
-                      isDarkMode || isHomePage 
+            <SheetContent 
+              side="right" 
+              className={`${isDarkMode ? 'bg-[#1A1F2C]' : (isHomePage ? 'bg-[#1A1F2C]' : 'bg-white')} 
+              border-l ${isDarkMode || isHomePage ? 'border-white/10' : 'border-gray-200'} 
+              overflow-y-auto p-0`}
+            >
+              <div className="h-full flex flex-col">
+                <SheetHeader className="p-6 border-b border-opacity-10 border-current">
+                  <SheetTitle className={`text-2xl font-bold font-poppins ${isDarkMode || isHomePage ? 'text-white' : 'text-black'}`}>
+                    <Link to="/">
+                      <span className="tracking-tighter">XPerience</span>
+                    </Link>
+                  </SheetTitle>
+                </SheetHeader>
+                <div className="flex-1 py-6">
+                  {navLinks.map((link, index) => (
+                    <Link
+                      key={link.name}
+                      to={link.path}
+                      className={`block px-6 py-4 text-lg font-medium transition-all duration-200 font-poppins
+                      ${index !== navLinks.length - 1 ? 'border-b border-opacity-10 border-current' : ''}
+                      ${isDarkMode || isHomePage 
                         ? 'text-white hover:bg-white/10' 
                         : 'text-black hover:bg-black/5'
-                    }`}
-                  >
-                    {link.name}
-                  </Link>
-                ))}
+                      }`}
+                    >
+                      {link.name}
+                    </Link>
+                  ))}
+                </div>
+                <div className={`p-6 border-t ${isDarkMode || isHomePage ? 'border-white/10' : 'border-gray-200'}`}>
+                  <p className={`text-sm ${isDarkMode || isHomePage ? 'text-white/60' : 'text-black/60'}`}>
+                    © {new Date().getFullYear()} XPerience. All rights reserved.
+                  </p>
+                </div>
               </div>
             </SheetContent>
           </Sheet>

@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -87,15 +88,79 @@ const Navbar = () => {
 
             {/* Mobile Menu Button - making height match navbar height */}
             <div className="md:hidden h-16 flex items-center">
+              <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                <SheetTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    aria-label="Toggle menu"
+                    className={`h-16 w-16 p-1 rounded-full flex items-center justify-center ${getBgColor()} ${
+                      isDarkMode || isHomePage 
+                        ? 'text-white hover:bg-white/20' 
+                        : 'hover:bg-black/5'
+                    }`}
+                  >
+                    <div className="w-8 flex flex-col items-center justify-center gap-1.5">
+                      <span 
+                        className={`block w-8 h-1 rounded-full transition-transform duration-300 ${
+                          isDarkMode || isHomePage ? 'bg-white' : 'bg-black'
+                        } ${isOpen ? 'transform rotate-45 translate-y-2.5' : ''}`}
+                      ></span>
+                      <span 
+                        className={`block w-8 h-1 rounded-full transition-opacity duration-300 ${
+                          isDarkMode || isHomePage ? 'bg-white' : 'bg-black'
+                        } ${isOpen ? 'opacity-0' : 'opacity-100'}`}
+                      ></span>
+                      <span 
+                        className={`block w-8 h-1 rounded-full transition-transform duration-300 ${
+                          isDarkMode || isHomePage ? 'bg-white' : 'bg-black'
+                        } ${isOpen ? 'transform -rotate-45 -translate-y-2.5' : ''}`}
+                      ></span>
+                    </div>
+                  </Button>
+                </SheetTrigger>
+                <SheetContent side="right" className={`${getBgColor()} border-none`}>
+                  <div className="container py-4 flex flex-col space-y-4">
+                    <Link 
+                      to="/" 
+                      className={`text-2xl font-bold font-poppins ${getTextColor()} mb-4`}
+                      onClick={() => setIsOpen(false)}
+                    >
+                      <span className="tracking-tighter">XPerience</span>
+                    </Link>
+                    {navLinks.map((link) => (
+                      <Link
+                        key={link.name}
+                        to={link.path}
+                        className={`px-4 py-2 text-base rounded-xl transition-colors font-poppins ${
+                          isDarkMode || isHomePage 
+                            ? 'text-white hover:bg-white/10' 
+                            : 'hover:bg-black/5'
+                        }`}
+                        onClick={() => setIsOpen(false)}
+                      >
+                        {link.name}
+                      </Link>
+                    ))}
+                  </div>
+                </SheetContent>
+              </Sheet>
+            </div>
+          </div>
+        </nav>
+      ) : (
+        /* Floating hamburger menu when scrolled - adjusted for responsiveness */
+        <div className={`absolute top-4 right-4 md:right-6 lg:right-8`}>
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild>
               <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsOpen(!isOpen)}
+                variant="outline"
+                size="icon"
                 aria-label="Toggle menu"
-                className={`h-16 w-16 p-1 rounded-full flex items-center justify-center ${getBgColor()} ${
+                className={`h-16 w-16 rounded-full shadow-lg flex items-center justify-center ${getBgColor()} ${
                   isDarkMode || isHomePage 
-                    ? 'text-white hover:bg-white/20' 
-                    : 'hover:bg-black/5'
+                    ? 'border-white/20 hover:bg-black/80 text-white' 
+                    : 'border-black/10 hover:bg-gray-100 text-black'
                 }`}
               >
                 <div className="w-8 flex flex-col items-center justify-center gap-1.5">
@@ -116,13 +181,16 @@ const Navbar = () => {
                   ></span>
                 </div>
               </Button>
-            </div>
-          </div>
-
-          {/* Mobile Navigation Menu */}
-          {isOpen && (
-            <div className={`md:hidden ${getBgColor()} border-t animate-fade-in rounded-b-lg overflow-hidden`}>
+            </SheetTrigger>
+            <SheetContent side="right" className={`${getBgColor()} border-none`}>
               <div className="container py-4 flex flex-col space-y-4">
+                <Link 
+                  to="/" 
+                  className={`text-2xl font-bold font-poppins ${getTextColor()} mb-4`}
+                  onClick={() => setIsOpen(false)}
+                >
+                  <span className="tracking-tighter">XPerience</span>
+                </Link>
                 {navLinks.map((link) => (
                   <Link
                     key={link.name}
@@ -138,70 +206,8 @@ const Navbar = () => {
                   </Link>
                 ))}
               </div>
-            </div>
-          )}
-        </nav>
-      ) : (
-        /* Floating hamburger menu when scrolled - adjusted for responsiveness */
-        <div className={`absolute top-4 right-4 md:right-6 lg:right-8`}>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
-            className={`h-16 w-16 rounded-full shadow-lg flex items-center justify-center ${getBgColor()} ${
-              isDarkMode || isHomePage 
-                ? 'border-white/20 hover:bg-black/80 text-white' 
-                : 'border-black/10 hover:bg-gray-100 text-black'
-            }`}
-          >
-            <div className="w-8 flex flex-col items-center justify-center gap-1.5">
-              <span 
-                className={`block w-8 h-1 rounded-full transition-transform duration-300 ${
-                  isDarkMode || isHomePage ? 'bg-white' : 'bg-black'
-                } ${isOpen ? 'transform rotate-45 translate-y-2.5' : ''}`}
-              ></span>
-              <span 
-                className={`block w-8 h-1 rounded-full transition-opacity duration-300 ${
-                  isDarkMode || isHomePage ? 'bg-white' : 'bg-black'
-                } ${isOpen ? 'opacity-0' : 'opacity-100'}`}
-              ></span>
-              <span 
-                className={`block w-8 h-1 rounded-full transition-transform duration-300 ${
-                  isDarkMode || isHomePage ? 'bg-white' : 'bg-black'
-                } ${isOpen ? 'transform -rotate-45 -translate-y-2.5' : ''}`}
-              ></span>
-            </div>
-          </Button>
-          
-          {/* Mobile Navigation Menu - responsive width */}
-          {isOpen && (
-            <div className={`absolute top-16 right-0 w-64 sm:w-72 mt-2 ${getBgColor()} shadow-lg rounded-lg border animate-fade-in overflow-hidden`}>
-              <div className="py-4 flex flex-col space-y-2">
-                <Link 
-                  to="/" 
-                  className={`px-4 py-2 text-lg font-bold font-poppins ${getTextColor()} mb-2`}
-                  onClick={() => setIsOpen(false)}
-                >
-                  <span className="tracking-tighter">XPerience</span>
-                </Link>
-                {navLinks.map((link) => (
-                  <Link
-                    key={link.name}
-                    to={link.path}
-                    className={`px-4 py-2 text-base transition-colors font-poppins ${
-                      isDarkMode || isHomePage 
-                        ? 'text-white hover:bg-white/10' 
-                        : 'hover:bg-black/5'
-                    }`}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {link.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          )}
+            </SheetContent>
+          </Sheet>
         </div>
       )}
     </div>

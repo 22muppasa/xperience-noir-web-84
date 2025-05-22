@@ -44,20 +44,20 @@ const Navbar = () => {
     { name: 'Contact', path: '/contact' }
   ];
 
-  // Determine the correct text color based on both page and theme
+  // Use black text regardless of page with white background
   const getTextColor = () => {
     if (isDarkMode) {
       return 'text-white';
     }
-    return isHomePage ? 'text-white' : 'text-black';
+    return 'text-black';
   };
 
-  // Determine the correct background color based on both page and theme
+  // Use white background regardless of page
   const getBgColor = () => {
     if (isDarkMode) {
       return 'bg-black';
     }
-    return isHomePage ? 'bg-black' : 'bg-white';
+    return 'bg-white';
   };
 
   // Apply different styles based on scroll state

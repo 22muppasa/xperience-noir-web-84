@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,6 +11,7 @@ const Navbar = () => {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
   const { isDarkMode } = useTheme();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,6 +25,13 @@ const Navbar = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Close mobile menu when resizing to desktop
+  useEffect(() => {
+    if (!isMobile && isOpen) {
+      setIsOpen(false);
+    }
+  }, [isMobile, isOpen]);
 
   const navLinks = [
     { name: 'Programs', path: '/programs' },
@@ -50,33 +59,33 @@ const Navbar = () => {
   };
 
   return (
-    <div className="fixed top-0 z-50 w-full flex justify-center pt-4 px-4">
+    <div className="fixed top-0 z-50 w-full flex justify-center pt-4 px-4 md:px-6 lg:px-8">
       {/* Full navbar when not scrolled */}
       {!scrolled ? (
-        <nav className={`w-full max-w-6xl rounded-lg ${getBgColor()}`}>
-          <div className="container mx-auto flex h-16 items-center justify-between px-4">
+        <nav className={`w-full max-w-[90rem] rounded-lg ${getBgColor()} transition-all duration-300`}>
+          <div className="container mx-auto flex h-16 md:h-20 items-center justify-between px-4 md:px-6 lg:px-8">
             {/* Logo */}
             <Link 
               to="/" 
-              className={`text-2xl font-bold font-poppins ${getTextColor()}`}
+              className={`text-2xl md:text-3xl font-bold font-poppins ${getTextColor()} transition-all duration-300`}
             >
               <span className="tracking-tighter">XPerience</span>
             </Link>
             
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
+            <div className="hidden md:flex items-center space-x-4 lg:space-x-8">
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
                   to={link.path}
-                  className={`text-sm font-medium button-hover font-poppins ${getTextColor()} hover:text-${getTextColor().split('-')[1]}/70`}
+                  className={`text-sm lg:text-base font-medium button-hover font-poppins ${getTextColor()} hover:text-${getTextColor().split('-')[1]}/70 transition-all duration-300`}
                 >
                   {link.name}
                 </Link>
               ))}
             </div>
 
-            {/* Mobile Menu Button - making height match navbar height (h-16) */}
+            {/* Mobile Menu Button - making height match navbar height */}
             <div className="md:hidden h-16 flex items-center">
               <Button
                 variant="ghost"
@@ -133,8 +142,8 @@ const Navbar = () => {
           )}
         </nav>
       ) : (
-        /* Hamburger menu only when scrolled - adjusted for height and color */
-        <div className="absolute top-4 right-4">
+        /* Floating hamburger menu when scrolled - adjusted for responsiveness */
+        <div className={`absolute top-4 right-4 md:right-6 lg:right-8`}>
           <Button
             variant="outline"
             size="icon"
@@ -165,9 +174,9 @@ const Navbar = () => {
             </div>
           </Button>
           
-          {/* Mobile Navigation Menu */}
+          {/* Mobile Navigation Menu - responsive width */}
           {isOpen && (
-            <div className={`absolute top-16 right-0 w-64 mt-2 ${getBgColor()} shadow-lg rounded-lg border animate-fade-in overflow-hidden`}>
+            <div className={`absolute top-16 right-0 w-64 sm:w-72 mt-2 ${getBgColor()} shadow-lg rounded-lg border animate-fade-in overflow-hidden`}>
               <div className="py-4 flex flex-col space-y-2">
                 <Link 
                   to="/" 

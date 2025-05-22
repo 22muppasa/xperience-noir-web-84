@@ -72,11 +72,11 @@ const Index = () => {
       </section>
       
       {/* Features Section */}
-      <section className="py-24 px-4 md:px-6 bg-white/10 backdrop-blur-lg rounded-t-[2.5rem] relative z-10">
+      <section className="py-24 px-4 md:px-6 bg-black rounded-t-[2.5rem] relative z-10">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-medium mb-6 text-black">What We Offer</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-medium mb-6 text-white">What We Offer</h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Our services are designed to help you succeed in today's digital landscape through education and expert consulting.
             </p>
           </div>
@@ -84,7 +84,7 @@ const Index = () => {
           <animated.div style={cardSpring} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Feature Card 1 */}
             <Link to="/programs" className="card-wrapper">
-              <div className="feature-card card-programs">
+              <div className="feature-card bg-white">
                 <div className="icon-container">
                   <Code size={24} />
                 </div>
@@ -97,7 +97,7 @@ const Index = () => {
             
             {/* Feature Card 2 */}
             <Link to="/consulting" className="card-wrapper">
-              <div className="feature-card card-consulting">
+              <div className="feature-card bg-white">
                 <div className="icon-container">
                   <PenSquare size={24} />
                 </div>
@@ -110,7 +110,7 @@ const Index = () => {
             
             {/* Feature Card 3 - About Us (replacing Community Impact) */}
             <Link to="/about" className="card-wrapper">
-              <div className="feature-card card-about">
+              <div className="feature-card bg-white">
                 <div className="icon-container">
                   <User size={24} />
                 </div>
@@ -136,7 +136,6 @@ const Index = () => {
   position: relative;
   width: 100%;
   min-height: 320px;
-  background: #000000;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -159,10 +158,10 @@ const Index = () => {
   justify-content: center;
   font-size: 25px;
   font-weight: bold;
-  background-color: white;
+  background-color: black;
   transition: all 0.5s;
   z-index: 0;
-  color: black;
+  color: white;
 }
 
 .feature-card::before {
@@ -229,7 +228,7 @@ const Index = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(0, 0, 0, 0.1);
   border-radius: 1rem;
   margin-bottom: 1.5rem;
   position: relative;
@@ -242,6 +241,12 @@ const Index = () => {
 .feature-card .icon-container {
   position: relative;
   z-index: 2;
+}
+
+.feature-card:hover h3,
+.feature-card:hover p {
+  color: white;
+  opacity: 0;
 }
 `}
         </style>

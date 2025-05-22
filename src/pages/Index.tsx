@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import { animated, useSpring } from '@react-spring/web';
 import { ArrowRight, Code, PenSquare, User } from 'lucide-react';
@@ -24,8 +25,8 @@ const Index = () => {
       {/* Animated Background */}
       <AnimatedBackground />
       
-      {/* Hero Section */}
-      <section className="flex flex-col justify-center min-h-[85vh] px-4 md:px-6 py-16 pt-24 relative z-10">
+      {/* Hero Section - Updated to have white background */}
+      <section className="flex flex-col justify-center min-h-[85vh] px-4 md:px-6 py-16 pt-24 relative z-10 bg-white">
         <div className="container mx-auto max-w-6xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>

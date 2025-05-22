@@ -162,6 +162,7 @@ const Index = () => {
   background-color: white;
   transition: all 0.5s;
   z-index: 0;
+  color: black;
 }
 
 .feature-card::before {

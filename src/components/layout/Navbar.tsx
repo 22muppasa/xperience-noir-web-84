@@ -4,7 +4,12 @@ import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { 
+  Sheet, 
+  SheetContent, 
+  SheetTrigger,
+  SheetTitle 
+} from '@/components/ui/sheet';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -99,6 +104,7 @@ const Navbar = () => {
                         ? 'text-white hover:bg-white/20' 
                         : 'hover:bg-black/5'
                     }`}
+                    onClick={() => setIsOpen(true)}
                   >
                     <div className="w-8 flex flex-col items-center justify-center gap-1.5">
                       <span 
@@ -120,6 +126,7 @@ const Navbar = () => {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className={`${getBgColor()} border-none`}>
+                  <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                   <div className="container py-4 flex flex-col space-y-4">
                     <Link 
                       to="/" 
@@ -157,32 +164,34 @@ const Navbar = () => {
                 variant="outline"
                 size="icon"
                 aria-label="Toggle menu"
-                className={`h-16 w-16 rounded-full shadow-lg flex items-center justify-center ${getBgColor()} ${
+                className={`h-12 w-12 rounded-full shadow-lg flex items-center justify-center ${getBgColor()} ${
                   isDarkMode || isHomePage 
                     ? 'border-white/20 hover:bg-black/80 text-white' 
                     : 'border-black/10 hover:bg-gray-100 text-black'
                 }`}
+                onClick={() => setIsOpen(true)}
               >
-                <div className="w-8 flex flex-col items-center justify-center gap-1.5">
+                <div className="w-6 flex flex-col items-center justify-center gap-1">
                   <span 
-                    className={`block w-8 h-1 rounded-full transition-transform duration-300 ${
+                    className={`block w-6 h-0.75 rounded-full transition-transform duration-300 ${
                       isDarkMode || isHomePage ? 'bg-white' : 'bg-black'
-                    } ${isOpen ? 'transform rotate-45 translate-y-2.5' : ''}`}
+                    } ${isOpen ? 'transform rotate-45 translate-y-1.5' : ''}`}
                   ></span>
                   <span 
-                    className={`block w-8 h-1 rounded-full transition-opacity duration-300 ${
+                    className={`block w-6 h-0.75 rounded-full transition-opacity duration-300 ${
                       isDarkMode || isHomePage ? 'bg-white' : 'bg-black'
                     } ${isOpen ? 'opacity-0' : 'opacity-100'}`}
                   ></span>
                   <span 
-                    className={`block w-8 h-1 rounded-full transition-transform duration-300 ${
+                    className={`block w-6 h-0.75 rounded-full transition-transform duration-300 ${
                       isDarkMode || isHomePage ? 'bg-white' : 'bg-black'
-                    } ${isOpen ? 'transform -rotate-45 -translate-y-2.5' : ''}`}
+                    } ${isOpen ? 'transform -rotate-45 -translate-y-1.5' : ''}`}
                   ></span>
                 </div>
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className={`${getBgColor()} border-none`}>
+              <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
               <div className="container py-4 flex flex-col space-y-4">
                 <Link 
                   to="/" 

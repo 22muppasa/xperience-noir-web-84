@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { animated, useSpring } from '@react-spring/web';
 import { ArrowRight, Code, PenSquare, User } from 'lucide-react';
@@ -262,19 +261,20 @@ const Index = () => {
         </style>
       </section>
       
-      {/* CTA Section */}
-      <section className="py-24 px-4 md:px-6 bg-black/50 backdrop-blur-lg text-white rounded-b-none relative z-10">
+      {/* CTA Section - Updated to have white background */}
+      <section className="py-24 px-4 md:px-6 bg-white text-black rounded-b-none relative z-10">
         <div className="container mx-auto max-w-5xl text-center">
           <h2 className="text-4xl md:text-5xl font-medium mb-8">Ready to transform your digital experience?</h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-10">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-10">
             Whether you want to learn coding or need expert consulting for your website, we're here to help you succeed.
           </p>
           <div className="flex justify-center">
             <Link to="/contact">
               <AnimatedButton 
-                sparkleColor="white" 
-                textColor="white"
+                sparkleColor="black" 
+                textColor="black"
                 icon={ArrowRight}
+                invertOnHover={true}
               >
                 Get in Touch
               </AnimatedButton>

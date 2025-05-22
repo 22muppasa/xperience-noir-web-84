@@ -30,10 +30,10 @@ const Index = () => {
         <div className="container mx-auto max-w-6xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h1 className="text-5xl md:text-7xl font-medium leading-tight tracking-tighter mb-6 animate-fade-in text-white">
+              <h1 className="text-5xl md:text-7xl font-medium leading-tight tracking-tighter mb-6 animate-fade-in text-black">
                 Transform Your Digital Experience
               </h1>
-              <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-xl animate-fade-in animate-delay-100">
+              <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-xl animate-fade-in animate-delay-100">
                 We empower individuals and businesses through education and consulting to thrive in the digital world.
               </p>
               <div className="flex flex-wrap gap-4 animate-fade-in animate-delay-200">

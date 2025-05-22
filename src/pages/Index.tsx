@@ -84,7 +84,7 @@ const Index = () => {
           <animated.div style={cardSpring} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Feature Card 1 */}
             <Link to="/programs" className="card-wrapper">
-              <div className="feature-card">
+              <div className="feature-card card-programs">
                 <div className="icon-container">
                   <Code size={24} />
                 </div>
@@ -97,7 +97,7 @@ const Index = () => {
             
             {/* Feature Card 2 */}
             <Link to="/consulting" className="card-wrapper">
-              <div className="feature-card">
+              <div className="feature-card card-consulting">
                 <div className="icon-container">
                   <PenSquare size={24} />
                 </div>
@@ -110,7 +110,7 @@ const Index = () => {
             
             {/* Feature Card 3 */}
             <Link to="/impact" className="card-wrapper">
-              <div className="feature-card">
+              <div className="feature-card card-impact">
                 <div className="icon-container">
                   <Wand size={24} />
                 </div>
@@ -190,15 +190,15 @@ const Index = () => {
   transition: opacity 0.3s;
 }
 
-.feature-card:nth-child(1):hover::after {
+.card-programs:hover::after {
   content: "LEARN PROGRAMMING SKILLS";
 }
 
-.feature-card:nth-child(2):hover::after {
+.card-consulting:hover::after {
   content: "TRANSFORM YOUR WEBSITE";
 }
 
-.feature-card:nth-child(3):hover::after {
+.card-impact:hover::after {
   content: "JOIN OUR COMMUNITY";
 }
 

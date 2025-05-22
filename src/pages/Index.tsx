@@ -4,6 +4,7 @@ import { animated, useSpring } from '@react-spring/web';
 import { ArrowRight, Code, PenSquare, Wand } from 'lucide-react';
 import AnimatedBackground from '@/components/ui/AnimatedBackground';
 import AnimatedButton from '@/components/ui/AnimatedButton';
+import FeatureCard from '@/components/ui/FeatureCard';
 
 const Index = () => {
   // Animation for hero image
@@ -19,6 +20,33 @@ const Index = () => {
     to: { opacity: 1, transform: 'translateY(0)' },
     config: { duration: 700, delay: 300 }
   });
+
+  const features = [
+    {
+      icon: Code,
+      title: "Coding Education",
+      description: "From beginner workshops to advanced bootcamps, we teach the skills needed for the digital economy.",
+      linkText: "Explore Programs",
+      linkPath: "/programs",
+      hoverText: "LEARN"
+    },
+    {
+      icon: PenSquare,
+      title: "Web Consulting",
+      description: "Our expert team helps businesses transform their online presence with modern, effective websites.",
+      linkText: "Our Process",
+      linkPath: "/consulting",
+      hoverText: "BUILD"
+    },
+    {
+      icon: Wand,
+      title: "Community Impact",
+      description: "We're committed to making digital skills accessible to underrepresented communities.",
+      linkText: "See Our Impact",
+      linkPath: "/impact",
+      hoverText: "GROW"
+    }
+  ];
 
   return (
     <div className="flex flex-col min-h-screen relative">
@@ -82,47 +110,17 @@ const Index = () => {
           </div>
           
           <animated.div style={cardSpring} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Feature 1 */}
-            <div className="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20 hover-scale shadow-sm text-white">
-              <div className="w-14 h-14 bg-white/20 text-white flex items-center justify-center rounded-2xl mb-6">
-                <Code size={24} />
-              </div>
-              <h3 className="text-2xl font-medium mb-4">Coding Education</h3>
-              <p className="text-gray-300 mb-6">
-                From beginner workshops to advanced bootcamps, we teach the skills needed for the digital economy.
-              </p>
-              <Link to="/programs" className="inline-flex items-center font-medium button-hover text-white">
-                Explore Programs
-              </Link>
-            </div>
-            
-            {/* Feature 2 */}
-            <div className="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20 hover-scale shadow-sm text-white">
-              <div className="w-14 h-14 bg-white/20 text-white flex items-center justify-center rounded-2xl mb-6">
-                <PenSquare size={24} />
-              </div>
-              <h3 className="text-2xl font-medium mb-4">Web Consulting</h3>
-              <p className="text-gray-300 mb-6">
-                Our expert team helps businesses transform their online presence with modern, effective websites.
-              </p>
-              <Link to="/consulting" className="inline-flex items-center font-medium button-hover text-white">
-                Our Process
-              </Link>
-            </div>
-            
-            {/* Feature 3 */}
-            <div className="bg-white/10 backdrop-blur-md p-8 rounded-3xl border border-white/20 hover-scale shadow-sm text-white">
-              <div className="w-14 h-14 bg-white/20 text-white flex items-center justify-center rounded-2xl mb-6">
-                <Wand size={24} />
-              </div>
-              <h3 className="text-2xl font-medium mb-4">Community Impact</h3>
-              <p className="text-gray-300 mb-6">
-                We're committed to making digital skills accessible to underrepresented communities.
-              </p>
-              <Link to="/impact" className="inline-flex items-center font-medium button-hover text-white">
-                See Our Impact
-              </Link>
-            </div>
+            {features.map((feature, index) => (
+              <FeatureCard
+                key={index}
+                icon={feature.icon}
+                title={feature.title}
+                description={feature.description}
+                linkText={feature.linkText}
+                linkPath={feature.linkPath}
+                hoverText={feature.hoverText}
+              />
+            ))}
           </animated.div>
         </div>
       </section>

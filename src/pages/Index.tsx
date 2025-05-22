@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { animated, useSpring } from '@react-spring/web';
 import { ArrowRight, Code, PenSquare, User } from 'lucide-react';
@@ -86,7 +85,7 @@ const Index = () => {
             <Link to="/programs" className="card-wrapper">
               <div className="feature-card bg-white">
                 <div className="icon-container">
-                  <Code size={24} />
+                  <Code size={24} className="icon-color" />
                 </div>
                 <h3 className="text-2xl font-medium mb-4 text-black card-text">Coding Education</h3>
                 <p className="text-gray-600 mb-6 card-text">
@@ -99,7 +98,7 @@ const Index = () => {
             <Link to="/consulting" className="card-wrapper">
               <div className="feature-card bg-white">
                 <div className="icon-container">
-                  <PenSquare size={24} />
+                  <PenSquare size={24} className="icon-color" />
                 </div>
                 <h3 className="text-2xl font-medium mb-4 text-black card-text">Web Consulting</h3>
                 <p className="text-gray-600 mb-6 card-text">
@@ -112,7 +111,7 @@ const Index = () => {
             <Link to="/about" className="card-wrapper">
               <div className="feature-card bg-white">
                 <div className="icon-container">
-                  <User size={24} />
+                  <User size={24} className="icon-color" />
                 </div>
                 <h3 className="text-2xl font-medium mb-4 text-black card-text">About Us</h3>
                 <p className="text-gray-600 mb-6 card-text">
@@ -236,6 +235,14 @@ const Index = () => {
   margin-bottom: 1.5rem;
   position: relative;
   z-index: 2;
+}
+
+.icon-color {
+  color: black;
+}
+
+.feature-card:hover .icon-color {
+  color: white;
 }
 
 .feature-card h3,

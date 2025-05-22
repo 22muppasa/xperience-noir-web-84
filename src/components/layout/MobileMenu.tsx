@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -33,7 +33,11 @@ const MobileMenu = ({ navLinks, isHomePage, scrolled = false }: MobileMenuProps)
   };
 
   // Adjust button height to match navbar height
-  const buttonSize = scrolled ? 'h-12 w-12' : 'h-16 w-16';
+  const buttonClasses = `p-1 rounded-full flex items-center justify-center ${getBgColor()} ${
+    isDarkMode || isHomePage 
+      ? 'text-white hover:bg-white/20' 
+      : 'hover:bg-black/5'
+  }`;
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -42,11 +46,7 @@ const MobileMenu = ({ navLinks, isHomePage, scrolled = false }: MobileMenuProps)
           variant="ghost"
           size="sm"
           aria-label="Toggle menu"
-          className={`${buttonSize} p-1 rounded-full flex items-center justify-center ${getBgColor()} ${
-            isDarkMode || isHomePage 
-              ? 'text-white hover:bg-white/20' 
-              : 'hover:bg-black/5'
-          }`}
+          className={`h-full aspect-square ${buttonClasses}`}
         >
           <div className="w-8 flex flex-col items-center justify-center gap-1.5">
             <span 

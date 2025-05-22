@@ -85,7 +85,7 @@ const FeatureCard = ({
           transition: all 0.5s;
         }
         .card:hover::after {
-          content: "${props => props.hoverText}";
+          content: "${hoverText}";
         }
       `}</style>
     </div>

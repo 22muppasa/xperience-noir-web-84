@@ -88,11 +88,11 @@ const Index = () => {
                 <div className="icon-container">
                   <Code size={24} />
                 </div>
-                <h3 className="text-2xl font-medium mb-4 text-white">Coding Education</h3>
-                <p className="text-gray-300 mb-6">
+                <h3 className="text-2xl font-medium mb-4 text-white card-text">Coding Education</h3>
+                <p className="text-gray-300 mb-6 card-text">
                   From beginner workshops to advanced bootcamps, we teach the skills needed for the digital economy.
                 </p>
-                <Link to="/programs" className="inline-flex items-center font-medium button-hover text-white">
+                <Link to="/programs" className="inline-flex items-center font-medium button-hover text-white card-text">
                   Explore Programs
                 </Link>
               </div>
@@ -104,11 +104,11 @@ const Index = () => {
                 <div className="icon-container">
                   <PenSquare size={24} />
                 </div>
-                <h3 className="text-2xl font-medium mb-4 text-white">Web Consulting</h3>
-                <p className="text-gray-300 mb-6">
+                <h3 className="text-2xl font-medium mb-4 text-white card-text">Web Consulting</h3>
+                <p className="text-gray-300 mb-6 card-text">
                   Our expert team helps businesses transform their online presence with modern, effective websites.
                 </p>
-                <Link to="/consulting" className="inline-flex items-center font-medium button-hover text-white">
+                <Link to="/consulting" className="inline-flex items-center font-medium button-hover text-white card-text">
                   Our Process
                 </Link>
               </div>
@@ -120,11 +120,11 @@ const Index = () => {
                 <div className="icon-container">
                   <Wand size={24} />
                 </div>
-                <h3 className="text-2xl font-medium mb-4 text-white">Community Impact</h3>
-                <p className="text-gray-300 mb-6">
+                <h3 className="text-2xl font-medium mb-4 text-white card-text">Community Impact</h3>
+                <p className="text-gray-300 mb-6 card-text">
                   We're committed to making digital skills accessible to underrepresented communities.
                 </p>
-                <Link to="/impact" className="inline-flex items-center font-medium button-hover text-white">
+                <Link to="/impact" className="inline-flex items-center font-medium button-hover text-white card-text">
                   See Our Impact
                 </Link>
               </div>
@@ -143,7 +143,7 @@ const Index = () => {
   position: relative;
   width: 100%;
   min-height: 320px;
-  background: rgba(77, 196, 191, 0.8);
+  background: #000000;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -166,7 +166,7 @@ const Index = () => {
   justify-content: center;
   font-size: 25px;
   font-weight: bold;
-  background-color: rgba(135, 206, 235, 0.8);
+  background-color: white;
   transition: all 0.5s;
   z-index: 0;
 }
@@ -189,6 +189,11 @@ const Index = () => {
   height: 100%;
   border-radius: 15px;
   transition: all 0.5s;
+}
+
+.feature-card:hover .card-text {
+  opacity: 0;
+  transition: opacity 0.3s;
 }
 
 .feature-card:nth-child(1):hover::after {

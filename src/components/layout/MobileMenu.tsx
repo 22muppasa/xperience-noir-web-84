@@ -75,7 +75,7 @@ const MobileMenu = ({ navLinks, isHomePage, scrolled = false }: MobileMenuProps)
           >
             <span className="tracking-tighter">XPerience</span>
           </Link>
-          {navLinks.map((link) => (
+          {navLinks.map((link, index) => (
             <Link
               key={link.name}
               to={link.path}
@@ -83,8 +83,13 @@ const MobileMenu = ({ navLinks, isHomePage, scrolled = false }: MobileMenuProps)
                 isDarkMode || isHomePage 
                   ? 'text-white hover:bg-white/10' 
                   : 'hover:bg-black/5'
-              }`}
+              } animate-fade-in`}
               onClick={() => setIsOpen(false)}
+              style={{ 
+                animationDelay: `${index * 50}ms`,
+                opacity: 0,
+                animation: isOpen ? `fade-in 0.3s ease-out forwards ${index * 50}ms` : 'none'
+              }}
             >
               {link.name}
             </Link>

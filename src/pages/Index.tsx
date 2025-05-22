@@ -191,15 +191,15 @@ const Index = () => {
 }
 
 .feature-card:nth-child(1):hover::after {
-  content: "EXPLORE PROGRAMS";
+  content: "LEARN PROGRAMMING SKILLS";
 }
 
 .feature-card:nth-child(2):hover::after {
-  content: "OUR PROCESS";
+  content: "TRANSFORM YOUR WEBSITE";
 }
 
 .feature-card:nth-child(3):hover::after {
-  content: "SEE OUR IMPACT";
+  content: "JOIN OUR COMMUNITY";
 }
 
 .icon-container {

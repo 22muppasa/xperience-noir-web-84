@@ -192,14 +192,35 @@ const Index = () => {
 
 .card-programs:hover::after {
   content: "LEARN PROGRAMMING SKILLS";
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: clamp(1rem, 4vw, 1.5rem);
+  line-height: 1.4;
 }
 
 .card-consulting:hover::after {
   content: "TRANSFORM YOUR WEBSITE";
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: clamp(1rem, 4vw, 1.5rem);
+  line-height: 1.4;
 }
 
 .card-impact:hover::after {
   content: "JOIN OUR COMMUNITY";
+  padding: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: clamp(1rem, 4vw, 1.5rem);
+  line-height: 1.4;
 }
 
 .icon-container {

@@ -83,7 +83,7 @@ const Index = () => {
           
           <animated.div style={cardSpring} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Feature Card 1 */}
-            <div className="card-wrapper">
+            <Link to="/programs" className="card-wrapper">
               <div className="feature-card">
                 <div className="icon-container">
                   <Code size={24} />
@@ -92,14 +92,11 @@ const Index = () => {
                 <p className="text-gray-300 mb-6 card-text">
                   From beginner workshops to advanced bootcamps, we teach the skills needed for the digital economy.
                 </p>
-                <Link to="/programs" className="inline-flex items-center font-medium button-hover text-white card-text">
-                  Explore Programs
-                </Link>
               </div>
-            </div>
+            </Link>
             
             {/* Feature Card 2 */}
-            <div className="card-wrapper">
+            <Link to="/consulting" className="card-wrapper">
               <div className="feature-card">
                 <div className="icon-container">
                   <PenSquare size={24} />
@@ -108,14 +105,11 @@ const Index = () => {
                 <p className="text-gray-300 mb-6 card-text">
                   Our expert team helps businesses transform their online presence with modern, effective websites.
                 </p>
-                <Link to="/consulting" className="inline-flex items-center font-medium button-hover text-white card-text">
-                  Our Process
-                </Link>
               </div>
-            </div>
+            </Link>
             
             {/* Feature Card 3 */}
-            <div className="card-wrapper">
+            <Link to="/impact" className="card-wrapper">
               <div className="feature-card">
                 <div className="icon-container">
                   <Wand size={24} />
@@ -124,11 +118,8 @@ const Index = () => {
                 <p className="text-gray-300 mb-6 card-text">
                   We're committed to making digital skills accessible to underrepresented communities.
                 </p>
-                <Link to="/impact" className="inline-flex items-center font-medium button-hover text-white card-text">
-                  See Our Impact
-                </Link>
               </div>
-            </div>
+            </Link>
           </animated.div>
         </div>
 
@@ -137,6 +128,8 @@ const Index = () => {
 {`
 .card-wrapper {
   perspective: 1000px;
+  display: block;
+  text-decoration: none;
 }
 
 .feature-card {
@@ -197,15 +190,15 @@ const Index = () => {
 }
 
 .feature-card:nth-child(1):hover::after {
-  content: "LEARN";
+  content: "EXPLORE PROGRAMS";
 }
 
 .feature-card:nth-child(2):hover::after {
-  content: "BUILD";
+  content: "OUR PROCESS";
 }
 
 .feature-card:nth-child(3):hover::after {
-  content: "GROW";
+  content: "SEE OUR IMPACT";
 }
 
 .icon-container {

@@ -136,7 +136,7 @@
     background: #000;
   }
 
-  .animated-background .container::after {
+  .animated-background::after {
     content: "";
     position: absolute;
     inset: 0;

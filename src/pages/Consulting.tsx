@@ -1,3 +1,4 @@
+
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Check, Star, Users, Clock, Shield, Target, Zap } from 'lucide-react';
@@ -339,15 +340,15 @@ const Consulting = () => {
                         </div>
                       </div>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-                      <DialogHeader>
-                        <DialogTitle className="text-2xl font-medium">{project.name}</DialogTitle>
-                        <DialogDescription className="text-lg text-gray-600">
+                    <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto bg-white border border-gray-200 shadow-2xl">
+                      <DialogHeader className="border-b border-gray-100 pb-6 mb-6">
+                        <DialogTitle className="text-3xl font-bold text-gray-900 mb-2">{project.name}</DialogTitle>
+                        <DialogDescription className="text-lg text-gray-600 font-medium">
                           {project.category}
                         </DialogDescription>
                       </DialogHeader>
-                      <div className="space-y-6">
-                        <div className="aspect-[16/9] overflow-hidden rounded-lg">
+                      <div className="space-y-8">
+                        <div className="aspect-[16/9] overflow-hidden rounded-xl border border-gray-200">
                           <img 
                             src={project.image} 
                             alt={project.name}
@@ -355,34 +356,37 @@ const Consulting = () => {
                           />
                         </div>
                         
-                        <div>
-                          <h4 className="font-medium mb-3 text-gray-900">Project Overview</h4>
-                          <p className="text-gray-700 leading-relaxed">{project.description}</p>
+                        <div className="bg-gray-50 rounded-xl p-6">
+                          <h4 className="text-xl font-bold mb-4 text-gray-900">Project Overview</h4>
+                          <p className="text-gray-800 leading-relaxed text-base">{project.description}</p>
                         </div>
                         
-                        <div className="grid grid-cols-3 gap-4">
-                          {Object.entries(project.metrics).map(([key, value]) => (
-                            <div key={key} className="text-center p-4 bg-gray-50 rounded-lg">
-                              <div className="text-2xl font-bold text-gray-900 mb-1">{value}</div>
-                              <div className="text-sm text-gray-600 capitalize">{key}</div>
-                            </div>
-                          ))}
+                        <div className="bg-white border border-gray-200 rounded-xl p-6">
+                          <h4 className="text-xl font-bold mb-6 text-gray-900 text-center">Key Results</h4>
+                          <div className="grid grid-cols-3 gap-6">
+                            {Object.entries(project.metrics).map(([key, value]) => (
+                              <div key={key} className="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
+                                <div className="text-3xl font-bold text-blue-600 mb-2">{value}</div>
+                                <div className="text-sm text-gray-700 font-medium capitalize">{key}</div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                         
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div>
-                            <h5 className="font-medium mb-2 text-gray-900">Duration</h5>
-                            <p className="text-gray-700">{project.duration}</p>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                          <div className="bg-gray-50 rounded-lg p-5 border border-gray-200">
+                            <h5 className="font-bold mb-3 text-gray-900 text-lg">Duration</h5>
+                            <p className="text-gray-800 font-medium">{project.duration}</p>
                           </div>
-                          <div>
-                            <h5 className="font-medium mb-2 text-gray-900">Team Size</h5>
-                            <p className="text-gray-700">{project.teamSize}</p>
+                          <div className="bg-gray-50 rounded-lg p-5 border border-gray-200">
+                            <h5 className="font-bold mb-3 text-gray-900 text-lg">Team Size</h5>
+                            <p className="text-gray-800 font-medium">{project.teamSize}</p>
                           </div>
-                          <div>
-                            <h5 className="font-medium mb-2 text-gray-900">Technologies</h5>
-                            <div className="flex flex-wrap gap-1">
+                          <div className="bg-gray-50 rounded-lg p-5 border border-gray-200">
+                            <h5 className="font-bold mb-3 text-gray-900 text-lg">Technologies</h5>
+                            <div className="flex flex-wrap gap-2">
                               {project.technologies.map((tech) => (
-                                <span key={tech} className="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded">
+                                <span key={tech} className="px-3 py-1 bg-white text-gray-800 text-sm rounded-full border border-gray-300 font-medium">
                                   {tech}
                                 </span>
                               ))}
@@ -390,14 +394,14 @@ const Consulting = () => {
                           </div>
                         </div>
                         
-                        <div className="pt-4 border-t">
+                        <div className="pt-6 border-t border-gray-200">
                           <Link to="#contact-form">
                             <AnimatedButton 
                               sparkleColor="black" 
                               textColor="black"
                               icon={ArrowRight}
                               invertOnHover={true}
-                              className="w-full justify-center"
+                              className="w-full justify-center bg-black text-white hover:bg-gray-800"
                             >
                               Start Similar Project
                             </AnimatedButton>

@@ -1,10 +1,117 @@
-
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Check, Star, Users, Clock, Shield, Target, Zap } from 'lucide-react';
 import ConsultingProcess from '@/components/ui/ConsultingProcess';
 import ContactForm from '@/components/ui/ContactForm';
 import AnimatedButton from '@/components/ui/AnimatedButton';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+const pastProjects = [
+  {
+    id: 1,
+    name: "EduTech Academy",
+    category: "Education Technology",
+    image: "https://images.unsplash.com/photo-1486718448742-163732cd1544?auto=format&fit=crop&w=800&h=600&q=80",
+    description: "Transformed a cluttered educational platform into a streamlined learning experience that increased student engagement by 67% and course completion rates by 43%. We redesigned the entire user interface with a focus on intuitive navigation and implemented gamification elements to boost student motivation.",
+    metrics: {
+      engagement: "+67%",
+      completion: "+43%",
+      satisfaction: "4.8/5"
+    },
+    technologies: ["React", "Node.js", "PostgreSQL", "Redis"],
+    duration: "8 weeks",
+    teamSize: "6 people"
+  },
+  {
+    id: 2,
+    name: "HealthCore Wellness",
+    category: "Healthcare & Wellness",
+    image: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=800&h=600&q=80",
+    description: "Redesigned the patient portal and appointment system, resulting in a 52% improvement in booking efficiency and 38% increase in patient satisfaction scores. The new system features automated reminders, telemedicine integration, and a comprehensive health dashboard.",
+    metrics: {
+      efficiency: "+52%",
+      satisfaction: "+38%",
+      retention: "+29%"
+    },
+    technologies: ["Vue.js", "Python", "MongoDB", "WebRTC"],
+    duration: "10 weeks",
+    teamSize: "8 people"
+  },
+  {
+    id: 3,
+    name: "TechStart Solutions",
+    category: "Technology Startup",
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&h=600&q=80",
+    description: "Built a comprehensive platform from the ground up, enabling them to scale from startup to series A funding with a 300% increase in user acquisition. The platform includes advanced analytics, automated workflows, and seamless third-party integrations.",
+    metrics: {
+      users: "+300%",
+      conversion: "+89%",
+      revenue: "+245%"
+    },
+    technologies: ["React", "TypeScript", "AWS", "GraphQL"],
+    duration: "12 weeks",
+    teamSize: "10 people"
+  },
+  {
+    id: 4,
+    name: "RetailMax Commerce",
+    category: "E-commerce",
+    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&h=600&q=80",
+    description: "Developed a modern e-commerce platform with advanced inventory management and personalized shopping experiences. The solution increased online sales by 180% and reduced cart abandonment by 45%.",
+    metrics: {
+      sales: "+180%",
+      abandonment: "-45%",
+      speed: "+60%"
+    },
+    technologies: ["Next.js", "Stripe", "Shopify", "Algolia"],
+    duration: "14 weeks",
+    teamSize: "7 people"
+  },
+  {
+    id: 5,
+    name: "FinanceFlow Pro",
+    category: "Financial Services",
+    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&h=600&q=80",
+    description: "Created a secure financial dashboard with real-time analytics and automated reporting features. Enhanced security protocols and user experience led to 95% user adoption rate and zero security incidents.",
+    metrics: {
+      adoption: "95%",
+      security: "100%",
+      efficiency: "+75%"
+    },
+    technologies: ["Angular", "Spring Boot", "MySQL", "Docker"],
+    duration: "16 weeks",
+    teamSize: "12 people"
+  },
+  {
+    id: 6,
+    name: "GreenEnergy Hub",
+    category: "Sustainability",
+    image: "https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&w=800&h=600&q=80",
+    description: "Built an innovative platform for renewable energy management and monitoring. The system helps companies track their carbon footprint and optimize energy consumption, resulting in 40% energy savings.",
+    metrics: {
+      savings: "40%",
+      efficiency: "+85%",
+      adoption: "92%"
+    },
+    technologies: ["React", "Python", "InfluxDB", "Grafana"],
+    duration: "10 weeks",
+    teamSize: "5 people"
+  }
+];
 
 const beforeAfterProjects = [
   {
@@ -207,6 +314,119 @@ const Consulting = () => {
           </div>
           
           <ConsultingProcess />
+        </div>
+      </section>
+      
+      {/* Past Projects Carousel */}
+      <section className="py-20 px-4 md:px-6 bg-white">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-medium mb-6 text-gray-900">Our Recent Projects</h2>
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
+              Explore our portfolio of successful digital transformations across various industries. Click on any project to learn more about our approach and results.
+            </p>
+          </div>
+          
+          <Carousel className="w-full">
+            <CarouselContent className="-ml-2 md:-ml-4">
+              {pastProjects.map((project) => (
+                <CarouselItem key={project.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <div className="group cursor-pointer bg-white border rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                        <div className="aspect-[4/3] overflow-hidden">
+                          <img 
+                            src={project.image} 
+                            alt={project.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        </div>
+                        <div className="p-6">
+                          <div className="text-sm text-gray-600 mb-2">{project.category}</div>
+                          <h3 className="text-xl font-medium mb-3 text-gray-900 group-hover:text-blue-600 transition-colors">{project.name}</h3>
+                          <p className="text-gray-700 text-sm leading-relaxed line-clamp-3">
+                            {project.description.substring(0, 120)}...
+                          </p>
+                          <div className="mt-4 flex items-center justify-between">
+                            <span className="text-sm font-medium text-blue-600">Click to learn more</span>
+                            <ArrowRight className="w-4 h-4 text-blue-600 group-hover:translate-x-1 transition-transform" />
+                          </div>
+                        </div>
+                      </div>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                      <DialogHeader>
+                        <DialogTitle className="text-2xl font-medium">{project.name}</DialogTitle>
+                        <DialogDescription className="text-lg text-gray-600">
+                          {project.category}
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-6">
+                        <div className="aspect-[16/9] overflow-hidden rounded-lg">
+                          <img 
+                            src={project.image} 
+                            alt={project.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        
+                        <div>
+                          <h4 className="font-medium mb-3 text-gray-900">Project Overview</h4>
+                          <p className="text-gray-700 leading-relaxed">{project.description}</p>
+                        </div>
+                        
+                        <div className="grid grid-cols-3 gap-4">
+                          {Object.entries(project.metrics).map(([key, value]) => (
+                            <div key={key} className="text-center p-4 bg-gray-50 rounded-lg">
+                              <div className="text-2xl font-bold text-gray-900 mb-1">{value}</div>
+                              <div className="text-sm text-gray-600 capitalize">{key}</div>
+                            </div>
+                          ))}
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div>
+                            <h5 className="font-medium mb-2 text-gray-900">Duration</h5>
+                            <p className="text-gray-700">{project.duration}</p>
+                          </div>
+                          <div>
+                            <h5 className="font-medium mb-2 text-gray-900">Team Size</h5>
+                            <p className="text-gray-700">{project.teamSize}</p>
+                          </div>
+                          <div>
+                            <h5 className="font-medium mb-2 text-gray-900">Technologies</h5>
+                            <div className="flex flex-wrap gap-1">
+                              {project.technologies.map((tech) => (
+                                <span key={tech} className="px-2 py-1 bg-gray-200 text-gray-700 text-xs rounded">
+                                  {tech}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="pt-4 border-t">
+                          <Link to="#contact-form">
+                            <AnimatedButton 
+                              sparkleColor="black" 
+                              textColor="black"
+                              icon={ArrowRight}
+                              invertOnHover={true}
+                              className="w-full justify-center"
+                            >
+                              Start Similar Project
+                            </AnimatedButton>
+                          </Link>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
         </div>
       </section>
       

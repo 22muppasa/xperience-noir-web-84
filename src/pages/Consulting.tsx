@@ -132,7 +132,7 @@ const Consulting = () => {
                 <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
                 <span className="text-sm uppercase tracking-wider text-gray-300">Digital Transformation</span>
               </div>
-              <h1 className="text-5xl md:text-6xl font-medium mb-6 animate-fade-in">
+              <h1 className="text-5xl md:text-6xl font-medium mb-6 animate-fade-in text-white">
                 Transform Your Digital Presence
               </h1>
               <p className="text-xl text-gray-300 mb-8 animate-fade-in animate-delay-100">
@@ -200,8 +200,8 @@ const Consulting = () => {
       <section className="py-20 px-4 md:px-6 bg-gray-50">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-medium mb-6">Our Proven Process</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-medium mb-6 text-gray-900">Our Proven Process</h2>
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
               We follow a strategic, collaborative approach that ensures your vision becomes reality while exceeding business objectives and user expectations.
             </p>
           </div>
@@ -214,8 +214,8 @@ const Consulting = () => {
       <section id="portfolio" className="py-20 px-4 md:px-6 bg-white">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-medium mb-6">Transformation Gallery</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-medium mb-6 text-gray-900">Transformation Gallery</h2>
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
               See the measurable impact of our work through these before and after transformations. Each project represents unique challenges we helped solve with strategic design and development.
             </p>
           </div>
@@ -252,18 +252,18 @@ const Consulting = () => {
                   
                   <div className={`order-2 ${index % 2 === 1 ? 'lg:order-1' : ''} space-y-6`}>
                     <div>
-                      <h3 className="text-3xl font-medium mb-2">{project.name}</h3>
-                      <p className="text-gray-500 text-lg">{project.category}</p>
+                      <h3 className="text-3xl font-medium mb-2 text-gray-900">{project.name}</h3>
+                      <p className="text-gray-600 text-lg">{project.category}</p>
                     </div>
                     
-                    <p className="text-lg leading-relaxed text-gray-700">
+                    <p className="text-lg leading-relaxed text-gray-800">
                       {project.description}
                     </p>
                     
                     <div className="grid grid-cols-3 gap-4">
                       {Object.entries(project.metrics).map(([key, value]) => (
                         <div key={key} className="text-center p-4 bg-gray-50 rounded-lg">
-                          <div className="text-2xl font-bold text-black mb-1">{value}</div>
+                          <div className="text-2xl font-bold text-gray-900 mb-1">{value}</div>
                           <div className="text-sm text-gray-600 capitalize">{key}</div>
                         </div>
                       ))}
@@ -292,7 +292,7 @@ const Consulting = () => {
       <section className="py-20 px-4 md:px-6 bg-black text-white">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-medium mb-6">What Our Clients Say</h2>
+            <h2 className="text-4xl md:text-5xl font-medium mb-6 text-white">What Our Clients Say</h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Don't just take our word for it. Hear from the leaders who trusted us to transform their digital presence.
             </p>
@@ -306,7 +306,7 @@ const Consulting = () => {
                     <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
                   ))}
                 </div>
-                <blockquote className="text-lg mb-6 leading-relaxed">
+                <blockquote className="text-lg mb-6 leading-relaxed text-gray-200">
                   "{testimonial.quote}"
                 </blockquote>
                 <div>
@@ -324,8 +324,8 @@ const Consulting = () => {
       <section className="py-20 px-4 md:px-6 bg-gray-50">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-medium mb-6">Choose Your Package</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-medium mb-6 text-gray-900">Choose Your Package</h2>
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
               Transparent pricing for every business size. All packages include our commitment to excellence and your success.
             </p>
           </div>
@@ -340,17 +340,17 @@ const Consulting = () => {
                 )}
                 
                 <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold mb-2">{pkg.name}</h3>
-                  <div className="text-4xl font-bold mb-2">{pkg.price}</div>
-                  <div className="text-gray-500 mb-4">{pkg.duration}</div>
-                  <p className="text-gray-600">{pkg.description}</p>
+                  <h3 className="text-2xl font-bold mb-2 text-gray-900">{pkg.name}</h3>
+                  <div className="text-4xl font-bold mb-2 text-gray-900">{pkg.price}</div>
+                  <div className="text-gray-600 mb-4">{pkg.duration}</div>
+                  <p className="text-gray-700">{pkg.description}</p>
                 </div>
                 
                 <ul className="space-y-4 mb-8">
                   {pkg.features.map((feature, featureIndex) => (
                     <li key={featureIndex} className="flex items-center gap-3">
                       <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
-                      <span className="text-gray-700">{feature}</span>
+                      <span className="text-gray-800">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -375,8 +375,8 @@ const Consulting = () => {
       <section className="py-20 px-4 md:px-6 bg-white">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-medium mb-6">Our Comprehensive Services</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-medium mb-6 text-gray-900">Our Comprehensive Services</h2>
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
               From strategy to execution, we provide end-to-end solutions that address every aspect of your digital transformation journey.
             </p>
           </div>
@@ -390,8 +390,8 @@ const Consulting = () => {
                   <path d="M14 15h1" />
                 </svg>
               </div>
-              <h3 className="text-xl font-medium mb-4">UI/UX Design</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="text-xl font-medium mb-4 text-gray-900">UI/UX Design</h3>
+              <p className="text-gray-700 leading-relaxed">
                 Create intuitive, beautiful interfaces that users love. Our design process focuses on user research, wireframing, and creating pixel-perfect experiences.
               </p>
             </div>
@@ -404,8 +404,8 @@ const Consulting = () => {
                   <path d="m22 12-4-4v8z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-medium mb-4">Web Development</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="text-xl font-medium mb-4 text-gray-900">Web Development</h3>
+              <p className="text-gray-700 leading-relaxed">
                 Build fast, secure, and scalable websites using modern technologies. From simple landing pages to complex web applications.
               </p>
             </div>
@@ -414,8 +414,8 @@ const Consulting = () => {
               <div className="w-14 h-14 bg-black text-white rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                 <Shield className="w-7 h-7" />
               </div>
-              <h3 className="text-xl font-medium mb-4">Security & Performance</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="text-xl font-medium mb-4 text-gray-900">Security & Performance</h3>
+              <p className="text-gray-700 leading-relaxed">
                 Ensure your website is secure, fast, and reliable. We implement best practices for security, optimization, and monitoring.
               </p>
             </div>
@@ -427,8 +427,8 @@ const Consulting = () => {
                   <path d="M12 18a6 6 0 0 0 0-12v12z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-medium mb-4">Analytics & SEO</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="text-xl font-medium mb-4 text-gray-900">Analytics & SEO</h3>
+              <p className="text-gray-700 leading-relaxed">
                 Improve visibility and track performance with comprehensive SEO optimization and analytics implementation.
               </p>
             </div>
@@ -441,8 +441,8 @@ const Consulting = () => {
                   <path d="m17.5 15 2-2" />
                 </svg>
               </div>
-              <h3 className="text-xl font-medium mb-4">Brand Strategy</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="text-xl font-medium mb-4 text-gray-900">Brand Strategy</h3>
+              <p className="text-gray-700 leading-relaxed">
                 Develop a cohesive visual identity and brand strategy that resonates with your audience and builds trust.
               </p>
             </div>
@@ -453,8 +453,8 @@ const Consulting = () => {
                   <path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9" />
                 </svg>
               </div>
-              <h3 className="text-xl font-medium mb-4">Ongoing Support</h3>
-              <p className="text-gray-600 leading-relaxed">
+              <h3 className="text-xl font-medium mb-4 text-gray-900">Ongoing Support</h3>
+              <p className="text-gray-700 leading-relaxed">
                 Keep your digital presence secure and up-to-date with our comprehensive maintenance and support services.
               </p>
             </div>
@@ -466,7 +466,7 @@ const Consulting = () => {
       <section id="contact-form" className="py-20 px-4 md:px-6 bg-black text-white">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-medium mb-6">Ready to Transform?</h2>
+            <h2 className="text-4xl md:text-5xl font-medium mb-6 text-white">Ready to Transform?</h2>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Let's discuss your project and create something extraordinary together. Fill out the form below and we'll get back to you within 24 hours.
             </p>
@@ -475,14 +475,14 @@ const Consulting = () => {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
             <div className="lg:col-span-2 space-y-8">
               <div>
-                <h3 className="text-2xl font-medium mb-6">Why Choose XPerience?</h3>
+                <h3 className="text-2xl font-medium mb-6 text-white">Why Choose XPerience?</h3>
                 <div className="space-y-6">
                   <div className="flex items-start gap-4">
                     <div className="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center flex-shrink-0 mt-1">
                       <Check className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="font-medium mb-2">Proven Track Record</h4>
+                      <h4 className="font-medium mb-2 text-white">Proven Track Record</h4>
                       <p className="text-gray-300">150+ successful projects with 98% client satisfaction rate</p>
                     </div>
                   </div>
@@ -492,7 +492,7 @@ const Consulting = () => {
                       <Users className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="font-medium mb-2">Expert Team</h4>
+                      <h4 className="font-medium mb-2 text-white">Expert Team</h4>
                       <p className="text-gray-300">Experienced designers and developers who understand your industry</p>
                     </div>
                   </div>
@@ -502,7 +502,7 @@ const Consulting = () => {
                       <Clock className="w-5 h-5" />
                     </div>
                     <div>
-                      <h4 className="font-medium mb-2">Fast Delivery</h4>
+                      <h4 className="font-medium mb-2 text-white">Fast Delivery</h4>
                       <p className="text-gray-300">Average project completion in 6 weeks without compromising quality</p>
                     </div>
                   </div>
@@ -510,7 +510,7 @@ const Consulting = () => {
               </div>
               
               <div className="border-t border-gray-700 pt-8">
-                <h4 className="font-medium mb-4">Get in Touch Directly</h4>
+                <h4 className="font-medium mb-4 text-white">Get in Touch Directly</h4>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
                     <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">

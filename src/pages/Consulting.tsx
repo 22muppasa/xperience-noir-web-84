@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Check, Star, Users, Clock, Shield, Target, Zap } from 'lucide-react';
-import ConsultingProcess from '@/components/ui/ConsultingProcess';
 import ContactForm from '@/components/ui/ContactForm';
 import AnimatedButton from '@/components/ui/AnimatedButton';
 import {
@@ -300,20 +299,6 @@ const Consulting = () => {
               </div>
             </div>
           </div>
-        </div>
-      </section>
-      
-      {/* Process Timeline */}
-      <section className="py-20 px-4 md:px-6 bg-gray-50">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-medium mb-6 text-gray-900">Our Proven Process</h2>
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-              We follow a strategic, collaborative approach that ensures your vision becomes reality while exceeding business objectives and user expectations.
-            </p>
-          </div>
-          
-          <ConsultingProcess />
         </div>
       </section>
       

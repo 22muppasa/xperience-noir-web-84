@@ -1,26 +1,121 @@
 
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Check, Star, Users, Clock, Shield, Target, Zap } from 'lucide-react';
 import ConsultingProcess from '@/components/ui/ConsultingProcess';
 import ContactForm from '@/components/ui/ContactForm';
+import AnimatedButton from '@/components/ui/AnimatedButton';
 
 const beforeAfterProjects = [
   {
     id: 1,
-    name: "BrightPath Academy",
-    category: "Education",
+    name: "EduTech Academy",
+    category: "Education Technology",
     before: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&w=800&h=600&q=80",
     after: "https://images.unsplash.com/photo-1486718448742-163732cd1544?auto=format&fit=crop&w=800&h=600&q=80",
-    description: "Transformed a cluttered educational website into a clean, user-friendly platform that increased student applications by 43%."
+    description: "Transformed a cluttered educational platform into a streamlined learning experience that increased student engagement by 67% and course completion rates by 43%.",
+    metrics: {
+      engagement: "+67%",
+      completion: "+43%",
+      satisfaction: "4.8/5"
+    }
   },
   {
     id: 2,
-    name: "NorthStar Wellness",
-    category: "Healthcare",
+    name: "HealthCore Wellness",
+    category: "Healthcare & Wellness",
     before: "https://images.unsplash.com/photo-1527576539890-dfa815648363?auto=format&fit=crop&w=800&h=600&q=80",
     after: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=800&h=600&q=80",
-    description: "Redesigned the patient portal experience, resulting in a 38% improvement in appointment scheduling and patient satisfaction."
+    description: "Redesigned the patient portal and appointment system, resulting in a 52% improvement in booking efficiency and 38% increase in patient satisfaction scores.",
+    metrics: {
+      efficiency: "+52%",
+      satisfaction: "+38%",
+      retention: "+29%"
+    }
+  },
+  {
+    id: 3,
+    name: "TechStart Solutions",
+    category: "Technology Startup",
+    before: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&h=600&q=80",
+    after: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&h=600&q=80",
+    description: "Built a comprehensive platform from the ground up, enabling them to scale from startup to series A funding with a 300% increase in user acquisition.",
+    metrics: {
+      users: "+300%",
+      conversion: "+89%",
+      revenue: "+245%"
+    }
+  }
+];
+
+const testimonials = [
+  {
+    name: "Sarah Chen",
+    company: "EduTech Academy",
+    role: "CEO",
+    quote: "XPerience transformed our digital presence completely. The new platform not only looks amazing but has dramatically improved our student outcomes.",
+    rating: 5
+  },
+  {
+    name: "Dr. Michael Rodriguez",
+    company: "HealthCore Wellness",
+    role: "Chief Medical Officer",
+    quote: "The team's understanding of healthcare workflows was impressive. They created solutions that actually work for our staff and patients.",
+    rating: 5
+  },
+  {
+    name: "Jennifer Park",
+    company: "TechStart Solutions",
+    role: "Founder",
+    quote: "From concept to launch, XPerience was instrumental in building our platform. Their expertise helped us secure our Series A funding.",
+    rating: 5
+  }
+];
+
+const packages = [
+  {
+    name: "Starter",
+    price: "$2,500",
+    duration: "2-3 weeks",
+    description: "Perfect for small businesses looking to establish their digital presence",
+    features: [
+      "Custom website design",
+      "Responsive development",
+      "Basic SEO optimization",
+      "Contact form integration",
+      "1 month support"
+    ],
+    popular: false
+  },
+  {
+    name: "Professional",
+    price: "$5,000",
+    duration: "4-6 weeks",
+    description: "Ideal for growing businesses needing advanced functionality",
+    features: [
+      "Everything in Starter",
+      "Advanced animations",
+      "Content management system",
+      "Analytics integration",
+      "E-commerce capability",
+      "3 months support"
+    ],
+    popular: true
+  },
+  {
+    name: "Enterprise",
+    price: "Custom",
+    duration: "8-12 weeks",
+    description: "Comprehensive solutions for large organizations",
+    features: [
+      "Everything in Professional",
+      "Custom integrations",
+      "Advanced security",
+      "Performance optimization",
+      "Staff training",
+      "12 months support"
+    ],
+    popular: false
   }
 ];
 
@@ -28,32 +123,86 @@ const Consulting = () => {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="py-20 px-4 md:px-6 bg-black text-white">
-        <div className="container mx-auto max-w-6xl">
-          <div className="max-w-3xl">
-            <h1 className="text-5xl md:text-6xl font-medium mb-6 animate-fade-in">
-              Transform Your Digital Presence
-            </h1>
-            <p className="text-xl text-gray-300 mb-8 animate-fade-in animate-delay-100">
-              We help businesses create exceptional websites that engage audiences and drive results. Our data-driven approach focuses on performance, usability, and conversion.
-            </p>
-            <Button size="lg" variant="outline" asChild className="text-white border-white hover:bg-white hover:text-black animate-fade-in animate-delay-200">
-              <Link to="#contact-form" className="flex items-center gap-2">
-                Start Your Project
-                <ArrowRight size={16} />
-              </Link>
-            </Button>
+      <section className="py-20 px-4 md:px-6 bg-black text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black opacity-90" />
+        <div className="container mx-auto max-w-6xl relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
+                <span className="text-sm uppercase tracking-wider text-gray-300">Digital Transformation</span>
+              </div>
+              <h1 className="text-5xl md:text-6xl font-medium mb-6 animate-fade-in">
+                Transform Your Digital Presence
+              </h1>
+              <p className="text-xl text-gray-300 mb-8 animate-fade-in animate-delay-100">
+                We help businesses create exceptional digital experiences that engage audiences, drive growth, and deliver measurable results through strategic design and development.
+              </p>
+              <div className="flex flex-wrap gap-4 animate-fade-in animate-delay-200">
+                <Link to="#contact-form">
+                  <AnimatedButton 
+                    className="flex items-center gap-2" 
+                    sparkleColor="white" 
+                    textColor="white"
+                    icon={ArrowRight}
+                  >
+                    Start Your Project
+                  </AnimatedButton>
+                </Link>
+                <Link to="#portfolio">
+                  <Button variant="outline" size="lg" className="text-white border-white hover:bg-white hover:text-black">
+                    View Our Work
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            <div className="relative">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-4">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 animate-fade-in animate-delay-300">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Users className="w-5 h-5 text-white" />
+                      <span className="text-sm text-gray-300">Client Satisfaction</span>
+                    </div>
+                    <div className="text-2xl font-bold text-white">98%</div>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 animate-fade-in animate-delay-500">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Target className="w-5 h-5 text-white" />
+                      <span className="text-sm text-gray-300">Success Rate</span>
+                    </div>
+                    <div className="text-2xl font-bold text-white">100%</div>
+                  </div>
+                </div>
+                <div className="space-y-4 mt-8">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 animate-fade-in animate-delay-400">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Clock className="w-5 h-5 text-white" />
+                      <span className="text-sm text-gray-300">Avg. Timeline</span>
+                    </div>
+                    <div className="text-2xl font-bold text-white">6 weeks</div>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 animate-fade-in animate-delay-600">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Zap className="w-5 h-5 text-white" />
+                      <span className="text-sm text-gray-300">Projects Completed</span>
+                    </div>
+                    <div className="text-2xl font-bold text-white">150+</div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
       
       {/* Process Timeline */}
-      <section className="py-20 px-4 md:px-6">
+      <section className="py-20 px-4 md:px-6 bg-gray-50">
         <div className="container mx-auto max-w-6xl">
-          <div className="max-w-3xl mb-12">
-            <h2 className="text-3xl md:text-4xl font-medium mb-6">Our Process</h2>
-            <p className="text-lg text-gray-600">
-              We follow a proven approach to deliver websites that exceed expectations. Our collaborative process ensures your vision comes to life while meeting strategic business objectives.
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-medium mb-6">Our Proven Process</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              We follow a strategic, collaborative approach that ensures your vision becomes reality while exceeding business objectives and user expectations.
             </p>
           </div>
           
@@ -61,57 +210,109 @@ const Consulting = () => {
         </div>
       </section>
       
-      {/* Before/After Gallery */}
-      <section className="py-20 px-4 md:px-6 bg-gray-50">
+      {/* Portfolio Section */}
+      <section id="portfolio" className="py-20 px-4 md:px-6 bg-white">
         <div className="container mx-auto max-w-6xl">
-          <div className="max-w-3xl mb-12">
-            <h2 className="text-3xl md:text-4xl font-medium mb-6">Transformation Gallery</h2>
-            <p className="text-lg text-gray-600">
-              See the impact of our work through these before and after comparisons. Each project represents a unique challenge we helped solve.
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-medium mb-6">Transformation Gallery</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              See the measurable impact of our work through these before and after transformations. Each project represents unique challenges we helped solve with strategic design and development.
             </p>
           </div>
           
-          <div className="space-y-20">
+          <div className="space-y-24">
             {beforeAfterProjects.map((project, index) => (
-              <div key={project.id} className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
-                <div className={`order-1 ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
-                  <div className="space-y-8">
-                    <div>
-                      <span className="bg-black text-white text-xs font-medium px-3 py-1 rounded-full mb-2 inline-block">BEFORE</span>
-                      <div className="aspect-[4/3] rounded-lg overflow-hidden border">
-                        <img 
-                          src={project.before} 
-                          alt={`${project.name} Before`}
-                          className="w-full h-full object-cover"
-                        />
+              <div key={project.id} className="group">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+                  <div className={`order-1 ${index % 2 === 1 ? 'lg:order-2' : ''}`}>
+                    <div className="space-y-8">
+                      <div className="relative">
+                        <span className="bg-red-500 text-white text-xs font-medium px-3 py-1 rounded-full mb-2 inline-block">BEFORE</span>
+                        <div className="aspect-[4/3] rounded-xl overflow-hidden border shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                          <img 
+                            src={project.before} 
+                            alt={`${project.name} Before`}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        </div>
                       </div>
-                    </div>
-                    
-                    <div>
-                      <span className="bg-black text-white text-xs font-medium px-3 py-1 rounded-full mb-2 inline-block">AFTER</span>
-                      <div className="aspect-[4/3] rounded-lg overflow-hidden border">
-                        <img 
-                          src={project.after} 
-                          alt={`${project.name} After`}
-                          className="w-full h-full object-cover"
-                        />
+                      
+                      <div className="relative">
+                        <span className="bg-green-500 text-white text-xs font-medium px-3 py-1 rounded-full mb-2 inline-block">AFTER</span>
+                        <div className="aspect-[4/3] rounded-xl overflow-hidden border shadow-lg group-hover:shadow-xl transition-shadow duration-300">
+                          <img 
+                            src={project.after} 
+                            alt={`${project.name} After`}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                
-                <div className={`order-2 ${index % 2 === 1 ? 'lg:order-1' : ''} flex flex-col justify-center`}>
-                  <h3 className="text-2xl font-medium mb-2">{project.name}</h3>
-                  <p className="text-gray-500 mb-6">{project.category}</p>
-                  <p className="text-lg leading-relaxed text-gray-700 mb-6">
-                    {project.description}
-                  </p>
-                  <Button variant="outline" asChild>
-                    <Link to="#contact-form" className="flex items-center gap-2 w-fit">
-                      Start a Similar Project
-                      <ArrowRight size={16} />
+                  
+                  <div className={`order-2 ${index % 2 === 1 ? 'lg:order-1' : ''} space-y-6`}>
+                    <div>
+                      <h3 className="text-3xl font-medium mb-2">{project.name}</h3>
+                      <p className="text-gray-500 text-lg">{project.category}</p>
+                    </div>
+                    
+                    <p className="text-lg leading-relaxed text-gray-700">
+                      {project.description}
+                    </p>
+                    
+                    <div className="grid grid-cols-3 gap-4">
+                      {Object.entries(project.metrics).map(([key, value]) => (
+                        <div key={key} className="text-center p-4 bg-gray-50 rounded-lg">
+                          <div className="text-2xl font-bold text-black mb-1">{value}</div>
+                          <div className="text-sm text-gray-600 capitalize">{key}</div>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <Link to="#contact-form">
+                      <AnimatedButton 
+                        sparkleColor="black" 
+                        textColor="black"
+                        icon={ArrowRight}
+                        invertOnHover={true}
+                        className="mt-4"
+                      >
+                        Start Similar Project
+                      </AnimatedButton>
                     </Link>
-                  </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="py-20 px-4 md:px-6 bg-black text-white">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-medium mb-6">What Our Clients Say</h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Don't just take our word for it. Hear from the leaders who trusted us to transform their digital presence.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <div key={index} className="bg-white/10 backdrop-blur-sm rounded-xl p-6 hover:bg-white/15 transition-colors duration-300">
+                <div className="flex items-center gap-1 mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+                <blockquote className="text-lg mb-6 leading-relaxed">
+                  "{testimonial.quote}"
+                </blockquote>
+                <div>
+                  <div className="font-medium text-white">{testimonial.name}</div>
+                  <div className="text-gray-300">{testimonial.role}</div>
+                  <div className="text-gray-400 text-sm">{testimonial.company}</div>
                 </div>
               </div>
             ))}
@@ -119,96 +320,142 @@ const Consulting = () => {
         </div>
       </section>
       
-      {/* Services */}
-      <section className="py-20 px-4 md:px-6">
+      {/* Pricing Packages */}
+      <section className="py-20 px-4 md:px-6 bg-gray-50">
         <div className="container mx-auto max-w-6xl">
-          <div className="max-w-3xl mb-12">
-            <h2 className="text-3xl md:text-4xl font-medium mb-6">Our Services</h2>
-            <p className="text-lg text-gray-600">
-              We offer a comprehensive range of services to address every aspect of your digital presence.
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-medium mb-6">Choose Your Package</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Transparent pricing for every business size. All packages include our commitment to excellence and your success.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {packages.map((pkg, index) => (
+              <div key={index} className={`relative bg-white rounded-2xl p-8 ${pkg.popular ? 'ring-2 ring-black scale-105' : 'border'} hover:shadow-xl transition-all duration-300`}>
+                {pkg.popular && (
+                  <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                    <span className="bg-black text-white px-4 py-1 rounded-full text-sm font-medium">Most Popular</span>
+                  </div>
+                )}
+                
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-bold mb-2">{pkg.name}</h3>
+                  <div className="text-4xl font-bold mb-2">{pkg.price}</div>
+                  <div className="text-gray-500 mb-4">{pkg.duration}</div>
+                  <p className="text-gray-600">{pkg.description}</p>
+                </div>
+                
+                <ul className="space-y-4 mb-8">
+                  {pkg.features.map((feature, featureIndex) => (
+                    <li key={featureIndex} className="flex items-center gap-3">
+                      <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      <span className="text-gray-700">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                
+                <Link to="#contact-form" className="block">
+                  <AnimatedButton 
+                    className="w-full justify-center"
+                    sparkleColor={pkg.popular ? "white" : "black"}
+                    textColor={pkg.popular ? "white" : "black"}
+                    invertOnHover={!pkg.popular}
+                  >
+                    Get Started
+                  </AnimatedButton>
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      
+      {/* Services */}
+      <section className="py-20 px-4 md:px-6 bg-white">
+        <div className="container mx-auto max-w-6xl">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-medium mb-6">Our Comprehensive Services</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              From strategy to execution, we provide end-to-end solutions that address every aspect of your digital transformation journey.
             </p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white border p-6 rounded-lg hover-scale">
-              <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center mb-6">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+            <div className="group bg-white border rounded-xl p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <div className="w-14 h-14 bg-black text-white rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
                   <rect width="18" height="18" x="3" y="3" rx="2" />
                   <path d="M9 3v18" />
                   <path d="M14 15h1" />
                 </svg>
               </div>
-              <h3 className="text-xl font-medium mb-4">Website Design</h3>
-              <p className="text-gray-600">
-                Beautiful, functional designs that enhance your brand and deliver exceptional user experiences across all devices.
+              <h3 className="text-xl font-medium mb-4">UI/UX Design</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Create intuitive, beautiful interfaces that users love. Our design process focuses on user research, wireframing, and creating pixel-perfect experiences.
               </p>
             </div>
             
-            <div className="bg-white border p-6 rounded-lg hover-scale">
-              <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center mb-6">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+            <div className="group bg-white border rounded-xl p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <div className="w-14 h-14 bg-black text-white rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
                   <path d="M2 12h10" />
                   <path d="M9 4v16" />
                   <path d="m22 12-4-4v8z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-medium mb-4">Development</h3>
-              <p className="text-gray-600">
-                Clean, efficient code that ensures your site is fast, secure, and easy to maintain as your business grows.
+              <h3 className="text-xl font-medium mb-4">Web Development</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Build fast, secure, and scalable websites using modern technologies. From simple landing pages to complex web applications.
               </p>
             </div>
             
-            <div className="bg-white border p-6 rounded-lg hover-scale">
-              <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center mb-6">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+            <div className="group bg-white border rounded-xl p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <div className="w-14 h-14 bg-black text-white rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <Shield className="w-7 h-7" />
+              </div>
+              <h3 className="text-xl font-medium mb-4">Security & Performance</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Ensure your website is secure, fast, and reliable. We implement best practices for security, optimization, and monitoring.
+              </p>
+            </div>
+            
+            <div className="group bg-white border rounded-xl p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <div className="w-14 h-14 bg-black text-white rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
                   <circle cx="12" cy="12" r="10" />
                   <path d="M12 18a6 6 0 0 0 0-12v12z" />
                 </svg>
               </div>
               <h3 className="text-xl font-medium mb-4">Analytics & SEO</h3>
-              <p className="text-gray-600">
-                Improve visibility and understand user behavior with comprehensive search engine optimization and analytics.
+              <p className="text-gray-600 leading-relaxed">
+                Improve visibility and track performance with comprehensive SEO optimization and analytics implementation.
               </p>
             </div>
             
-            <div className="bg-white border p-6 rounded-lg hover-scale">
-              <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center mb-6">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+            <div className="group bg-white border rounded-xl p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <div className="w-14 h-14 bg-black text-white rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
                   <path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5l6.74-6.76Z" />
                   <path d="M16 8 2 22" />
                   <path d="m17.5 15 2-2" />
                 </svg>
               </div>
-              <h3 className="text-xl font-medium mb-4">Branding</h3>
-              <p className="text-gray-600">
-                Develop a cohesive visual identity that makes your business memorable and builds customer trust.
+              <h3 className="text-xl font-medium mb-4">Brand Strategy</h3>
+              <p className="text-gray-600 leading-relaxed">
+                Develop a cohesive visual identity and brand strategy that resonates with your audience and builds trust.
               </p>
             </div>
             
-            <div className="bg-white border p-6 rounded-lg hover-scale">
-              <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center mb-6">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
-                  <rect width="7" height="13" x="3" y="2" rx="1" />
-                  <rect width="7" height="13" x="14" y="2" rx="1" />
-                  <path d="M10 2v20" />
-                  <path d="M10 14h4" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-medium mb-4">Content Strategy</h3>
-              <p className="text-gray-600">
-                Develop compelling content that engages your audience and supports your business objectives.
-              </p>
-            </div>
-            
-            <div className="bg-white border p-6 rounded-lg hover-scale">
-              <div className="w-12 h-12 bg-black text-white rounded-full flex items-center justify-center mb-6">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
+            <div className="group bg-white border rounded-xl p-6 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+              <div className="w-14 h-14 bg-black text-white rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
                   <path d="M21 12a9 9 0 0 1-9 9m9-9a9 9 0 0 0-9-9m9 9H3m9 9a9 9 0 0 1-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9" />
                 </svg>
               </div>
               <h3 className="text-xl font-medium mb-4">Ongoing Support</h3>
-              <p className="text-gray-600">
-                Keep your website secure, updated, and performing optimally with our maintenance and support services.
+              <p className="text-gray-600 leading-relaxed">
+                Keep your digital presence secure and up-to-date with our comprehensive maintenance and support services.
               </p>
             </div>
           </div>
@@ -216,43 +463,84 @@ const Consulting = () => {
       </section>
       
       {/* Contact Form */}
-      <section id="contact-form" className="py-20 px-4 md:px-6 bg-gray-50">
+      <section id="contact-form" className="py-20 px-4 md:px-6 bg-black text-white">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-12">
-            <div className="md:col-span-2">
-              <h2 className="text-3xl md:text-4xl font-medium mb-6">Start Your Project</h2>
-              <p className="text-lg text-gray-600 mb-6">
-                Ready to transform your digital presence? Fill out this form and we'll get back to you within 24 hours to discuss your project.
-              </p>
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                      <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z" />
-                    </svg>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-medium mb-6">Ready to Transform?</h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+              Let's discuss your project and create something extraordinary together. Fill out the form below and we'll get back to you within 24 hours.
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
+            <div className="lg:col-span-2 space-y-8">
+              <div>
+                <h3 className="text-2xl font-medium mb-6">Why Choose XPerience?</h3>
+                <div className="space-y-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <Check className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-2">Proven Track Record</h4>
+                      <p className="text-gray-300">150+ successful projects with 98% client satisfaction rate</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-medium mb-1">Discuss via Phone</h3>
-                    <p className="text-gray-600">+1 (888) 555-1234</p>
+                  
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <Users className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-2">Expert Team</h4>
+                      <p className="text-gray-300">Experienced designers and developers who understand your industry</p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-4">
+                    <div className="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                      <Clock className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-2">Fast Delivery</h4>
+                      <p className="text-gray-300">Average project completion in 6 weeks without compromising quality</p>
+                    </div>
                   </div>
                 </div>
-                
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                      <rect width="20" height="16" x="2" y="4" rx="2" />
-                      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-                    </svg>
+              </div>
+              
+              <div className="border-t border-gray-700 pt-8">
+                <h4 className="font-medium mb-4">Get in Touch Directly</h4>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                        <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <span className="text-gray-300">Phone:</span>
+                      <span className="ml-2 text-white">+1 (888) 555-1234</span>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-medium mb-1">Email Us</h3>
-                    <p className="text-gray-600">consulting@xperience.com</p>
+                  
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                        <rect width="20" height="16" x="2" y="4" rx="2" />
+                        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                      </svg>
+                    </div>
+                    <div>
+                      <span className="text-gray-300">Email:</span>
+                      <span className="ml-2 text-white">consulting@xperience.com</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
             
-            <div className="md:col-span-3 bg-white rounded-lg border p-6">
+            <div className="lg:col-span-3 bg-white rounded-2xl p-8">
               <ContactForm />
             </div>
           </div>

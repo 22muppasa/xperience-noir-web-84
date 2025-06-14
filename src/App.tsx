@@ -17,22 +17,18 @@ import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import Loader from "./components/ui/Loader";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import { AuthProvider } from "./contexts/AuthContext";
-import Auth from "./pages/Auth";
-import Dashboard from "./pages/Dashboard";
-import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
 const App = () => {
   const [loading, setLoading] = useState(true);
-
+  
   useEffect(() => {
     // Display loader for 6 seconds
     const timer = setTimeout(() => {
       setLoading(false);
     }, 6000);
-
+    
     return () => clearTimeout(timer);
   }, []);
 
@@ -48,27 +44,22 @@ const App = () => {
             </div>
           ) : (
             <BrowserRouter>
-              <AuthProvider>
-                <div className="flex flex-col min-h-screen transition-colors duration-300">
-                  <Navbar />
-                  <div className="flex-grow pt-16 w-full">
-                    <Routes>
-                      <Route path="/" element={<Index />} />
-                      <Route path="/programs" element={<Programs />} />
-                      <Route path="/consulting" element={<Consulting />} />
-                      <Route path="/get-involved" element={<GetInvolved />} />
-                      <Route path="/social-hub" element={<SocialHub />} />
-                      <Route path="/about" element={<About />} />
-                      <Route path="/contact" element={<Contact />} />
-                      <Route path="/auth" element={<Auth />} />
-                      <Route path="/dashboard" element={<Dashboard />} />
-                      <Route path="/admin" element={<Admin />} />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </div>
-                  <Footer />
+              <div className="flex flex-col min-h-screen transition-colors duration-300">
+                <Navbar />
+                <div className="flex-grow pt-16 w-full"> {/* Adjusted padding and made full width */}
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/programs" element={<Programs />} />
+                    <Route path="/consulting" element={<Consulting />} />
+                    <Route path="/get-involved" element={<GetInvolved />} />
+                    <Route path="/social-hub" element={<SocialHub />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
                 </div>
-              </AuthProvider>
+                <Footer />
+              </div>
             </BrowserRouter>
           )}
         </TooltipProvider>
@@ -78,4 +69,3 @@ const App = () => {
 };
 
 export default App;
-

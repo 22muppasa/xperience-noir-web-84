@@ -17,26 +17,23 @@ function usePasswordToggle() {
 }
 
 type AuthMode = "login" | "signup";
-type Role = "customer" | "admin";
 
 const Auth = () => {
   const [authMode, setAuthMode] = useState<AuthMode>("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [role, setRole] = useState<Role>("customer");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [pwVisible, togglePwVisible] = usePasswordToggle();
   const navigate = useNavigate();
   const { refreshProfile } = useAuth();
 
-  // Clear all form errors when switching mode
+  // Clear form errors when switching mode
   const handleModeChange = (mode: AuthMode) => {
     setAuthMode(mode);
     setError("");
     setFullName("");
-    setRole("customer");
     setPassword("");
     setEmail("");
   };
@@ -54,7 +51,7 @@ const Auth = () => {
       if (loginError) setError(loginError.message);
       else navigate("/");
     } else {
-      // Signup
+      // Signup - Remove role assignment from frontend, always default to customer
       const redirectTo = `${window.location.origin}/auth`;
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
@@ -63,7 +60,7 @@ const Auth = () => {
           emailRedirectTo: redirectTo,
           data: {
             full_name: fullName,
-            role,
+            role: "customer" // Forced default on signup; admin role must be set by admin manually
           }
         },
       });
@@ -77,7 +74,7 @@ const Auth = () => {
               .update({
                 email,
                 full_name: fullName,
-                role
+                role: "customer"
               })
               .eq("id", data.user.id);
           }
@@ -102,30 +99,16 @@ const Auth = () => {
         <form onSubmit={handleSubmit} autoComplete="on">
           <CardContent className="space-y-4">
             {authMode === "signup" && (
-              <>
-                <div>
-                  <Label htmlFor="fullName">Full Name</Label>
-                  <Input
-                    id="fullName"
-                    placeholder="Full Name"
-                    value={fullName}
-                    onChange={e => setFullName(e.target.value)}
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="role">Role</Label>
-                  <select
-                    id="role"
-                    value={role}
-                    onChange={(e) => setRole(e.target.value as Role)}
-                    className="w-full h-10 px-3 rounded-md border border-input bg-background text-base focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                  >
-                    <option value="customer">Customer</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                </div>
-              </>
+              <div>
+                <Label htmlFor="fullName">Full Name</Label>
+                <Input
+                  id="fullName"
+                  placeholder="Full Name"
+                  value={fullName}
+                  onChange={e => setFullName(e.target.value)}
+                  required
+                />
+              </div>
             )}
             <div>
               <Label htmlFor="email">Email</Label>
@@ -228,4 +211,3 @@ const Auth = () => {
 };
 
 export default Auth;
-

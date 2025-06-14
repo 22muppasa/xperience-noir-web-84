@@ -89,14 +89,55 @@ export type Database = {
           },
         ]
       }
+      file_uploads: {
+        Row: {
+          bucket_name: string
+          completed_at: string | null
+          created_at: string | null
+          file_path: string
+          file_size: number
+          id: string
+          mime_type: string
+          original_filename: string
+          upload_status: string | null
+          user_id: string
+        }
+        Insert: {
+          bucket_name: string
+          completed_at?: string | null
+          created_at?: string | null
+          file_path: string
+          file_size: number
+          id?: string
+          mime_type: string
+          original_filename: string
+          upload_status?: string | null
+          user_id: string
+        }
+        Update: {
+          bucket_name?: string
+          completed_at?: string | null
+          created_at?: string | null
+          file_path?: string
+          file_size?: number
+          id?: string
+          mime_type?: string
+          original_filename?: string
+          upload_status?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       kids_work: {
         Row: {
           created_at: string | null
           description: string | null
           enrollment_id: string | null
+          file_size: number | null
           file_type: string | null
           file_url: string | null
           id: string
+          storage_path: string | null
           title: string
           uploaded_by: string | null
         }
@@ -104,9 +145,11 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           enrollment_id?: string | null
+          file_size?: number | null
           file_type?: string | null
           file_url?: string | null
           id?: string
+          storage_path?: string | null
           title: string
           uploaded_by?: string | null
         }
@@ -114,9 +157,11 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           enrollment_id?: string | null
+          file_size?: number | null
           file_type?: string | null
           file_url?: string | null
           id?: string
+          storage_path?: string | null
           title?: string
           uploaded_by?: string | null
         }
@@ -176,6 +221,7 @@ export type Database = {
           last_name: string | null
           phone: string | null
           role: Database["public"]["Enums"]["user_role"]
+          storage_path: string | null
           updated_at: string | null
         }
         Insert: {
@@ -187,6 +233,7 @@ export type Database = {
           last_name?: string | null
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"]
+          storage_path?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -198,6 +245,7 @@ export type Database = {
           last_name?: string | null
           phone?: string | null
           role?: Database["public"]["Enums"]["user_role"]
+          storage_path?: string | null
           updated_at?: string | null
         }
         Relationships: []
@@ -215,6 +263,7 @@ export type Database = {
           price: number | null
           start_date: string | null
           status: Database["public"]["Enums"]["program_status"] | null
+          storage_path: string | null
           title: string
           updated_at: string | null
         }
@@ -230,6 +279,7 @@ export type Database = {
           price?: number | null
           start_date?: string | null
           status?: Database["public"]["Enums"]["program_status"] | null
+          storage_path?: string | null
           title: string
           updated_at?: string | null
         }
@@ -245,6 +295,7 @@ export type Database = {
           price?: number | null
           start_date?: string | null
           status?: Database["public"]["Enums"]["program_status"] | null
+          storage_path?: string | null
           title?: string
           updated_at?: string | null
         }
@@ -260,6 +311,7 @@ export type Database = {
           published_at: string | null
           scheduled_for: string | null
           status: Database["public"]["Enums"]["post_status"] | null
+          storage_path: string | null
           title: string
           updated_at: string | null
         }
@@ -272,6 +324,7 @@ export type Database = {
           published_at?: string | null
           scheduled_for?: string | null
           status?: Database["public"]["Enums"]["post_status"] | null
+          storage_path?: string | null
           title: string
           updated_at?: string | null
         }
@@ -284,6 +337,7 @@ export type Database = {
           published_at?: string | null
           scheduled_for?: string | null
           status?: Database["public"]["Enums"]["post_status"] | null
+          storage_path?: string | null
           title?: string
           updated_at?: string | null
         }

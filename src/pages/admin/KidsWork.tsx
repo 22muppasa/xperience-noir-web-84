@@ -12,66 +12,98 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table';
-import { Image, Upload, Eye, MessageCircle, Calendar, User } from 'lucide-react';
+import { Image, Upload, Eye, MessageCircle, Calendar, User, Download } from 'lucide-react';
+import KidsWorkUpload from '@/components/file-upload/KidsWorkUpload';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const AdminKidsWork = () => {
-  // Mock data for kids work
-  const kidsWork = [
-    {
-      id: 1,
-      title: 'Rainbow Painting',
-      childName: 'Emma Johnson',
-      programName: 'Summer Art Camp',
-      uploadDate: '2024-06-15',
-      fileType: 'image',
-      status: 'approved',
-      comments: 3
-    },
-    {
-      id: 2,
-      title: 'Science Experiment Report',
-      childName: 'Alex Chen',
-      programName: 'STEM Workshop',
-      uploadDate: '2024-06-14',
-      fileType: 'document',
-      status: 'pending',
-      comments: 1
-    },
-    {
-      id: 3,
-      title: 'Clay Sculpture',
-      childName: 'Sophie Williams',
-      programName: 'Summer Art Camp',
-      uploadDate: '2024-06-13',
-      fileType: 'image',
-      status: 'approved',
-      comments: 5
-    }
-  ];
+  const { toast } = useToast();
 
-  const recentUploads = [
-    {
-      id: 1,
-      title: 'Sunset Drawing',
-      childName: 'Emma Johnson',
-      uploadedAt: '2 hours ago',
-      thumbnail: '/placeholder.svg'
-    },
-    {
-      id: 2,
-      title: 'Robot Design',
-      childName: 'Alex Chen',
-      uploadedAt: '4 hours ago',
-      thumbnail: '/placeholder.svg'
-    },
-    {
-      id: 3,
-      title: 'Nature Collage',
-      childName: 'Sophie Williams',
-      uploadedAt: '1 day ago',
-      thumbnail: '/placeholder.svg'
+  // Fetch all kids work for admin
+  const { data: kidsWork = [], isLoading, refetch } = useQuery({
+    queryKey: ['admin-kids-work'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('kids_work')
+        .select(`
+          *,
+          enrollments(
+            id,
+            child_name,
+            programs(
+              title
+            )
+          )
+        `)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
     }
-  ];
+  });
+
+  // Fetch recent uploads
+  const { data: recentUploads = [] } = useQuery({
+    queryKey: ['recent-uploads'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('kids_work')
+        .select(`
+          *,
+          enrollments(
+            child_name
+          )
+        `)
+        .order('created_at', { ascending: false })
+        .limit(6);
+
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
+  const handleDownload = async (fileUrl: string, title: string) => {
+    try {
+      const response = await fetch(fileUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = title;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      toast({
+        title: "Download failed",
+        description: "Failed to download file",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const getFileTypeLabel = (fileType: string) => {
+    if (fileType?.startsWith('image/')) return 'Image';
+    if (fileType === 'application/pdf') return 'PDF';
+    if (fileType?.startsWith('video/')) return 'Video';
+    return 'File';
+  };
+
+  if (isLoading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+            <p className="mt-2 text-gray-600">Loading kids work...</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <DashboardLayout>
@@ -81,18 +113,14 @@ const AdminKidsWork = () => {
             <h1 className="text-2xl font-bold text-gray-900">Kids Work Management</h1>
             <p className="text-gray-600">Manage and showcase children's work</p>
           </div>
-          <Button className="flex items-center">
-            <Upload className="mr-2 h-4 w-4" />
-            Upload Work
-          </Button>
+          <KidsWorkUpload onUploadComplete={() => refetch()} />
         </div>
 
         <Tabs defaultValue="gallery" className="w-full">
           <TabsList>
             <TabsTrigger value="gallery">Work Gallery</TabsTrigger>
-            <TabsTrigger value="pending">Pending Approval</TabsTrigger>
             <TabsTrigger value="recent">Recent Uploads</TabsTrigger>
-            <TabsTrigger value="comments">Comments</TabsTrigger>
+            <TabsTrigger value="stats">Statistics</TabsTrigger>
           </TabsList>
 
           <TabsContent value="gallery" className="space-y-4">
@@ -100,91 +128,64 @@ const AdminKidsWork = () => {
               <CardHeader>
                 <CardTitle className="flex items-center">
                   <Image className="mr-2 h-5 w-5" />
-                  All Kids Work
+                  All Kids Work ({kidsWork.length})
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Title</TableHead>
-                      <TableHead>Child</TableHead>
-                      <TableHead>Program</TableHead>
-                      <TableHead>Upload Date</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Comments</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {kidsWork.map((work) => (
-                      <TableRow key={work.id}>
-                        <TableCell className="font-medium">{work.title}</TableCell>
-                        <TableCell>{work.childName}</TableCell>
-                        <TableCell>{work.programName}</TableCell>
-                        <TableCell>{work.uploadDate}</TableCell>
-                        <TableCell>
-                          <Badge variant="outline">{work.fileType}</Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={work.status === 'approved' ? 'default' : 'secondary'}>
-                            {work.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center">
-                            <MessageCircle className="h-4 w-4 mr-1" />
-                            {work.comments}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex space-x-2">
-                            <Button size="sm" variant="outline">
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                            <Button size="sm" variant="outline">
-                              <MessageCircle className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
+                {kidsWork.length === 0 ? (
+                  <div className="text-center py-8">
+                    <Image className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                    <p className="text-gray-600">No work uploaded yet</p>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Child</TableHead>
+                        <TableHead>Program</TableHead>
+                        <TableHead>Upload Date</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Size</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="pending" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Pending Approval</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {kidsWork.filter(work => work.status === 'pending').map((work) => (
-                    <div key={work.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="flex items-center space-x-4">
-                        <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
-                          <Image className="h-8 w-8 text-gray-400" />
-                        </div>
-                        <div>
-                          <h3 className="font-medium">{work.title}</h3>
-                          <p className="text-sm text-gray-600">
-                            by {work.childName} | {work.programName}
-                          </p>
-                          <p className="text-sm text-gray-500">Uploaded: {work.uploadDate}</p>
-                        </div>
-                      </div>
-                      <div className="flex space-x-2">
-                        <Button size="sm" variant="outline">View</Button>
-                        <Button size="sm">Approve</Button>
-                        <Button size="sm" variant="destructive">Reject</Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    </TableHeader>
+                    <TableBody>
+                      {kidsWork.map((work) => (
+                        <TableRow key={work.id}>
+                          <TableCell className="font-medium">{work.title}</TableCell>
+                          <TableCell>{work.enrollments?.child_name || 'Unknown'}</TableCell>
+                          <TableCell>{work.enrollments?.programs?.title || 'Unknown'}</TableCell>
+                          <TableCell>{new Date(work.created_at).toLocaleDateString()}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline">{getFileTypeLabel(work.file_type)}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            {work.file_size ? `${Math.round(work.file_size / 1024)}KB` : '-'}
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex space-x-2">
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => window.open(work.file_url, '_blank')}
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => handleDownload(work.file_url, work.title)}
+                              >
+                                <Download className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -199,15 +200,37 @@ const AdminKidsWork = () => {
                   {recentUploads.map((upload) => (
                     <Card key={upload.id}>
                       <CardContent className="p-4">
-                        <div className="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center">
-                          <Image className="h-12 w-12 text-gray-400" />
+                        <div className="aspect-square bg-gray-100 rounded-lg mb-3 flex items-center justify-center overflow-hidden">
+                          {upload.file_type?.startsWith('image/') ? (
+                            <img 
+                              src={upload.file_url} 
+                              alt={upload.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <Image className="h-12 w-12 text-gray-400" />
+                          )}
                         </div>
-                        <h3 className="font-medium">{upload.title}</h3>
-                        <p className="text-sm text-gray-600">by {upload.childName}</p>
-                        <p className="text-sm text-gray-500">{upload.uploadedAt}</p>
+                        <h3 className="font-medium line-clamp-2">{upload.title}</h3>
+                        <p className="text-sm text-gray-600">by {upload.enrollments?.child_name}</p>
+                        <p className="text-sm text-gray-500">
+                          {new Date(upload.created_at).toLocaleDateString()}
+                        </p>
                         <div className="mt-3 flex space-x-2">
-                          <Button size="sm" variant="outline">View</Button>
-                          <Button size="sm">Approve</Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => window.open(upload.file_url, '_blank')}
+                          >
+                            View
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant="outline"
+                            onClick={() => handleDownload(upload.file_url, upload.title)}
+                          >
+                            Download
+                          </Button>
                         </div>
                       </CardContent>
                     </Card>
@@ -217,37 +240,59 @@ const AdminKidsWork = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="comments" className="space-y-4">
+          <TabsContent value="stats" className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-blue-600">{kidsWork.length}</div>
+                  <div className="text-sm text-gray-600">Total Works</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-green-600">
+                    {kidsWork.filter(w => w.file_type?.startsWith('image/')).length}
+                  </div>
+                  <div className="text-sm text-gray-600">Images</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-purple-600">
+                    {kidsWork.filter(w => w.file_type === 'application/pdf').length}
+                  </div>
+                  <div className="text-sm text-gray-600">PDFs</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardContent className="p-4 text-center">
+                  <div className="text-2xl font-bold text-orange-600">
+                    {kidsWork.filter(w => w.file_type?.startsWith('video/')).length}
+                  </div>
+                  <div className="text-sm text-gray-600">Videos</div>
+                </CardContent>
+              </Card>
+            </div>
+
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <MessageCircle className="mr-2 h-5 w-5" />
-                  Recent Comments
-                </CardTitle>
+                <CardTitle>File Storage Usage</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="p-4 border rounded-lg">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h4 className="font-medium">On "Rainbow Painting"</h4>
-                        <p className="text-sm text-gray-600">by Sarah Johnson (Parent)</p>
-                      </div>
-                      <span className="text-sm text-gray-500">2 hours ago</span>
-                    </div>
-                    <p className="text-sm">"This is absolutely beautiful! Emma worked so hard on this piece."</p>
-                    <Button size="sm" variant="outline" className="mt-2">Reply</Button>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Total Storage Used:</span>
+                    <span className="font-medium">
+                      {Math.round(kidsWork.reduce((sum, work) => sum + (work.file_size || 0), 0) / 1024 / 1024)}MB
+                    </span>
                   </div>
-                  <div className="p-4 border rounded-lg">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h4 className="font-medium">On "Science Experiment Report"</h4>
-                        <p className="text-sm text-gray-600">by Lisa Chen (Parent)</p>
-                      </div>
-                      <span className="text-sm text-gray-500">1 day ago</span>
-                    </div>
-                    <p className="text-sm">"Great job Alex! Your hypothesis was very well thought out."</p>
-                    <Button size="sm" variant="outline" className="mt-2">Reply</Button>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Average File Size:</span>
+                    <span className="font-medium">
+                      {kidsWork.length > 0 
+                        ? Math.round(kidsWork.reduce((sum, work) => sum + (work.file_size || 0), 0) / kidsWork.length / 1024)
+                        : 0}KB
+                    </span>
                   </div>
                 </div>
               </CardContent>

@@ -16,6 +16,10 @@ import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import CustomerDashboard from "./pages/CustomerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
+import CustomerPrograms from "./pages/customer/Programs";
+import CustomerKidsWork from "./pages/customer/KidsWork";
+import CustomerMessages from "./pages/customer/Messages";
+import CustomerProfile from "./pages/customer/Profile";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import Loader from "./components/ui/Loader";
@@ -120,12 +124,34 @@ const App = () => {
                     {/* Auth route */}
                     <Route path="/auth" element={<Auth />} />
                     
-                    {/* Protected routes */}
+                    {/* Protected customer routes */}
                     <Route path="/dashboard" element={
                       <ProtectedRoute requiredRole="customer">
                         <CustomerDashboard />
                       </ProtectedRoute>
                     } />
+                    <Route path="/dashboard/programs" element={
+                      <ProtectedRoute requiredRole="customer">
+                        <CustomerPrograms />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/dashboard/kids-work" element={
+                      <ProtectedRoute requiredRole="customer">
+                        <CustomerKidsWork />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/dashboard/messages" element={
+                      <ProtectedRoute requiredRole="customer">
+                        <CustomerMessages />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/dashboard/profile" element={
+                      <ProtectedRoute requiredRole="customer">
+                        <CustomerProfile />
+                      </ProtectedRoute>
+                    } />
+                    
+                    {/* Protected admin routes */}
                     <Route path="/admin" element={
                       <ProtectedRoute requiredRole="admin">
                         <AdminDashboard />

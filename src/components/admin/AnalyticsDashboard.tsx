@@ -18,7 +18,7 @@ const AnalyticsDashboard = () => {
         programsResult
       ] = await Promise.all([
         supabase.from('profiles').select('id, created_at, role'),
-        supabase.from('kids_work').select('id, created_at, user_id'),
+        supabase.from('kids_work').select('id, created_at, uploaded_by'),
         supabase.from('messages').select('id, created_at, sender_id'),
         supabase.from('file_uploads').select('id, created_at, file_size'),
         supabase.from('programs').select('id, created_at, title')
@@ -39,11 +39,11 @@ const AnalyticsDashboard = () => {
 
       const growthData = last7Days.map(date => {
         const dayUsers = usersResult.data?.filter(u => 
-          u.created_at?.startsWith(date)
+          u.created_at && u.created_at.startsWith(date)
         ).length || 0;
         
         const daySubmissions = kidsWorkResult.data?.filter(k => 
-          k.created_at?.startsWith(date)
+          k.created_at && k.created_at.startsWith(date)
         ).length || 0;
 
         return {

@@ -1,6 +1,6 @@
 
 import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
+import { Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -20,6 +20,13 @@ import CustomerPrograms from "./pages/customer/Programs";
 import CustomerKidsWork from "./pages/customer/KidsWork";
 import CustomerMessages from "./pages/customer/Messages";
 import CustomerProfile from "./pages/customer/Profile";
+import AdminCustomers from "./pages/admin/Customers";
+import AdminPrograms from "./pages/admin/Programs";
+import AdminKidsWork from "./pages/admin/KidsWork";
+import AdminMessages from "./pages/admin/Messages";
+import AdminContactForms from "./pages/admin/ContactForms";
+import AdminSocialPosts from "./pages/admin/SocialPosts";
+import AdminSettings from "./pages/admin/Settings";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import Loader from "./components/ui/Loader";
@@ -155,6 +162,41 @@ const App = () => {
                     <Route path="/admin" element={
                       <ProtectedRoute requiredRole="admin">
                         <AdminDashboard />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/admin/customers" element={
+                      <ProtectedRoute requiredRole="admin">
+                        <AdminCustomers />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/admin/programs" element={
+                      <ProtectedRoute requiredRole="admin">
+                        <AdminPrograms />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/admin/kids-work" element={
+                      <ProtectedRoute requiredRole="admin">
+                        <AdminKidsWork />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/admin/messages" element={
+                      <ProtectedRoute requiredRole="admin">
+                        <AdminMessages />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/admin/contact" element={
+                      <ProtectedRoute requiredRole="admin">
+                        <AdminContactForms />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/admin/social-posts" element={
+                      <ProtectedRoute requiredRole="admin">
+                        <AdminSocialPosts />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/admin/settings" element={
+                      <ProtectedRoute requiredRole="admin">
+                        <AdminSettings />
                       </ProtectedRoute>
                     } />
                     

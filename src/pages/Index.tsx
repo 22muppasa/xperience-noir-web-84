@@ -36,11 +36,11 @@ const Index = () => {
               </AnimatedButton>
             </Link>
             
-            <Link to="/auth">
+            <Link to="/contact">
               <AnimatedButton className="px-8 py-4 text-lg border border-black bg-transparent hover:bg-black hover:text-white" 
                 sparkleColor={isDarkMode ? "white" : "black"} 
                 textColor={isDarkMode ? "white" : "black"}>
-                Access Dashboard
+                Contact Us
                 <Users className="ml-2 h-5 w-5" />
               </AnimatedButton>
             </Link>
@@ -125,9 +125,9 @@ const Index = () => {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link to="/auth">
+            <Link to="/contact">
               <AnimatedButton className="bg-black text-white hover:bg-gray-800 px-8 py-4 text-lg">
-                Create Account
+                Get Started
                 <ArrowRight className="ml-2 h-5 w-5" />
               </AnimatedButton>
             </Link>

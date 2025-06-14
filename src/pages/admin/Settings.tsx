@@ -1,251 +1,340 @@
 
+import React, { useState } from 'react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
+import SystemMonitoring from '@/components/admin/SystemMonitoring';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Settings, User, Mail, Shield, Bell, Palette } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { useToast } from '@/hooks/use-toast';
+import { 
+  Settings as SettingsIcon, 
+  Monitor, 
+  Bell, 
+  Shield, 
+  Database,
+  Mail,
+  Globe
+} from 'lucide-react';
 
 const AdminSettings = () => {
+  const [settings, setSettings] = useState({
+    siteName: 'Kids Work Platform',
+    siteDescription: 'A platform for showcasing children\'s creative work',
+    allowRegistration: true,
+    requireEmailVerification: true,
+    enableNotifications: true,
+    maintenanceMode: false,
+    maxFileSize: '10',
+    allowedFileTypes: 'jpg,png,gif,pdf,doc,docx',
+    smtpServer: '',
+    smtpPort: '587',
+    smtpUsername: '',
+    smtpPassword: '',
+    enableBackups: true,
+    backupFrequency: 'daily'
+  });
+
+  const { toast } = useToast();
+
+  const handleSave = () => {
+    // In a real app, this would save to a backend
+    toast({
+      title: "Settings saved",
+      description: "Your changes have been saved successfully",
+    });
+  };
+
+  const handleSettingChange = (key: string, value: any) => {
+    setSettings(prev => ({ ...prev, [key]: value }));
+  };
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Admin Settings</h1>
-          <p className="text-gray-600">Manage system settings and configurations</p>
+          <h2 className="text-2xl font-bold">System Settings</h2>
+          <p className="text-muted-foreground">
+            Manage your platform configuration and monitor system health
+          </p>
         </div>
 
-        <Tabs defaultValue="general" className="w-full">
-          <TabsList>
-            <TabsTrigger value="general">General</TabsTrigger>
-            <TabsTrigger value="users">User Management</TabsTrigger>
-            <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            <TabsTrigger value="security">Security</TabsTrigger>
-            <TabsTrigger value="appearance">Appearance</TabsTrigger>
+        <Tabs defaultValue="general" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="general">
+              <SettingsIcon className="h-4 w-4 mr-2" />
+              General
+            </TabsTrigger>
+            <TabsTrigger value="security">
+              <Shield className="h-4 w-4 mr-2" />
+              Security
+            </TabsTrigger>
+            <TabsTrigger value="email">
+              <Mail className="h-4 w-4 mr-2" />
+              Email
+            </TabsTrigger>
+            <TabsTrigger value="storage">
+              <Database className="h-4 w-4 mr-2" />
+              Storage
+            </TabsTrigger>
+            <TabsTrigger value="monitoring">
+              <Monitor className="h-4 w-4 mr-2" />
+              Monitoring
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="general" className="space-y-4">
+          <TabsContent value="general" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Settings className="mr-2 h-5 w-5" />
-                  General Settings
-                </CardTitle>
+                <CardTitle>General Settings</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1">Organization Name</label>
-                  <input 
-                    type="text" 
-                    defaultValue="XPerience Camp"
-                    className="w-full p-2 border rounded-lg"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Contact Email</label>
-                  <input 
-                    type="email" 
-                    defaultValue="info@xperiencecamp.com"
-                    className="w-full p-2 border rounded-lg"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Phone Number</label>
-                  <input 
-                    type="tel" 
-                    defaultValue="(555) 123-4567"
-                    className="w-full p-2 border rounded-lg"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1">Address</label>
-                  <textarea 
-                    rows={3}
-                    defaultValue="123 Camp Lane, Adventure City, AC 12345"
-                    className="w-full p-2 border rounded-lg"
-                  />
-                </div>
-                <Button>Save Changes</Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="users" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <User className="mr-2 h-5 w-5" />
-                  User Management
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h3 className="font-medium mb-2">Registration Settings</h3>
-                  <div className="space-y-2">
-                    <label className="flex items-center">
-                      <input type="checkbox" className="mr-2" defaultChecked />
-                      Allow new customer registrations
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="mr-2" />
-                      Require admin approval for new accounts
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="mr-2" defaultChecked />
-                      Send welcome email to new users
-                    </label>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-medium mb-2">Default User Role</h3>
-                  <select className="w-full p-2 border rounded-lg">
-                    <option value="customer">Customer</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                </div>
-                <Button>Save User Settings</Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="notifications" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Bell className="mr-2 h-5 w-5" />
-                  Notification Settings
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h3 className="font-medium mb-2">Email Notifications</h3>
-                  <div className="space-y-2">
-                    <label className="flex items-center">
-                      <input type="checkbox" className="mr-2" defaultChecked />
-                      New enrollment notifications
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="mr-2" defaultChecked />
-                      New message notifications
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="mr-2" />
-                      Daily summary reports
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="mr-2" defaultChecked />
-                      Contact form submissions
-                    </label>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-medium mb-2">Notification Email</h3>
-                  <input 
-                    type="email" 
-                    defaultValue="admin@xperiencecamp.com"
-                    className="w-full p-2 border rounded-lg"
-                  />
-                </div>
-                <Button>Save Notification Settings</Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="security" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Shield className="mr-2 h-5 w-5" />
-                  Security Settings
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <h3 className="font-medium mb-2">Password Requirements</h3>
-                  <div className="space-y-2">
-                    <label className="flex items-center">
-                      <input type="checkbox" className="mr-2" defaultChecked />
-                      Minimum 8 characters
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="mr-2" defaultChecked />
-                      Require uppercase letters
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="mr-2" defaultChecked />
-                      Require numbers
-                    </label>
-                    <label className="flex items-center">
-                      <input type="checkbox" className="mr-2" />
-                      Require special characters
-                    </label>
-                  </div>
-                </div>
-                <div>
-                  <h3 className="font-medium mb-2">Session Settings</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-1">Session Timeout (minutes)</label>
-                    <input 
-                      type="number" 
-                      defaultValue="60"
-                      className="w-full p-2 border rounded-lg"
+                    <Label htmlFor="siteName">Site Name</Label>
+                    <Input
+                      id="siteName"
+                      value={settings.siteName}
+                      onChange={(e) => handleSettingChange('siteName', e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="siteDescription">Site Description</Label>
+                    <Input
+                      id="siteDescription"
+                      value={settings.siteDescription}
+                      onChange={(e) => handleSettingChange('siteDescription', e.target.value)}
                     />
                   </div>
                 </div>
-                <Button>Save Security Settings</Button>
+
+                <Separator />
+
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Allow New Registrations</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Allow new users to register for accounts
+                      </p>
+                    </div>
+                    <Switch
+                      checked={settings.allowRegistration}
+                      onCheckedChange={(checked) => handleSettingChange('allowRegistration', checked)}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Maintenance Mode</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Temporarily disable the platform for maintenance
+                      </p>
+                    </div>
+                    <Switch
+                      checked={settings.maintenanceMode}
+                      onCheckedChange={(checked) => handleSettingChange('maintenanceMode', checked)}
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <Label>Enable Notifications</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Send email notifications for important events
+                      </p>
+                    </div>
+                    <Switch
+                      checked={settings.enableNotifications}
+                      onCheckedChange={(checked) => handleSettingChange('enableNotifications', checked)}
+                    />
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="appearance" className="space-y-4">
+          <TabsContent value="security" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle className="flex items-center">
-                  <Palette className="mr-2 h-5 w-5" />
-                  Appearance Settings
-                </CardTitle>
+                <CardTitle>Security Settings</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div>
-                  <h3 className="font-medium mb-2">Theme</h3>
-                  <select className="w-full p-2 border rounded-lg">
-                    <option value="light">Light</option>
-                    <option value="dark">Dark</option>
-                    <option value="auto">Auto</option>
-                  </select>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Require Email Verification</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Users must verify their email before accessing the platform
+                    </p>
+                  </div>
+                  <Switch
+                    checked={settings.requireEmailVerification}
+                    onCheckedChange={(checked) => handleSettingChange('requireEmailVerification', checked)}
+                  />
                 </div>
+
+                <Separator />
+
                 <div>
-                  <h3 className="font-medium mb-2">Brand Colors</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Primary Color</label>
-                      <input 
-                        type="color" 
-                        defaultValue="#3B82F6"
-                        className="w-full h-10 border rounded-lg"
-                      />
+                  <Label>Session Timeout</Label>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Automatically log out users after inactivity
+                  </p>
+                  <Input placeholder="24 hours" />
+                </div>
+
+                <div>
+                  <Label>Password Policy</Label>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Minimum password requirements
+                  </p>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" defaultChecked />
+                      <span className="text-sm">At least 8 characters</span>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">Secondary Color</label>
-                      <input 
-                        type="color" 
-                        defaultValue="#10B981"
-                        className="w-full h-10 border rounded-lg"
-                      />
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" defaultChecked />
+                      <span className="text-sm">Include uppercase letters</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" defaultChecked />
+                      <span className="text-sm">Include numbers</span>
                     </div>
                   </div>
                 </div>
-                <div>
-                  <h3 className="font-medium mb-2">Logo</h3>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                    <p className="text-gray-500">Upload new logo</p>
-                    <Button variant="outline" className="mt-2">Choose File</Button>
-                  </div>
-                </div>
-                <Button>Save Appearance Settings</Button>
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="email" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Email Configuration</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="smtpServer">SMTP Server</Label>
+                    <Input
+                      id="smtpServer"
+                      placeholder="smtp.gmail.com"
+                      value={settings.smtpServer}
+                      onChange={(e) => handleSettingChange('smtpServer', e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="smtpPort">SMTP Port</Label>
+                    <Input
+                      id="smtpPort"
+                      placeholder="587"
+                      value={settings.smtpPort}
+                      onChange={(e) => handleSettingChange('smtpPort', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="smtpUsername">SMTP Username</Label>
+                    <Input
+                      id="smtpUsername"
+                      type="email"
+                      placeholder="your-email@domain.com"
+                      value={settings.smtpUsername}
+                      onChange={(e) => handleSettingChange('smtpUsername', e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="smtpPassword">SMTP Password</Label>
+                    <Input
+                      id="smtpPassword"
+                      type="password"
+                      placeholder="••••••••"
+                      value={settings.smtpPassword}
+                      onChange={(e) => handleSettingChange('smtpPassword', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                <Button variant="outline">Test Email Configuration</Button>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="storage" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Storage Settings</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <Label htmlFor="maxFileSize">Maximum File Size (MB)</Label>
+                  <Input
+                    id="maxFileSize"
+                    type="number"
+                    value={settings.maxFileSize}
+                    onChange={(e) => handleSettingChange('maxFileSize', e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="allowedFileTypes">Allowed File Types</Label>
+                  <Input
+                    id="allowedFileTypes"
+                    placeholder="jpg,png,gif,pdf,doc,docx"
+                    value={settings.allowedFileTypes}
+                    onChange={(e) => handleSettingChange('allowedFileTypes', e.target.value)}
+                  />
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Comma-separated list of allowed file extensions
+                  </p>
+                </div>
+
+                <Separator />
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label>Enable Automatic Backups</Label>
+                    <p className="text-sm text-muted-foreground">
+                      Automatically backup data and files
+                    </p>
+                  </div>
+                  <Switch
+                    checked={settings.enableBackups}
+                    onCheckedChange={(checked) => handleSettingChange('enableBackups', checked)}
+                  />
+                </div>
+
+                <div>
+                  <Label>Backup Frequency</Label>
+                  <select 
+                    className="w-full mt-1 p-2 border rounded-md"
+                    value={settings.backupFrequency}
+                    onChange={(e) => handleSettingChange('backupFrequency', e.target.value)}
+                  >
+                    <option value="hourly">Hourly</option>
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                  </select>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="monitoring" className="space-y-6">
+            <SystemMonitoring />
+          </TabsContent>
         </Tabs>
+
+        <div className="flex justify-end space-x-2">
+          <Button variant="outline">Reset to Defaults</Button>
+          <Button onClick={handleSave}>Save Changes</Button>
+        </div>
       </div>
     </DashboardLayout>
   );

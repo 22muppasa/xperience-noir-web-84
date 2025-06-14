@@ -1,220 +1,165 @@
 
-import { useAuth } from '@/contexts/AuthContext';
+import React from 'react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
-import DashboardCard from '@/components/dashboard/DashboardCard';
+import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, BookOpen, MessageSquare, FileText, Image, Settings } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { 
+  Users, 
+  FileText, 
+  MessageSquare, 
+  Settings, 
+  BarChart3, 
+  Shield,
+  Activity,
+  Calendar
+} from 'lucide-react';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
 
+  const quickActions = [
+    {
+      title: 'Manage Users',
+      description: 'View and manage all user accounts',
+      icon: Users,
+      href: '/admin/customers',
+      color: 'bg-blue-500'
+    },
+    {
+      title: 'Review Kids Work',
+      description: 'Review and approve submitted work',
+      icon: FileText,
+      href: '/admin/kids-work',
+      color: 'bg-green-500'
+    },
+    {
+      title: 'Messages',
+      description: 'Manage user communications',
+      icon: MessageSquare,
+      href: '/admin/messages',
+      color: 'bg-purple-500'
+    },
+    {
+      title: 'System Settings',
+      description: 'Configure system preferences',
+      icon: Settings,
+      href: '/admin/settings',
+      color: 'bg-gray-500'
+    }
+  ];
+
+  const adminStats = [
+    {
+      title: 'Total Active Users',
+      value: '1,247',
+      change: '+12%',
+      icon: Users,
+      trend: 'up'
+    },
+    {
+      title: 'Pending Reviews',
+      value: '23',
+      change: '-5%',
+      icon: FileText,
+      trend: 'down'
+    },
+    {
+      title: 'System Uptime',
+      value: '99.9%',
+      change: 'Excellent',
+      icon: Activity,
+      trend: 'stable'
+    },
+    {
+      title: 'Active Programs',
+      value: '8',
+      change: '+2 this month',
+      icon: Calendar,
+      trend: 'up'
+    }
+  ];
+
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-8">
         {/* Welcome Section */}
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Admin Dashboard</h1>
-          <p className="text-gray-600">Welcome back, Admin</p>
+        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6 text-white">
+          <h1 className="text-2xl md:text-3xl font-bold mb-2">
+            Welcome back, Admin!
+          </h1>
+          <p className="text-blue-100 mb-4">
+            Here's what's happening with your platform today.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            <Button variant="secondary" size="sm">
+              <Shield className="h-4 w-4 mr-2" />
+              System Health: Good
+            </Button>
+            <Button variant="secondary" size="sm">
+              <BarChart3 className="h-4 w-4 mr-2" />
+              View Analytics
+            </Button>
+          </div>
         </div>
 
-        {/* Analytics Overview */}
+        {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <DashboardCard
-            title="Total Customers"
-            value="24"
-            description="+2 from last month"
-            icon={Users}
-            trend={{ value: "+8.3% from last month", positive: true }}
-          />
-          <DashboardCard
-            title="Active Programs"
-            value="8"
-            description="5 starting this month"
-            icon={BookOpen}
-          />
-          <DashboardCard
-            title="Total Enrollments"
-            value="45"
-            description="+12 this week"
-            icon={FileText}
-            trend={{ value: "+15.2% from last week", positive: true }}
-          />
-          <DashboardCard
-            title="Unread Messages"
-            value="7"
-            description="3 urgent"
-            icon={MessageSquare}
-          />
+          {adminStats.map((stat, index) => (
+            <Card key={index}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+                <stat.icon className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stat.value}</div>
+                <p className={`text-xs ${
+                  stat.trend === 'up' ? 'text-green-600' : 
+                  stat.trend === 'down' ? 'text-red-600' : 
+                  'text-muted-foreground'
+                }`}>
+                  {stat.change}
+                </p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
-        {/* Management Sections */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Customer Management */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Users className="mr-2 h-5 w-5" />
-                Customer Management
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button className="w-full" variant="outline">
-                View All Customers
-              </Button>
-              <Button className="w-full" variant="outline">
-                Customer Enrollments
-              </Button>
-              <Button className="w-full" variant="outline">
-                Customer Messages
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Program Management */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <BookOpen className="mr-2 h-5 w-5" />
-                Program Management
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button className="w-full" variant="outline">
-                Create New Program
-              </Button>
-              <Button className="w-full" variant="outline">
-                Manage Programs
-              </Button>
-              <Button className="w-full" variant="outline">
-                View Enrollments
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Kids Work Management */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Image className="mr-2 h-5 w-5" />
-                Kids Work
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button className="w-full" variant="outline">
-                Upload Work
-              </Button>
-              <Button className="w-full" variant="outline">
-                Manage Gallery
-              </Button>
-              <Button className="w-full" variant="outline">
-                View Comments
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Communication */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <MessageSquare className="mr-2 h-5 w-5" />
-                Communication
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button className="w-full" variant="outline">
-                Send Message
-              </Button>
-              <Button className="w-full" variant="outline">
-                Group Message
-              </Button>
-              <Button className="w-full" variant="outline">
-                Message Templates
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Contact Management */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <FileText className="mr-2 h-5 w-5" />
-                Contact Forms
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button className="w-full" variant="outline">
-                View Submissions
-              </Button>
-              <Button className="w-full" variant="outline">
-                Pending Responses
-              </Button>
-              <Button className="w-full" variant="outline">
-                Archive
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Social Posts */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Settings className="mr-2 h-5 w-5" />
-                Social Hub
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button className="w-full" variant="outline">
-                Create Post
-              </Button>
-              <Button className="w-full" variant="outline">
-                Manage Posts
-              </Button>
-              <Button className="w-full" variant="outline">
-                Schedule Posts
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Recent Activity */}
+        {/* Quick Actions */}
         <Card>
           <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
+            <CardTitle>Quick Actions</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <div>
-                    <p className="text-sm font-medium">New customer registration: Sarah Johnson</p>
-                    <p className="text-xs text-gray-500">15 minutes ago</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {quickActions.map((action, index) => (
+                <Button
+                  key={index}
+                  variant="outline"
+                  className="h-auto p-4 flex flex-col items-start space-y-2"
+                  onClick={() => window.location.href = action.href}
+                >
+                  <div className={`p-2 rounded-lg ${action.color} text-white`}>
+                    <action.icon className="h-5 w-5" />
                   </div>
-                </div>
-                <Button size="sm" variant="outline">View</Button>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <div>
-                    <p className="text-sm font-medium">Program enrollment: Summer Art Camp</p>
-                    <p className="text-xs text-gray-500">1 hour ago</p>
+                  <div className="text-left">
+                    <h3 className="font-semibold text-sm">{action.title}</h3>
+                    <p className="text-xs text-muted-foreground">{action.description}</p>
                   </div>
-                </div>
-                <Button size="sm" variant="outline">View</Button>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                  <div>
-                    <p className="text-sm font-medium">New contact form submission</p>
-                    <p className="text-xs text-gray-500">2 hours ago</p>
-                  </div>
-                </div>
-                <Button size="sm" variant="outline">Respond</Button>
-              </div>
+                </Button>
+              ))}
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Analytics Dashboard */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Analytics Overview</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <AnalyticsDashboard />
           </CardContent>
         </Card>
       </div>

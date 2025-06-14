@@ -13,10 +13,15 @@ import SocialHub from "./pages/SocialHub";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import NotFound from "./pages/NotFound";
+import Auth from "./pages/Auth";
+import CustomerDashboard from "./pages/CustomerDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import Loader from "./components/ui/Loader";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
 
@@ -35,34 +40,105 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          {loading ? (
-            <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black z-50">
-              <Loader />
-            </div>
-          ) : (
-            <BrowserRouter>
-              <div className="flex flex-col min-h-screen transition-colors duration-300">
-                <Navbar />
-                <div className="flex-grow pt-16 w-full"> {/* Adjusted padding and made full width */}
+        <AuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            {loading ? (
+              <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black z-50">
+                <Loader />
+              </div>
+            ) : (
+              <BrowserRouter>
+                <div className="flex flex-col min-h-screen transition-colors duration-300">
                   <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/programs" element={<Programs />} />
-                    <Route path="/consulting" element={<Consulting />} />
-                    <Route path="/get-involved" element={<GetInvolved />} />
-                    <Route path="/social-hub" element={<SocialHub />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/contact" element={<Contact />} />
+                    {/* Public routes */}
+                    <Route path="/" element={
+                      <>
+                        <Navbar />
+                        <div className="flex-grow pt-16 w-full">
+                          <Index />
+                        </div>
+                        <Footer />
+                      </>
+                    } />
+                    <Route path="/programs" element={
+                      <>
+                        <Navbar />
+                        <div className="flex-grow pt-16 w-full">
+                          <Programs />
+                        </div>
+                        <Footer />
+                      </>
+                    } />
+                    <Route path="/consulting" element={
+                      <>
+                        <Navbar />
+                        <div className="flex-grow pt-16 w-full">
+                          <Consulting />
+                        </div>
+                        <Footer />
+                      </>
+                    } />
+                    <Route path="/get-involved" element={
+                      <>
+                        <Navbar />
+                        <div className="flex-grow pt-16 w-full">
+                          <GetInvolved />
+                        </div>
+                        <Footer />
+                      </>
+                    } />
+                    <Route path="/social-hub" element={
+                      <>
+                        <Navbar />
+                        <div className="flex-grow pt-16 w-full">
+                          <SocialHub />
+                        </div>
+                        <Footer />
+                      </>
+                    } />
+                    <Route path="/about" element={
+                      <>
+                        <Navbar />
+                        <div className="flex-grow pt-16 w-full">
+                          <About />
+                        </div>
+                        <Footer />
+                      </>
+                    } />
+                    <Route path="/contact" element={
+                      <>
+                        <Navbar />
+                        <div className="flex-grow pt-16 w-full">
+                          <Contact />
+                        </div>
+                        <Footer />
+                      </>
+                    } />
+                    
+                    {/* Auth route */}
+                    <Route path="/auth" element={<Auth />} />
+                    
+                    {/* Protected routes */}
+                    <Route path="/dashboard" element={
+                      <ProtectedRoute requiredRole="customer">
+                        <CustomerDashboard />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/admin" element={
+                      <ProtectedRoute requiredRole="admin">
+                        <AdminDashboard />
+                      </ProtectedRoute>
+                    } />
+                    
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </div>
-                <Footer />
-              </div>
-            </BrowserRouter>
-          )}
-        </TooltipProvider>
+              </BrowserRouter>
+            )}
+          </TooltipProvider>
+        </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );

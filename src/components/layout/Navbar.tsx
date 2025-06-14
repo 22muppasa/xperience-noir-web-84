@@ -2,7 +2,9 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Button } from '@/components/ui/button';
 import Logo from '@/components/layout/Logo';
 import MobileMenu from '@/components/layout/MobileMenu';
 import DesktopNav from '@/components/layout/DesktopNav';
@@ -13,6 +15,7 @@ const Navbar = () => {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
   const { isDarkMode } = useTheme();
+  const { user, userRole } = useAuth();
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -73,7 +76,29 @@ const Navbar = () => {
           <Logo textColor={getTextColor()} />
           
           {/* Desktop Navigation */}
-          <DesktopNav navLinks={navLinks} textColor={getTextColor()} />
+          <div className="hidden md:flex items-center space-x-4 lg:space-x-8">
+            <DesktopNav navLinks={navLinks} textColor={getTextColor()} />
+            
+            {/* Auth Button */}
+            {user ? (
+              <Button 
+                onClick={() => {
+                  const dashboardPath = userRole === 'admin' ? '/admin' : '/dashboard';
+                  window.location.href = dashboardPath;
+                }}
+                className="ml-4"
+              >
+                Dashboard
+              </Button>
+            ) : (
+              <Button 
+                onClick={() => window.location.href = '/auth'}
+                className="ml-4"
+              >
+                Sign In
+              </Button>
+            )}
+          </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden h-full flex items-center">

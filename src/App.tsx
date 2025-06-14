@@ -17,6 +17,10 @@ import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import Loader from "./components/ui/Loader";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { AuthProvider } from "./contexts/AuthContext";
+import Auth from "./pages/Auth";
+import Dashboard from "./pages/Dashboard";
+import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
@@ -34,36 +38,41 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          {loading ? (
-            <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black z-50">
-              <Loader />
-            </div>
-          ) : (
-            <BrowserRouter>
-              <div className="flex flex-col min-h-screen transition-colors duration-300">
-                <Navbar />
-                <div className="flex-grow pt-16 w-full"> {/* Adjusted padding and made full width */}
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/programs" element={<Programs />} />
-                    <Route path="/consulting" element={<Consulting />} />
-                    <Route path="/get-involved" element={<GetInvolved />} />
-                    <Route path="/social-hub" element={<SocialHub />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </div>
-                <Footer />
+      <AuthProvider>
+        <ThemeProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            {loading ? (
+              <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black z-50">
+                <Loader />
               </div>
-            </BrowserRouter>
-          )}
-        </TooltipProvider>
-      </ThemeProvider>
+            ) : (
+              <BrowserRouter>
+                <div className="flex flex-col min-h-screen transition-colors duration-300">
+                  <Navbar />
+                  <div className="flex-grow pt-16 w-full">
+                    <Routes>
+                      <Route path="/" element={<Index />} />
+                      <Route path="/programs" element={<Programs />} />
+                      <Route path="/consulting" element={<Consulting />} />
+                      <Route path="/get-involved" element={<GetInvolved />} />
+                      <Route path="/social-hub" element={<SocialHub />} />
+                      <Route path="/about" element={<About />} />
+                      <Route path="/contact" element={<Contact />} />
+                      <Route path="/auth" element={<Auth />} />
+                      <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/admin" element={<Admin />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </div>
+                  <Footer />
+                </div>
+              </BrowserRouter>
+            )}
+          </TooltipProvider>
+        </ThemeProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 };

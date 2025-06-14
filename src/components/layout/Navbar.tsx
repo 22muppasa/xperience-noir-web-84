@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -6,6 +5,8 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import Logo from '@/components/layout/Logo';
 import MobileMenu from '@/components/layout/MobileMenu';
 import DesktopNav from '@/components/layout/DesktopNav';
+import { useAuth } from '@/contexts/AuthContext';
+import { NavLink } from 'react-router-dom';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,6 +15,7 @@ const Navbar = () => {
   const isHomePage = location.pathname === '/';
   const { isDarkMode } = useTheme();
   const isMobile = useIsMobile();
+  const { profile, logout, loading } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -74,6 +76,28 @@ const Navbar = () => {
           
           {/* Desktop Navigation */}
           <DesktopNav navLinks={navLinks} textColor={getTextColor()} />
+
+          {/* Profile/Logout or Auth link on right */}
+          <div className="flex items-center gap-4">
+            {!loading && profile && (
+              <>
+                {profile.role === "admin" ? (
+                  <NavLink to="/admin" className="font-semibold">Admin</NavLink>
+                ) : (
+                  <NavLink to="/dashboard" className="font-semibold">Dashboard</NavLink>
+                )}
+                <button 
+                  onClick={logout}
+                  className={`text-xs px-2 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors ${getTextColor()}`}
+                >
+                  Logout
+                </button>
+              </>
+            )}
+            {!loading && !profile && (
+              <NavLink to="/auth" className={`font-semibold ${getTextColor()}`}>Login</NavLink>
+            )}
+          </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden h-full flex items-center">

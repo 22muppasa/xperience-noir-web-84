@@ -26,29 +26,29 @@ const queryClient = new QueryClient();
 
 const App = () => {
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     // Display loader for 6 seconds
     const timer = setTimeout(() => {
       setLoading(false);
     }, 6000);
-    
+
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <ThemeProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            {loading ? (
-              <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black z-50">
-                <Loader />
-              </div>
-            ) : (
-              <BrowserRouter>
+      <ThemeProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          {loading ? (
+            <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black z-50">
+              <Loader />
+            </div>
+          ) : (
+            <BrowserRouter>
+              <AuthProvider>
                 <div className="flex flex-col min-h-screen transition-colors duration-300">
                   <Navbar />
                   <div className="flex-grow pt-16 w-full">
@@ -68,13 +68,14 @@ const App = () => {
                   </div>
                   <Footer />
                 </div>
-              </BrowserRouter>
-            )}
-          </TooltipProvider>
-        </ThemeProvider>
-      </AuthProvider>
+              </AuthProvider>
+            </BrowserRouter>
+          )}
+        </TooltipProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 };
 
 export default App;
+

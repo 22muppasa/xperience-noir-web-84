@@ -1,4 +1,3 @@
-
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import ContactForm from '@/components/ui/ContactForm';
@@ -22,12 +21,12 @@ const Contact = () => {
       </section>
       
       {/* Contact Information */}
-      <section className="py-20 px-4 md:px-6">
+      <section className="py-20 px-4 md:px-6 bg-white text-black">
         <div className="container mx-auto max-w-6xl">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
             <div className="lg:col-span-2">
               <h2 className="text-3xl md:text-4xl font-medium mb-6">Contact Information</h2>
-              <p className="text-lg text-gray-600 mb-8">
+              <p className="text-lg text-gray-700 mb-8">
                 Reach out using any of the methods below, or fill out the contact form and we'll get back to you as soon as possible.
               </p>
               
@@ -39,9 +38,9 @@ const Contact = () => {
                   <div>
                     <h3 className="font-medium mb-1">Email</h3>
                     <p className="text-gray-600 mb-1">General Inquiries:</p>
-                    <a href="mailto:hello@xperience.com" className="text-black hover:underline">hello@xperience.com</a>
+                    <a href="mailto:hello@xperience.com" className="text-blue-600 hover:underline">hello@xperience.com</a>
                     <p className="text-gray-600 mt-2 mb-1">Support:</p>
-                    <a href="mailto:support@xperience.com" className="text-black hover:underline">support@xperience.com</a>
+                    <a href="mailto:support@xperience.com" className="text-blue-600 hover:underline">support@xperience.com</a>
                   </div>
                 </div>
                 
@@ -52,9 +51,9 @@ const Contact = () => {
                   <div>
                     <h3 className="font-medium mb-1">Phone</h3>
                     <p className="text-gray-600 mb-1">Main Office:</p>
-                    <a href="tel:+18885551234" className="text-black hover:underline">(888) 555-1234</a>
+                    <a href="tel:+18885551234" className="text-blue-600 hover:underline">(888) 555-1234</a>
                     <p className="text-gray-600 mt-2 mb-1">Support:</p>
-                    <a href="tel:+18885555678" className="text-black hover:underline">(888) 555-5678</a>
+                    <a href="tel:+18885555678" className="text-blue-600 hover:underline">(888) 555-5678</a>
                   </div>
                 </div>
                 
@@ -64,9 +63,9 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-medium mb-1">Location</h3>
-                    <p className="text-gray-600">123 Tech Way</p>
-                    <p className="text-gray-600">Suite 400</p>
-                    <p className="text-gray-600">San Francisco, CA 94107</p>
+                    <p className="text-gray-700">123 Tech Way</p>
+                    <p className="text-gray-700">Suite 400</p>
+                    <p className="text-gray-700">San Francisco, CA 94107</p>
                   </div>
                 </div>
                 
@@ -76,7 +75,7 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-medium mb-1">Schedule a Call</h3>
-                    <p className="text-gray-600 mb-3">
+                    <p className="text-gray-700 mb-3">
                       Book a 30-minute consultation with a member of our team to discuss your needs.
                     </p>
                     <Button asChild>
@@ -121,8 +120,8 @@ const Contact = () => {
             </div>
             
             <div className="lg:col-span-3">
-              <div className="bg-white border rounded-lg p-8">
-                <h2 className="text-2xl font-medium mb-6">Send Us a Message</h2>
+              <div className="bg-gray-50 border rounded-lg p-8">
+                <h2 className="text-2xl font-medium mb-6 text-black">Send Us a Message</h2>
                 <ContactForm />
               </div>
             </div>
@@ -131,53 +130,53 @@ const Contact = () => {
       </section>
       
       {/* Map */}
-      <section className="py-12 px-4 md:px-6">
+      <section className="py-12 px-4 md:px-6 bg-gray-100 text-black">
         <div className="container mx-auto max-w-6xl">
           <h2 className="text-2xl font-medium mb-6">Find Us</h2>
-          <div className="aspect-[16/9] w-full bg-gray-200 rounded-lg overflow-hidden">
+          <div className="aspect-[16/9] w-full bg-white rounded-lg overflow-hidden border">
             {/* This is a placeholder for a map. In a real app, you would embed a Google Maps or other map service here */}
             <div className="w-full h-full flex items-center justify-center">
-              <p className="text-gray-500">Map Embed Placeholder</p>
+              <p className="text-gray-600">Map Embed Placeholder</p>
             </div>
           </div>
         </div>
       </section>
       
       {/* FAQ Section */}
-      <section className="py-20 px-4 md:px-6 bg-gray-50">
+      <section className="py-20 px-4 md:px-6 bg-gray-50 text-black">
         <div className="container mx-auto max-w-4xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-medium mb-6">Frequently Asked Questions</h2>
-            <p className="text-lg text-gray-600">
+            <p className="text-lg text-gray-700">
               Find quick answers to common questions about our programs and services.
             </p>
           </div>
           
           <div className="space-y-6">
             <div className="bg-white border rounded-lg p-6">
-              <h3 className="text-xl font-medium mb-2">What are your business hours?</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-medium mb-2 text-black">What are your business hours?</h3>
+              <p className="text-gray-700">
                 Our office is open Monday through Friday from 9:00 AM to 5:00 PM Pacific Time. Our support team is available via email 24/7.
               </p>
             </div>
             
             <div className="bg-white border rounded-lg p-6">
-              <h3 className="text-xl font-medium mb-2">How quickly will you respond to my inquiry?</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-medium mb-2 text-black">How quickly will you respond to my inquiry?</h3>
+              <p className="text-gray-700">
                 We aim to respond to all inquiries within 24 business hours. For urgent matters, please call our main office.
               </p>
             </div>
             
             <div className="bg-white border rounded-lg p-6">
-              <h3 className="text-xl font-medium mb-2">Do you offer virtual consultations?</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-medium mb-2 text-black">Do you offer virtual consultations?</h3>
+              <p className="text-gray-700">
                 Yes, we offer both in-person and virtual consultations. You can schedule a virtual meeting through our online booking system.
               </p>
             </div>
             
             <div className="bg-white border rounded-lg p-6">
-              <h3 className="text-xl font-medium mb-2">Can I visit your office to learn more about your programs?</h3>
-              <p className="text-gray-600">
+              <h3 className="text-xl font-medium mb-2 text-black">Can I visit your office to learn more about your programs?</h3>
+              <p className="text-gray-700">
                 Absolutely! We welcome visitors during our regular business hours. It's recommended to schedule an appointment in advance to ensure someone is available to meet with you.
               </p>
             </div>

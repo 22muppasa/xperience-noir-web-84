@@ -37,7 +37,9 @@ const Index = () => {
             </Link>
             
             <Link to="/auth">
-              <AnimatedButton variant="outline" className="px-8 py-4 text-lg border-black text-black hover:bg-black hover:text-white">
+              <AnimatedButton className="px-8 py-4 text-lg border border-black bg-transparent hover:bg-black hover:text-white" 
+                sparkleColor={isDarkMode ? "white" : "black"} 
+                textColor={isDarkMode ? "white" : "black"}>
                 Access Dashboard
                 <Users className="ml-2 h-5 w-5" />
               </AnimatedButton>
@@ -131,7 +133,9 @@ const Index = () => {
             </Link>
             
             <Link to="/contact">
-              <AnimatedButton variant="outline" className="px-8 py-4 text-lg border-black text-black hover:bg-black hover:text-white">
+              <AnimatedButton className="px-8 py-4 text-lg border border-black bg-transparent hover:bg-black hover:text-white"
+                sparkleColor={isDarkMode ? "white" : "black"} 
+                textColor={isDarkMode ? "white" : "black"}>
                 Contact Us
               </AnimatedButton>
             </Link>

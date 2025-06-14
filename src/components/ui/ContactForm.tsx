@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 const ContactForm = () => {
   const { toast } = useToast();
@@ -21,10 +22,21 @@ const ContactForm = () => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate API call
     try {
-      // In a real app, you would send the form data to your backend here
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { error } = await supabase
+        .from('contact_submissions')
+        .insert([
+          {
+            name: formData.name,
+            email: formData.email,
+            subject: formData.subject,
+            message: formData.message,
+          }
+        ]);
+
+      if (error) {
+        throw error;
+      }
       
       toast({
         title: "Message sent successfully",
@@ -39,6 +51,7 @@ const ContactForm = () => {
         message: '',
       });
     } catch (error) {
+      console.error('Error submitting contact form:', error);
       toast({
         title: "Error sending message",
         description: "Please try again later.",

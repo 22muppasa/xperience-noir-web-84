@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import DashboardCard from './DashboardCard';
-import { BookOpen, Image, MessageSquare, Bell, TrendingUp } from 'lucide-react';
+import { BookOpen, MessageSquare, Bell, TrendingUp } from 'lucide-react';
 
 const StatsOverview = () => {
   const { user } = useAuth();
@@ -13,18 +13,14 @@ const StatsOverview = () => {
     queryFn: async () => {
       if (!user?.id) return null;
 
-      const [enrollmentsResult, kidsWorkResult, messagesResult, notificationsResult] = await Promise.all([
+      const [enrollmentsResult, messagesResult, notificationsResult] = await Promise.all([
         supabase
           .from('enrollments')
           .select('id, status')
           .eq('customer_id', user.id),
         supabase
-          .from('kids_work')
-          .select('id')
-          .eq('parent_customer_id', user.id),
-        supabase
           .from('messages')
-          .select('id, status')
+          .select('id, status, recipient_id')
           .or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`),
         supabase
           .from('notifications')
@@ -33,7 +29,6 @@ const StatsOverview = () => {
       ]);
 
       const enrollments = enrollmentsResult.data || [];
-      const kidsWork = kidsWorkResult.data || [];
       const messages = messagesResult.data || [];
       const notifications = notificationsResult.data || [];
 
@@ -42,10 +37,9 @@ const StatsOverview = () => {
           total: enrollments.length,
           active: enrollments.filter(e => e.status === 'active').length
         },
-        kidsWork: kidsWork.length,
         messages: {
           total: messages.length,
-          unread: messages.filter(m => m.status === 'unread').length
+          unread: messages.filter(m => m.status === 'unread' && m.recipient_id === user.id).length
         },
         notifications: {
           total: notifications.length,
@@ -81,14 +75,6 @@ const StatsOverview = () => {
       />
       
       <DashboardCard
-        title="Kids Work"
-        value={stats.kidsWork}
-        description="Uploaded projects"
-        icon={<Image className="h-5 w-5" />}
-        trend={{ value: 8, isPositive: true }}
-      />
-      
-      <DashboardCard
         title="Messages"
         value={stats.messages.unread}
         description={`${stats.messages.total} total messages`}
@@ -100,6 +86,13 @@ const StatsOverview = () => {
         value={stats.notifications.unread}
         description={`${stats.notifications.total} total notifications`}
         icon={<Bell className="h-5 w-5" />}
+      />
+
+      <DashboardCard
+        title="Progress"
+        value="Growing!"
+        description="Keep up the great work"
+        icon={<TrendingUp className="h-5 w-5" />}
       />
     </div>
   );

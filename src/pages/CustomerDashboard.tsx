@@ -1,3 +1,4 @@
+
 import { useAuth } from '@/contexts/AuthContext';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import WelcomeSection from '@/components/dashboard/WelcomeSection';
@@ -6,8 +7,7 @@ import ActivityTimeline from '@/components/dashboard/ActivityTimeline';
 import QuickActionCard from '@/components/dashboard/QuickActionCard';
 import ProgramsGrid from '@/components/programs/ProgramsGrid';
 import MessageComposer from '@/components/messaging/MessageComposer';
-import KidsWorkUpload from '@/components/file-upload/KidsWorkUpload';
-import { BookOpen, Image, MessageSquare, User, Calendar, TrendingUp } from 'lucide-react';
+import { BookOpen, MessageSquare, User, Calendar, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useQuery } from '@tanstack/react-query';
@@ -40,19 +40,51 @@ const CustomerDashboard = () => {
     enabled: !!user?.id
   });
 
+  // Get real messages
+  const { data: messages } = useQuery({
+    queryKey: ['user-messages', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      const { data, error } = await supabase
+        .from('messages')
+        .select('*')
+        .or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`)
+        .order('created_at', { ascending: false })
+        .limit(10);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id
+  });
+
+  // Get user enrollments
+  const { data: enrollments } = useQuery({
+    queryKey: ['user-enrollments', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      const { data, error } = await supabase
+        .from('enrollments')
+        .select(`
+          id,
+          child_name,
+          status,
+          enrolled_at,
+          programs(title, start_date)
+        `)
+        .eq('customer_id', user.id)
+        .order('enrolled_at', { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!user?.id
+  });
+
   const quickActions = [
     {
       title: "Browse Programs",
       description: "Discover new learning opportunities and creative workshops",
       icon: BookOpen,
       onClick: () => setActiveSection('programs')
-    },
-    {
-      title: "Upload Kids Work",
-      description: "Share your child's latest creative projects",
-      icon: Image,
-      onClick: () => {},
-      isComponent: true
     },
     {
       title: "Send Message",
@@ -109,16 +141,40 @@ const CustomerDashboard = () => {
               </button>
             </div>
           </div>
-          <Card className="bg-white border border-gray-200 rounded-xl shadow-none">
-            <CardContent className="p-12 text-center">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <MessageSquare className="h-8 w-8 text-black" />
-              </div>
-              <h3 className="text-xl font-semibold text-black mb-2">No Messages Yet</h3>
-              <p className="text-black mb-6 max-w-md mx-auto">Start a conversation with an administrator to get help with programs or general questions.</p>
-              <MessageComposer />
-            </CardContent>
-          </Card>
+          
+          {messages && messages.length > 0 ? (
+            <div className="space-y-4">
+              {messages.map((message) => (
+                <Card key={message.id} className="bg-white border border-gray-200 rounded-xl shadow-none hover:shadow-sm transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg text-black mb-2">{message.subject}</h3>
+                        <p className="text-sm text-black mb-2">
+                          {new Date(message.created_at).toLocaleDateString()}
+                        </p>
+                        <p className="text-black line-clamp-3">{message.content}</p>
+                      </div>
+                      {message.status === 'unread' && (
+                        <span className="bg-black text-white text-xs px-2 py-1 rounded-full font-medium">New</span>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card className="bg-white border border-gray-200 rounded-xl shadow-none">
+              <CardContent className="p-12 text-center">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <MessageSquare className="h-8 w-8 text-black" />
+                </div>
+                <h3 className="text-xl font-semibold text-black mb-2">No New Messages</h3>
+                <p className="text-black mb-6 max-w-md mx-auto">Start a conversation with an administrator to get help with programs or general questions.</p>
+                <MessageComposer />
+              </CardContent>
+            </Card>
+          )}
         </div>
       </DashboardLayout>
     );
@@ -160,11 +216,7 @@ const CustomerDashboard = () => {
             <div className="space-y-4">
               {quickActions.map((action, index) => (
                 <div key={action.title} className="animate-fade-in" style={{ animationDelay: `${index * 50}ms` }}>
-                  {action.title === "Upload Kids Work" ? (
-                    <KidsWorkUpload onUploadComplete={() => window.location.reload()} />
-                  ) : (
-                    <QuickActionCard {...action} />
-                  )}
+                  <QuickActionCard {...action} />
                 </div>
               ))}
             </div>
@@ -204,19 +256,39 @@ const CustomerDashboard = () => {
             <CardContent className="p-6">
               <div className="flex items-center space-x-3 mb-4">
                 <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <TrendingUp className="h-5 w-5 text-black" />
+                  <BookOpen className="h-5 w-5 text-black" />
                 </div>
-                <h3 className="font-semibold text-black">Learning Progress</h3>
+                <h3 className="font-semibold text-black">My Programs</h3>
               </div>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-black">Growing!</span>
-                  <div className="w-12 h-2 bg-gray-200 rounded-full overflow-hidden">
-                    <div className="w-8 h-full bg-black rounded-full"></div>
-                  </div>
+              {enrollments && enrollments.length > 0 ? (
+                <div className="space-y-3">
+                  {enrollments.slice(0, 2).map((enrollment: any) => (
+                    <div key={enrollment.id} className="p-3 bg-gray-50 rounded-lg">
+                      <p className="font-medium text-black text-sm">{enrollment.programs?.title}</p>
+                      <p className="text-xs text-black mt-1">Child: {enrollment.child_name}</p>
+                      <p className="text-xs text-black mt-1 capitalize">Status: {enrollment.status}</p>
+                    </div>
+                  ))}
+                  {enrollments.length > 2 && (
+                    <button
+                      onClick={() => setActiveSection('programs')}
+                      className="text-xs text-black hover:underline"
+                    >
+                      View all {enrollments.length} enrollments →
+                    </button>
+                  )}
                 </div>
-                <p className="text-sm text-black">Keep up the great work with enrollments and activities!</p>
-              </div>
+              ) : (
+                <div>
+                  <p className="text-sm text-black mb-3">No programs enrolled yet</p>
+                  <button
+                    onClick={() => setActiveSection('programs')}
+                    className="w-full px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium text-sm"
+                  >
+                    Browse Programs →
+                  </button>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -224,21 +296,41 @@ const CustomerDashboard = () => {
             <CardContent className="p-6">
               <div className="flex items-center space-x-3 mb-4">
                 <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <BookOpen className="h-5 w-5 text-black" />
+                  <MessageSquare className="h-5 w-5 text-black" />
                 </div>
-                <h3 className="font-semibold text-black">Get Started</h3>
+                <h3 className="font-semibold text-black">Recent Messages</h3>
               </div>
-              <div className="space-y-3">
-                <p className="text-sm text-black">
-                  Ready to begin your learning journey? Explore our programs and find the perfect fit.
-                </p>
-                <button
-                  onClick={() => setActiveSection('programs')}
-                  className="w-full px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium text-sm"
-                >
-                  Browse Programs →
-                </button>
-              </div>
+              {messages && messages.length > 0 ? (
+                <div className="space-y-3">
+                  {messages.slice(0, 2).map((message: any) => (
+                    <div key={message.id} className="p-3 bg-gray-50 rounded-lg">
+                      <p className="font-medium text-black text-sm line-clamp-1">{message.subject}</p>
+                      <p className="text-xs text-black mt-1">{new Date(message.created_at).toLocaleDateString()}</p>
+                      {message.status === 'unread' && (
+                        <span className="inline-block mt-1 text-xs bg-black text-white px-2 py-0.5 rounded-full">New</span>
+                      )}
+                    </div>
+                  ))}
+                  {messages.length > 2 && (
+                    <button
+                      onClick={() => setActiveSection('messages')}
+                      className="text-xs text-black hover:underline"
+                    >
+                      View all messages →
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  <p className="text-sm text-black mb-3">No new messages</p>
+                  <button
+                    onClick={() => setActiveSection('messages')}
+                    className="w-full px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium text-sm"
+                  >
+                    Send Message →
+                  </button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

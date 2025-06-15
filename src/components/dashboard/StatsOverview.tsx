@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import DashboardCard from './DashboardCard';
-import { BookOpen, Image, MessageSquare, Bell } from 'lucide-react';
+import { BookOpen, Image, MessageSquare, Bell, TrendingUp } from 'lucide-react';
 
 const StatsOverview = () => {
   const { user } = useAuth();
@@ -60,7 +60,7 @@ const StatsOverview = () => {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="animate-pulse bg-gray-200 rounded-xl h-32"></div>
+          <div key={i} className="animate-pulse bg-white rounded-xl h-32 border border-gray-200"></div>
         ))}
       </div>
     );
@@ -78,7 +78,6 @@ const StatsOverview = () => {
         description={`${stats.enrollments.total} total enrollments`}
         icon={<BookOpen className="h-5 w-5" />}
         trend={{ value: 12, isPositive: true }}
-        gradient="bg-gradient-to-r from-blue-500 to-blue-600"
       />
       
       <DashboardCard
@@ -87,7 +86,6 @@ const StatsOverview = () => {
         description="Uploaded projects"
         icon={<Image className="h-5 w-5" />}
         trend={{ value: 8, isPositive: true }}
-        gradient="bg-gradient-to-r from-green-500 to-green-600"
       />
       
       <DashboardCard
@@ -95,7 +93,6 @@ const StatsOverview = () => {
         value={stats.messages.unread}
         description={`${stats.messages.total} total messages`}
         icon={<MessageSquare className="h-5 w-5" />}
-        gradient="bg-gradient-to-r from-purple-500 to-purple-600"
       />
       
       <DashboardCard
@@ -103,7 +100,6 @@ const StatsOverview = () => {
         value={stats.notifications.unread}
         description={`${stats.notifications.total} total notifications`}
         icon={<Bell className="h-5 w-5" />}
-        gradient="bg-gradient-to-r from-orange-500 to-orange-600"
       />
     </div>
   );

@@ -1,4 +1,5 @@
-import { useState } from 'react';
+
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -10,7 +11,7 @@ import { Upload, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import WorkTagManager from '@/components/tags/WorkTagManager';
 
-const AdminKidsWorkUpload = () => {
+const EnhancedKidsWorkUpload = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedChild, setSelectedChild] = useState('');
   const [title, setTitle] = useState('');
@@ -45,7 +46,6 @@ const AdminKidsWorkUpload = () => {
         throw error;
       }
 
-      // Transform the data to ensure proper typing
       return data.map(enrollment => ({
         id: enrollment.id,
         child_name: enrollment.child_name,
@@ -133,7 +133,7 @@ const AdminKidsWorkUpload = () => {
 
       toast({
         title: "Upload Successful",
-        description: `${selectedFiles.length} file(s) uploaded successfully with enhanced features.`,
+        description: `${selectedFiles.length} file(s) uploaded successfully with tags.`,
       });
 
       // Reset form
@@ -163,7 +163,7 @@ const AdminKidsWorkUpload = () => {
       <CardHeader>
         <CardTitle className="text-black">Upload Kids' Work</CardTitle>
         <CardDescription className="text-black">
-          Upload artwork, projects, or other work from children with enhanced tagging and organization.
+          Upload artwork, projects, or other work from children in the programs with enhanced tagging.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -268,4 +268,4 @@ const AdminKidsWorkUpload = () => {
   );
 };
 
-export default AdminKidsWorkUpload;
+export default EnhancedKidsWorkUpload;

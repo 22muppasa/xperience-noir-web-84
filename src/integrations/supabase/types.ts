@@ -9,6 +9,83 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          id: string
+          new_values: Json | null
+          old_values: Json | null
+          record_id: string
+          table_name: string
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id: string
+          table_name: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string
+          table_name?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      child_milestones: {
+        Row: {
+          achieved_date: string
+          category: string
+          child_id: string
+          created_at: string
+          description: string | null
+          id: string
+          notes: string | null
+          recorded_by: string
+          title: string
+        }
+        Insert: {
+          achieved_date: string
+          category: string
+          child_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          notes?: string | null
+          recorded_by: string
+          title: string
+        }
+        Update: {
+          achieved_date?: string
+          category?: string
+          child_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          notes?: string | null
+          recorded_by?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "child_milestones_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       children: {
         Row: {
           created_at: string
@@ -80,6 +157,56 @@ export type Database = {
           subject?: string
         }
         Relationships: []
+      }
+      emergency_contacts: {
+        Row: {
+          can_pickup: boolean
+          child_id: string
+          created_at: string
+          email: string | null
+          id: string
+          is_primary: boolean
+          name: string
+          notes: string | null
+          phone: string
+          relationship: string
+          updated_at: string
+        }
+        Insert: {
+          can_pickup?: boolean
+          child_id: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_primary?: boolean
+          name: string
+          notes?: string | null
+          phone: string
+          relationship: string
+          updated_at?: string
+        }
+        Update: {
+          can_pickup?: boolean
+          child_id?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_primary?: boolean
+          name?: string
+          notes?: string | null
+          phone?: string
+          relationship?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "emergency_contacts_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       enrollments: {
         Row: {
@@ -234,6 +361,39 @@ export type Database = {
           },
         ]
       }
+      kids_work_tags: {
+        Row: {
+          id: string
+          tag_id: string
+          work_id: string
+        }
+        Insert: {
+          id?: string
+          tag_id: string
+          work_id: string
+        }
+        Update: {
+          id?: string
+          tag_id?: string
+          work_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kids_work_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "work_tags"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "kids_work_tags_work_id_fkey"
+            columns: ["work_id"]
+            isOneToOne: false
+            referencedRelation: "kids_work"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           attachment_url: string | null
@@ -267,6 +427,39 @@ export type Database = {
           sender_id?: string | null
           status?: Database["public"]["Enums"]["message_status"] | null
           subject?: string
+        }
+        Relationships: []
+      }
+      notification_preferences: {
+        Row: {
+          created_at: string
+          digest_frequency: string
+          email_enabled: boolean
+          id: string
+          notification_type: string
+          push_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          digest_frequency?: string
+          email_enabled?: boolean
+          id?: string
+          notification_type: string
+          push_enabled?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          digest_frequency?: string
+          email_enabled?: boolean
+          id?: string
+          notification_type?: string
+          push_enabled?: boolean
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -498,6 +691,101 @@ export type Database = {
           storage_path?: string | null
           title?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      work_collection_items: {
+        Row: {
+          added_at: string
+          collection_id: string
+          id: string
+          work_id: string
+        }
+        Insert: {
+          added_at?: string
+          collection_id: string
+          id?: string
+          work_id: string
+        }
+        Update: {
+          added_at?: string
+          collection_id?: string
+          id?: string
+          work_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_collection_items_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "work_collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "work_collection_items_work_id_fkey"
+            columns: ["work_id"]
+            isOneToOne: false
+            referencedRelation: "kids_work"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_collections: {
+        Row: {
+          child_id: string
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          child_id: string
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          child_id?: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "work_collections_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      work_tags: {
+        Row: {
+          color: string | null
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          id?: string
+          name?: string
         }
         Relationships: []
       }

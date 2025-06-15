@@ -1,9 +1,10 @@
-
+import Navbar from '@/components/layout/Navbar';
 import SocialFeed from '@/components/ui/SocialFeed';
 
 const SocialHub = () => {
   return (
     <div className="flex flex-col min-h-screen">
+      <Navbar />
       {/* Hero Section */}
       <section className="py-12 md:py-20 px-4 md:px-6 bg-black text-white">
         <div className="container mx-auto max-w-6xl">

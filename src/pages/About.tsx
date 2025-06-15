@@ -1,5 +1,5 @@
-
 import React from 'react';
+import Navbar from '@/components/layout/Navbar';
 import { useTheme } from '@/contexts/ThemeContext';
 import AboutHero from '@/components/about/AboutHero';
 import MissionVision from '@/components/about/MissionVision';
@@ -13,6 +13,7 @@ const About = () => {
   
   return (
     <div className={`flex flex-col min-h-screen ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}`}>
+      <Navbar />
       <AboutHero />
       <MissionVision />
       <CompanyTimeline />

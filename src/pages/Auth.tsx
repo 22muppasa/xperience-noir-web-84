@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Eye, EyeOff, Mail, Lock, User, AlertCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import Navbar from '@/components/layout/Navbar';
 
 const Auth = () => {
   const { signIn, signUp } = useAuth();
@@ -67,6 +67,7 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+      <Navbar />
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-block">

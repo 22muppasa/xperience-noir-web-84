@@ -44,11 +44,19 @@ const Auth = () => {
     setIsSubmitting(true);
 
     try {
+      console.log('Form submission started:', { isSignUp, email: formData.email });
+      
       if (isSignUp) {
-        await signUp(formData.email, formData.password, formData.firstName, formData.lastName);
+        console.log('Attempting signup...');
+        const result = await signUp(formData.email, formData.password, formData.firstName, formData.lastName);
+        console.log('Signup result:', result);
       } else {
-        await signIn(formData.email, formData.password);
+        console.log('Attempting signin...');
+        const result = await signIn(formData.email, formData.password);
+        console.log('Signin result:', result);
       }
+    } catch (error) {
+      console.error('Form submission error:', error);
     } finally {
       setIsSubmitting(false);
     }

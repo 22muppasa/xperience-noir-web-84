@@ -29,24 +29,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.id);
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Fetch user role
+          // Fetch user role with timeout to prevent blocking
           setTimeout(async () => {
             try {
-              const { data: profile } = await supabase
+              const { data: profile, error } = await supabase
                 .from('profiles')
                 .select('role')
                 .eq('id', session.user.id)
                 .single();
               
-              setUserRole(profile?.role || null);
+              if (error) {
+                console.error('Error fetching user role:', error);
+                // Default to customer role if profile doesn't exist yet
+                setUserRole('customer');
+              } else {
+                setUserRole(profile?.role || 'customer');
+              }
             } catch (error) {
               console.error('Error fetching user role:', error);
+              setUserRole('customer');
             }
-          }, 0);
+          }, 100);
         } else {
           setUserRole(null);
         }
@@ -69,35 +77,48 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const signIn = async (email: string, password: string) => {
     try {
+      setLoading(true);
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
       
       if (error) {
+        console.error('Sign in error:', error);
         toast({
           title: "Sign in failed",
           description: error.message,
           variant: "destructive",
         });
+      } else {
+        toast({
+          title: "Welcome back!",
+          description: "You have been signed in successfully.",
+        });
       }
       
       return { error };
     } catch (error: any) {
+      console.error('Unexpected sign in error:', error);
       toast({
         title: "Sign in failed",
         description: "An unexpected error occurred",
         variant: "destructive",
       });
       return { error };
+    } finally {
+      setLoading(false);
     }
   };
 
   const signUp = async (email: string, password: string, firstName: string, lastName: string) => {
     try {
+      setLoading(true);
       const redirectUrl = `${window.location.origin}/`;
       
-      const { error } = await supabase.auth.signUp({
+      console.log('Attempting signup for:', email);
+      
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -105,17 +126,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           data: {
             first_name: firstName,
             last_name: lastName,
+            role: 'customer' // Explicitly set role
           }
         }
       });
       
       if (error) {
+        console.error('Sign up error:', error);
         toast({
           title: "Sign up failed",
           description: error.message,
           variant: "destructive",
         });
-      } else {
+      } else if (data.user) {
+        console.log('User created successfully:', data.user.id);
         toast({
           title: "Account created",
           description: "Please check your email to verify your account.",
@@ -124,12 +148,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       return { error };
     } catch (error: any) {
+      console.error('Unexpected sign up error:', error);
       toast({
         title: "Sign up failed",
-        description: "An unexpected error occurred",
+        description: "An unexpected error occurred during signup",
         variant: "destructive",
       });
       return { error };
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -145,6 +172,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         description: "You have been signed out successfully.",
       });
     } catch (error: any) {
+      console.error('Sign out error:', error);
       toast({
         title: "Sign out failed",
         description: "An error occurred while signing out",

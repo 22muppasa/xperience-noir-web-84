@@ -1,8 +1,10 @@
+
 import { Link } from 'react-router-dom';
 import { animated, useSpring } from '@react-spring/web';
 import { ArrowRight, Code, PenSquare, User } from 'lucide-react';
 import AnimatedBackground from '@/components/ui/AnimatedBackground';
 import AnimatedButton from '@/components/ui/AnimatedButton';
+import Navbar from '@/components/layout/Navbar';
 
 const Index = () => {
   // Animation for hero image
@@ -21,6 +23,9 @@ const Index = () => {
 
   return (
     <div className="flex flex-col min-h-screen relative">
+      {/* Navbar */}
+      <Navbar />
+      
       {/* Animated Background */}
       <AnimatedBackground />
       

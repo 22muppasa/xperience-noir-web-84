@@ -37,7 +37,7 @@ const AdminContactForms = () => {
 
   // Update submission status mutation
   const updateStatusMutation = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
+    mutationFn: async ({ id, status }: { id: string; status: 'unread' | 'read' | 'archived' | 'in_progress' | 'responded' }) => {
       const { error } = await supabase
         .from('contact_submissions')
         .update({ status })
@@ -67,7 +67,7 @@ const AdminContactForms = () => {
       const { error } = await supabase
         .from('contact_submissions')
         .update({ 
-          status: 'responded',
+          status: 'responded' as any,
           responded_at: new Date().toISOString()
         })
         .eq('id', id);
@@ -92,7 +92,7 @@ const AdminContactForms = () => {
     }
   };
 
-  const handleStatusChange = (id: string, status: string) => {
+  const handleStatusChange = (id: string, status: 'unread' | 'read' | 'archived' | 'in_progress' | 'responded') => {
     updateStatusMutation.mutate({ id, status });
   };
 
@@ -203,12 +203,12 @@ const AdminContactForms = () => {
                           <TableCell>
                             <div className="flex items-center text-sm text-black">
                               <Clock className="h-4 w-4 mr-1" />
-                              {new Date(submission.created_at).toLocaleDateString()}
+                              {submission.created_at && new Date(submission.created_at).toLocaleDateString()}
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge className={getStatusColor(submission.status)}>
-                              {submission.status.replace('_', ' ')}
+                            <Badge className={getStatusColor(submission.status || 'unread')}>
+                              {(submission.status || 'unread').replace('_', ' ')}
                             </Badge>
                           </TableCell>
                           <TableCell>
@@ -268,7 +268,7 @@ const AdminContactForms = () => {
                           <p className="text-sm text-black">
                             From: {submission.name} ({submission.email})
                           </p>
-                          <p className="text-sm text-black">{new Date(submission.created_at).toLocaleDateString()}</p>
+                          <p className="text-sm text-black">{submission.created_at && new Date(submission.created_at).toLocaleDateString()}</p>
                         </div>
                         <Badge className="bg-red-100 text-red-800 border-red-200">
                           Unread
@@ -317,7 +317,7 @@ const AdminContactForms = () => {
                           <p className="text-sm text-black">
                             From: {submission.name} ({submission.email})
                           </p>
-                          <p className="text-sm text-black">{new Date(submission.created_at).toLocaleDateString()}</p>
+                          <p className="text-sm text-black">{submission.created_at && new Date(submission.created_at).toLocaleDateString()}</p>
                         </div>
                         <Badge className="bg-blue-100 text-blue-800 border-blue-200">
                           In Progress
@@ -365,7 +365,7 @@ const AdminContactForms = () => {
                           <p className="text-sm text-black">
                             From: {submission.name} ({submission.email})
                           </p>
-                          <p className="text-sm text-black">{new Date(submission.created_at).toLocaleDateString()}</p>
+                          <p className="text-sm text-black">{submission.created_at && new Date(submission.created_at).toLocaleDateString()}</p>
                         </div>
                         <Badge className="bg-green-100 text-green-800 border-green-200">Responded</Badge>
                       </div>

@@ -36,9 +36,9 @@ const ActivityTimeline = () => {
           .limit(5),
         supabase
           .from('enrollments')
-          .select('id, child_name, created_at, status')
+          .select('id, child_name, enrolled_at, status')
           .eq('customer_id', user.id)
-          .order('created_at', { ascending: false })
+          .order('enrolled_at', { ascending: false })
           .limit(3),
         supabase
           .from('notifications')
@@ -71,7 +71,7 @@ const ActivityTimeline = () => {
           type: 'enrollment',
           title: `Enrolled: ${item.child_name}`,
           description: `Status: ${item.status}`,
-          timestamp: item.created_at,
+          timestamp: item.enrolled_at,
           icon: Users
         })),
         ...(notificationsResult.data || []).map(item => ({

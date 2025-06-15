@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -64,7 +63,7 @@ const AdminSocialPosts = () => {
         .insert([{
           ...postData,
           published_at: postData.status === 'published' ? new Date().toISOString() : null
-        }]);
+        } as any]);
 
       if (error) throw error;
     },
@@ -95,7 +94,7 @@ const AdminSocialPosts = () => {
         published_at: data.status === 'published' && !editingPost?.published_at 
           ? new Date().toISOString() 
           : editingPost?.published_at
-      };
+      } as any;
 
       const { error } = await supabase
         .from('social_posts')
@@ -281,12 +280,12 @@ const AdminSocialPosts = () => {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge className={getStatusColor(post.status)}>
-                              {post.status}
+                            <Badge className={getStatusColor(post.status || 'draft')}>
+                              {post.status || 'draft'}
                             </Badge>
                           </TableCell>
                           <TableCell className="text-black">
-                            {new Date(post.created_at).toLocaleDateString()}
+                            {post.created_at && new Date(post.created_at).toLocaleDateString()}
                           </TableCell>
                           <TableCell className="text-black">
                             {post.published_at ? new Date(post.published_at).toLocaleDateString() : '-'}

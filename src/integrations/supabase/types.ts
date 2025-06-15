@@ -408,8 +408,13 @@ export type Database = {
     }
     Enums: {
       enrollment_status: "pending" | "active" | "completed" | "cancelled"
-      message_status: "unread" | "read" | "archived"
-      post_status: "draft" | "scheduled" | "published"
+      message_status:
+        | "unread"
+        | "read"
+        | "archived"
+        | "in_progress"
+        | "responded"
+      post_status: "draft" | "scheduled" | "published" | "archived"
       program_status: "draft" | "published" | "archived"
       user_role: "admin" | "customer"
     }
@@ -528,8 +533,14 @@ export const Constants = {
   public: {
     Enums: {
       enrollment_status: ["pending", "active", "completed", "cancelled"],
-      message_status: ["unread", "read", "archived"],
-      post_status: ["draft", "scheduled", "published"],
+      message_status: [
+        "unread",
+        "read",
+        "archived",
+        "in_progress",
+        "responded",
+      ],
+      post_status: ["draft", "scheduled", "published", "archived"],
       program_status: ["draft", "published", "archived"],
       user_role: ["admin", "customer"],
     },

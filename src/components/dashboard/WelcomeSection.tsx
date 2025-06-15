@@ -1,4 +1,3 @@
-
 import { useAuth } from '@/contexts/AuthContext';
 import { Clock, Sun, Moon, Sunset, ChevronRight } from 'lucide-react';
 
@@ -7,10 +6,10 @@ const WelcomeSection = () => {
   
   const getTimeBasedGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return { greeting: 'Good morning', icon: Sun, color: 'text-gray-600' };
-    if (hour < 17) return { greeting: 'Good afternoon', icon: Sun, color: 'text-gray-600' };
-    if (hour < 20) return { greeting: 'Good evening', icon: Sunset, color: 'text-gray-600' };
-    return { greeting: 'Good night', icon: Moon, color: 'text-gray-600' };
+    if (hour < 12) return { greeting: 'Good morning', icon: Sun, color: 'text-white' };
+    if (hour < 17) return { greeting: 'Good afternoon', icon: Sun, color: 'text-white' };
+    if (hour < 20) return { greeting: 'Good evening', icon: Sunset, color: 'text-white' };
+    return { greeting: 'Good night', icon: Moon, color: 'text-white' };
   };
 
   const { greeting, icon: TimeIcon, color } = getTimeBasedGreeting();
@@ -30,15 +29,15 @@ const WelcomeSection = () => {
               <TimeIcon className="h-6 w-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold font-poppins tracking-tight">
+              <h1 className="text-3xl font-bold font-poppins tracking-tight text-white">
                 {greeting}, {userName}!
               </h1>
-              <p className="text-gray-300 text-lg">
+              <p className="text-lg text-white">
                 Welcome to your learning dashboard
               </p>
             </div>
           </div>
-          <div className="hidden md:flex items-center space-x-2 text-gray-400 text-sm">
+          <div className="hidden md:flex items-center space-x-2 text-white text-sm">
             <Clock className="h-4 w-4" />
             <span>
               {new Date().toLocaleDateString('en-US', { 
@@ -50,16 +49,16 @@ const WelcomeSection = () => {
           </div>
         </div>
         
-        <p className="text-gray-300 text-base mb-6 max-w-2xl leading-relaxed">
+        <p className="text-base mb-6 max-w-2xl leading-relaxed text-white">
           Track your progress, explore new programs, and celebrate your achievements in one unified space.
         </p>
         
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2 bg-white/5 rounded-lg px-4 py-2 border border-white/10">
             <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span className="text-sm text-gray-300">All systems operational</span>
+            <span className="text-sm text-white">All systems operational</span>
           </div>
-          <div className="flex items-center space-x-1 text-gray-400 hover:text-white transition-colors cursor-pointer group">
+          <div className="flex items-center space-x-1 text-white hover:text-black transition-colors cursor-pointer group">
             <span className="text-sm">Quick actions</span>
             <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
           </div>

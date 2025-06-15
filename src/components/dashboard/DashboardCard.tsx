@@ -1,4 +1,3 @@
-
 import { ReactNode } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, TrendingDown } from 'lucide-react';
@@ -17,22 +16,23 @@ interface DashboardCardProps {
   gradient?: string;
 }
 
-const DashboardCard = ({ 
-  title, 
-  value, 
-  description, 
-  icon, 
+const DashboardCard = ({
+  title,
+  value,
+  description,
+  icon,
   trend,
   className = "",
 }: DashboardCardProps) => {
   return (
     <Card className={`relative overflow-hidden border border-gray-200 bg-white rounded-xl shadow-none group hover:shadow hover:scale-105 transition-all duration-300 ${className}`}>
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 relative z-10">
-        <CardTitle className="text-base font-semibold text-gray-800">{title}</CardTitle>
+        <CardTitle className="text-base font-semibold text-black">{title}</CardTitle>
         <div className="flex items-center space-x-2">
           {trend && (
-            <div className={`flex items-center text-xs font-semibold px-2 py-1 rounded-full ${trend.isPositive 
-              ? 'text-green-700 bg-gray-100' : 'text-red-700 bg-gray-100'
+            <div className={`flex items-center text-xs font-semibold px-2 py-1 rounded-full ${trend.isPositive
+              ? 'text-black bg-gray-100'
+              : 'text-black bg-gray-100'
             }`}>
               {trend.isPositive ? (
                 <TrendingUp className="h-3 w-3 mr-1" />
@@ -44,7 +44,7 @@ const DashboardCard = ({
           )}
           {icon && (
             <div className={`p-2 rounded-lg bg-gray-100`}>
-              <div className="text-gray-700">
+              <div className="text-black">
                 {icon}
               </div>
             </div>
@@ -53,9 +53,9 @@ const DashboardCard = ({
       </CardHeader>
       <CardContent className="relative z-10">
         <div className="space-y-3">
-          <div className="text-3xl font-bold text-gray-900 tracking-tight">{value}</div>
+          <div className="text-3xl font-bold text-black tracking-tight">{value}</div>
           {description && (
-            <p className="text-sm text-gray-500 leading-relaxed">{description}</p>
+            <p className="text-sm text-black leading-relaxed">{description}</p>
           )}
         </div>
       </CardContent>

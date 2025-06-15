@@ -114,7 +114,7 @@ const ActivityTimeline = () => {
   });
 
   const getActivityIcon = (type: string) => {
-    const iconProps = { className: "h-4 w-4" };
+    const iconProps = { className: "h-4 w-4 text-black" };
     switch (type) {
       case 'enrollment': return <BookOpen {...iconProps} />;
       case 'kids_work': return <Image {...iconProps} />;
@@ -126,7 +126,7 @@ const ActivityTimeline = () => {
 
   const getStatusBadge = (type: string, status?: string) => {
     if (!status) return null;
-    
+
     const getVariant = () => {
       switch (status) {
         case 'confirmed':
@@ -150,7 +150,7 @@ const ActivityTimeline = () => {
     return (
       <Card className="border-gray-200 shadow-none">
         <CardHeader className="pb-4">
-          <CardTitle className="text-xl font-semibold text-gray-900">Recent Activity</CardTitle>
+          <CardTitle className="text-xl font-semibold text-black">Recent Activity</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           {Array.from({ length: 5 }).map((_, i) => (
@@ -171,11 +171,11 @@ const ActivityTimeline = () => {
     <Card className="border-gray-200 shadow-none">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-xl font-semibold text-gray-900 flex items-center space-x-2">
-            <Clock className="h-5 w-5 text-gray-600" />
+          <CardTitle className="text-xl font-semibold text-black flex items-center space-x-2">
+            <Clock className="h-5 w-5 text-black" />
             <span>Recent Activity</span>
           </CardTitle>
-          <button className="text-sm text-gray-500 hover:text-gray-700 flex items-center space-x-1 transition-colors">
+          <button className="text-sm text-black hover:text-white bg-transparent flex items-center space-x-1 transition-colors">
             <span>View all</span>
             <ArrowRight className="h-4 w-4" />
           </button>
@@ -185,32 +185,32 @@ const ActivityTimeline = () => {
         {activities.length === 0 ? (
           <div className="text-center py-12">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Clock className="h-8 w-8 text-gray-400" />
+              <Clock className="h-8 w-8 text-black" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No recent activity</h3>
-            <p className="text-gray-500 mb-4">Start by enrolling in programs or uploading kids work!</p>
+            <h3 className="text-lg font-medium text-black mb-2">No recent activity</h3>
+            <p className="text-black mb-4">Start by enrolling in programs or uploading kids work!</p>
           </div>
         ) : (
           <div className="space-y-4">
             {activities.map((activity, index) => (
-              <div 
-                key={activity.id} 
+              <div
+                key={activity.id}
                 className="group flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-200"
               >
-                <div className="flex-shrink-0 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 group-hover:bg-gray-200 transition-colors">
+                <div className="flex-shrink-0 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-black group-hover:bg-gray-200 transition-colors">
                   {getActivityIcon(activity.type)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-start justify-between mb-1">
-                    <h4 className="text-sm font-medium text-gray-900 truncate pr-2">
+                    <h4 className="text-sm font-medium text-black truncate pr-2">
                       {activity.title}
                     </h4>
                     {getStatusBadge(activity.type, activity.status)}
                   </div>
-                  <p className="text-sm text-gray-600 truncate mb-2">
+                  <p className="text-sm text-black truncate mb-2">
                     {activity.description}
                   </p>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-black">
                     {new Date(activity.timestamp).toLocaleDateString('en-US', {
                       month: 'short',
                       day: 'numeric',

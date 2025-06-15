@@ -28,7 +28,7 @@ const QuickActionCard = ({
       <CardContent className="p-6 relative z-10">
         <div className="flex items-start justify-between mb-4">
           <div className="p-3 rounded-xl bg-gray-100">
-            <Icon className="h-6 w-6 text-gray-800" />
+            <Icon className="h-6 w-6 text-black" />
           </div>
           {badge && (
             <span className="bg-black text-white text-xs px-2 py-1 rounded-full font-medium">
@@ -37,8 +37,8 @@ const QuickActionCard = ({
           )}
         </div>
         <div className="space-y-2">
-          <h3 className="font-semibold text-gray-800">{title}</h3>
-          <p className="text-sm text-gray-500 leading-relaxed">
+          <h3 className="font-semibold text-black">{title}</h3>
+          <p className="text-sm text-black leading-relaxed">
             {description}
           </p>
         </div>
@@ -47,7 +47,7 @@ const QuickActionCard = ({
             {children}
           </div>
         ) : (
-          <div className="mt-4 flex items-center text-xs font-medium text-gray-400">
+          <div className="mt-4 flex items-center text-xs font-medium text-black">
             <span>Click to access</span>
             <span className="ml-1">→</span>
           </div>

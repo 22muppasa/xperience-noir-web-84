@@ -1,9 +1,9 @@
-
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Check, Users, Clock, Shield, Target, Zap } from 'lucide-react';
 import ContactForm from '@/components/ui/ContactForm';
 import AnimatedButton from '@/components/ui/AnimatedButton';
+import Navbar from '@/components/layout/Navbar';
 import {
   Carousel,
   CarouselContent,
@@ -117,6 +117,7 @@ const pastProjects = [
 const Consulting = () => {
   return (
     <div className="flex flex-col min-h-screen bg-black text-white"> {/* Set dark bg, light text */}
+      <Navbar />
       {/* Hero Section */}
       <section className="py-20 px-4 md:px-6 bg-black text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-900 to-black opacity-90" />
@@ -501,4 +502,3 @@ const Consulting = () => {
 };
 
 export default Consulting;
-

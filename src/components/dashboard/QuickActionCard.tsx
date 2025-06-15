@@ -12,52 +12,44 @@ interface QuickActionCardProps {
   children?: React.ReactNode;
 }
 
-const QuickActionCard = ({ 
-  title, 
-  description, 
-  icon: Icon, 
-  gradient, 
-  onClick, 
+const QuickActionCard = ({
+  title,
+  description,
+  icon: Icon,
+  onClick,
   badge,
-  children 
+  children
 }: QuickActionCardProps) => {
   return (
-    <Card 
-      className="relative overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer border-0 shadow-md group"
+    <Card
+      className="relative overflow-hidden border border-gray-200 bg-white rounded-xl shadow-none group hover:shadow hover:scale-105 transition-all duration-300 cursor-pointer"
       onClick={children ? undefined : onClick}
     >
-      {/* Background gradient overlay */}
-      <div className={`absolute inset-0 ${gradient} opacity-5 group-hover:opacity-10 transition-opacity duration-300`}></div>
-      
       <CardContent className="p-6 relative z-10">
         <div className="flex items-start justify-between mb-4">
-          <div className={`p-3 rounded-xl ${gradient} bg-opacity-10 group-hover:bg-opacity-20 transition-all duration-300`}>
-            <Icon className="h-6 w-6 text-white" />
+          <div className="p-3 rounded-xl bg-gray-100">
+            <Icon className="h-6 w-6 text-gray-800" />
           </div>
           {badge && (
-            <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+            <span className="bg-black text-white text-xs px-2 py-1 rounded-full font-medium">
               {badge}
             </span>
           )}
         </div>
-        
         <div className="space-y-2">
-          <h3 className="font-semibold text-gray-900 group-hover:text-gray-800 transition-colors duration-200">
-            {title}
-          </h3>
-          <p className="text-sm text-gray-600 leading-relaxed">
+          <h3 className="font-semibold text-gray-800">{title}</h3>
+          <p className="text-sm text-gray-500 leading-relaxed">
             {description}
           </p>
         </div>
-        
         {children ? (
           <div className="mt-4">
             {children}
           </div>
         ) : (
-          <div className="mt-4 flex items-center text-xs font-medium text-gray-500 group-hover:text-gray-700 transition-colors duration-200">
+          <div className="mt-4 flex items-center text-xs font-medium text-gray-400">
             <span>Click to access</span>
-            <span className="ml-1 transform group-hover:translate-x-1 transition-transform duration-200">→</span>
+            <span className="ml-1">→</span>
           </div>
         )}
       </CardContent>

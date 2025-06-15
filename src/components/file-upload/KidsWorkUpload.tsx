@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -138,25 +137,22 @@ const KidsWorkUpload = ({ onUploadComplete }: KidsWorkUploadProps) => {
   };
 
   return (
-    <Card className="relative overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer border-0 shadow-md group">
-      <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-green-600 opacity-5 group-hover:opacity-10 transition-opacity duration-300"></div>
-      
+    <Card className="relative border border-gray-200 bg-white rounded-xl shadow-none group hover:shadow hover:scale-105 transition-all duration-300">
+      <div className="absolute inset-0 bg-gray-100 opacity-10 group-hover:opacity-20 transition-opacity duration-300"></div>
       <CardContent className="p-6 relative z-10">
         <div className="flex items-start justify-between mb-4">
-          <div className="p-3 rounded-xl bg-gradient-to-r from-green-500 to-green-600 bg-opacity-10 group-hover:bg-opacity-20 transition-all duration-300">
-            <Image className="h-6 w-6 text-white" />
+          <div className="p-3 rounded-xl bg-gray-100">
+            <Image className="h-6 w-6 text-gray-800" />
           </div>
         </div>
-        
         <div className="space-y-2 mb-4">
-          <h3 className="font-semibold text-gray-900 group-hover:text-gray-800 transition-colors duration-200">
+          <h3 className="font-semibold text-gray-800 group-hover:text-gray-800 transition-colors duration-200">
             Upload Kids Work
           </h3>
-          <p className="text-sm text-gray-600 leading-relaxed">
+          <p className="text-sm text-gray-500 leading-relaxed">
             Share your child's latest creative projects
           </p>
         </div>
-        
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="title">Title *</Label>

@@ -2,10 +2,12 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Calendar, Clock, Users, ArrowRight } from 'lucide-react';
+import Navbar from '@/components/layout/Navbar';
 
 const Programs = () => {
   return (
     <div className="flex flex-col min-h-screen">
+      <Navbar />
       {/* Hero Section */}
       <section className="py-20 px-4 md:px-6 bg-black text-white">
         <div className="container mx-auto max-w-6xl">

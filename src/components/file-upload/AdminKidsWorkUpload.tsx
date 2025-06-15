@@ -16,9 +16,9 @@ interface Enrollment {
   customer_id: string;
   program_id: string;
   profiles?: {
-    first_name: string;
-    last_name: string;
-  };
+    first_name?: string;
+    last_name?: string;
+  } | null;
 }
 
 const AdminKidsWorkUpload = () => {
@@ -42,7 +42,7 @@ const AdminKidsWorkUpload = () => {
           child_name,
           customer_id,
           program_id,
-          profiles!enrollments_customer_id_fkey (
+          profiles:customer_id (
             first_name,
             last_name
           )
@@ -93,7 +93,7 @@ const AdminKidsWorkUpload = () => {
             description,
             file_url: publicUrl,
             file_type: file.type,
-            uploaded_by_admin: true
+            storage_path: filePath
           });
 
         if (insertError) throw insertError;

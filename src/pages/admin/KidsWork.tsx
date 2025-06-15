@@ -37,7 +37,6 @@ interface KidsWork {
   file_url: string;
   file_type: string;
   created_at: string;
-  uploaded_by_admin: boolean;
   enrollment_id: string;
   enrollments: {
     child_name: string;
@@ -175,6 +174,13 @@ const AdminKidsWork = () => {
     );
   };
 
+  const navigateToUpload = () => {
+    const uploadTab = document.querySelector('[data-value="upload"]') as HTMLButtonElement;
+    if (uploadTab) {
+      uploadTab.click();
+    }
+  };
+
   if (isLoading) {
     return (
       <DashboardLayout>
@@ -198,7 +204,7 @@ const AdminKidsWork = () => {
 
         <Tabs defaultValue="upload" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="upload" className="flex items-center space-x-2">
+            <TabsTrigger value="upload" data-value="upload" className="flex items-center space-x-2">
               <Upload className="h-4 w-4" />
               <span>Upload Work</span>
             </TabsTrigger>
@@ -237,7 +243,7 @@ const AdminKidsWork = () => {
                     <Upload className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                     <h3 className="text-lg font-medium text-gray-900 mb-2">No kids work uploaded yet</h3>
                     <p className="text-gray-600 mb-4">Start by uploading some children's creative work and projects.</p>
-                    <Button onClick={() => document.querySelector('[value="upload"]')?.click()}>
+                    <Button onClick={navigateToUpload}>
                       Upload First Work
                     </Button>
                   </div>

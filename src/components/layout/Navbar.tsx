@@ -17,13 +17,13 @@ const Navbar = () => {
   };
 
   const navLinks = [
-    { href: '/', label: 'Home' },
-    { href: '/programs', label: 'Programs' },
-    { href: '/consulting', label: 'Consulting' },
-    { href: '/get-involved', label: 'Get Involved' },
-    { href: '/social-hub', label: 'Social Hub' },
-    { href: '/about', label: 'About' },
-    { href: '/contact', label: 'Contact' }
+    { name: 'Home', path: '/' },
+    { name: 'Programs', path: '/programs' },
+    { name: 'Consulting', path: '/consulting' },
+    { name: 'Get Involved', path: '/get-involved' },
+    { name: 'Social Hub', path: '/social-hub' },
+    { name: 'About', path: '/about' },
+    { name: 'Contact', path: '/contact' }
   ];
 
   return (

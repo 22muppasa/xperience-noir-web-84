@@ -24,25 +24,25 @@ const CustomerDashboard = () => {
             title="Active Programs"
             value="3"
             description="Currently enrolled"
-            icon={BookOpen}
+            icon={<BookOpen className="h-5 w-5" />}
           />
           <DashboardCard
             title="Kids Work"
             value="12"
             description="New uploads this week"
-            icon={Image}
+            icon={<Image className="h-5 w-5" />}
           />
           <DashboardCard
             title="Messages"
             value="2"
             description="Unread messages"
-            icon={MessageSquare}
+            icon={<MessageSquare className="h-5 w-5" />}
           />
           <DashboardCard
             title="Profile"
             value="85%"
             description="Profile complete"
-            icon={User}
+            icon={<User className="h-5 w-5" />}
           />
         </div>
 

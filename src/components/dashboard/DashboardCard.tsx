@@ -28,7 +28,7 @@ const DashboardCard = ({
         <CardTitle className="text-sm font-medium text-gray-900">{title}</CardTitle>
         {icon && (
           <div className="text-gray-700">
-            {typeof icon === 'function' ? icon({}) : icon}
+            {icon}
           </div>
         )}
       </CardHeader>

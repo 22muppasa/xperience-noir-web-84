@@ -1,111 +1,81 @@
 
-import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { 
-  Home, 
-  Users, 
-  BookOpen, 
+  LayoutDashboard, 
+  Calendar, 
   MessageSquare, 
-  Image, 
-  FileText, 
-  Settings,
-  ChevronLeft,
-  ChevronRight,
-  Calendar,
-  Mail
+  User, 
+  Settings, 
+  FileText,
+  Users,
+  Image,
+  Send,
+  Baby,
+  UserCog
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useLocation, useNavigate } from 'react-router-dom';
 
-interface DashboardSidebarProps {
-  userRole: string | null;
-}
-
-const DashboardSidebar = ({ userRole }: DashboardSidebarProps) => {
-  const [collapsed, setCollapsed] = useState(false);
+const DashboardSidebar = () => {
+  const { user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
-  const customerNavItems = [
-    { name: 'Dashboard', href: '/dashboard', icon: Home },
-    { name: 'Programs', href: '/dashboard/programs', icon: BookOpen },
-    { name: 'Kids Work', href: '/dashboard/kids-work', icon: Image },
-    { name: 'Messages', href: '/dashboard/messages', icon: MessageSquare },
-    { name: 'Profile', href: '/dashboard/profile', icon: Settings },
+  const isAdmin = user?.user_metadata?.role === 'admin';
+
+  const adminMenuItems = [
+    { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
+    { icon: Users, label: 'Customers', path: '/admin/customers' },
+    { icon: Baby, label: 'Children', path: '/admin/children' },
+    { icon: Calendar, label: 'Programs', path: '/admin/programs' },
+    { icon: Image, label: 'Kids Work', path: '/admin/kids-work' },
+    { icon: MessageSquare, label: 'Messages', path: '/admin/messages' },
+    { icon: Send, label: 'Social Posts', path: '/admin/social-posts' },
+    { icon: FileText, label: 'Contact Forms', path: '/admin/contact-forms' },
+    { icon: Settings, label: 'Settings', path: '/admin/settings' },
   ];
 
-  const adminNavItems = [
-    { name: 'Dashboard', href: '/admin', icon: Home },
-    { name: 'Customers', href: '/admin/customers', icon: Users },
-    { name: 'Programs', href: '/admin/programs', icon: BookOpen },
-    { name: 'Kids Work', href: '/admin/kids-work', icon: Image },
-    { name: 'Messages', href: '/admin/messages', icon: MessageSquare },
-    { name: 'Contact Forms', href: '/admin/contact', icon: Mail },
-    { name: 'Social Posts', href: '/admin/social-posts', icon: FileText },
-    { name: 'Settings', href: '/admin/settings', icon: Settings },
+  const customerMenuItems = [
+    { icon: LayoutDashboard, label: 'Dashboard', path: '/customer' },
+    { icon: Calendar, label: 'Programs', path: '/customer/programs' },
+    { icon: Baby, label: 'My Children', path: '/customer/children' },
+    { icon: Image, label: 'Kids Work', path: '/customer/kids-work' },
+    { icon: MessageSquare, label: 'Messages', path: '/customer/messages' },
+    { icon: User, label: 'Profile', path: '/customer/profile' },
   ];
 
-  const navItems = userRole === 'admin' ? adminNavItems : customerNavItems;
+  const menuItems = isAdmin ? adminMenuItems : customerMenuItems;
 
   return (
-    <div className={cn(
-      "bg-white border-r border-gray-200 transition-all duration-300 flex flex-col",
-      collapsed ? "w-16" : "w-64"
-    )}>
-      {/* Logo and Collapse Button */}
-      <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-        {!collapsed && (
-          <Link to="/" className="text-xl font-bold text-gray-900">
-            XPerience
-          </Link>
-        )}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => setCollapsed(!collapsed)}
-          className="p-2"
-        >
-          {collapsed ? (
-            <ChevronRight className="h-4 w-4" />
-          ) : (
-            <ChevronLeft className="h-4 w-4" />
-          )}
-        </Button>
+    <div className="w-64 bg-white border-r border-black h-screen flex flex-col">
+      <div className="p-6 border-b border-black">
+        <h2 className="text-xl font-bold text-black">
+          {isAdmin ? 'Admin Dashboard' : 'My Dashboard'}
+        </h2>
       </div>
-
-      {/* Navigation */}
+      
       <nav className="flex-1 p-4 space-y-2">
-        {navItems.map((item) => {
-          const isActive = location.pathname === item.href;
+        {menuItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = location.pathname === item.path;
           
           return (
-            <Link
-              key={item.name}
-              to={item.href}
-              className={cn(
-                "flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors",
-                isActive
-                  ? "bg-gray-100 text-gray-900"
-                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-              )}
+            <Button
+              key={item.path}
+              variant={isActive ? "default" : "ghost"}
+              className={`w-full justify-start text-left ${
+                isActive 
+                  ? 'bg-black text-white' 
+                  : 'text-black hover:bg-gray-100 hover:text-black'
+              }`}
+              onClick={() => navigate(item.path)}
             >
-              <item.icon className={cn("h-5 w-5", collapsed ? "mr-0" : "mr-3")} />
-              {!collapsed && <span>{item.name}</span>}
-            </Link>
+              <Icon className="mr-3 h-4 w-4" />
+              {item.label}
+            </Button>
           );
         })}
       </nav>
-
-      {/* User Role Badge */}
-      {!collapsed && (
-        <div className="p-4 border-t border-gray-200">
-          <div className="bg-gray-100 rounded-lg p-3 text-center">
-            <p className="text-xs text-gray-500 uppercase tracking-wide">Role</p>
-            <p className="text-sm font-medium text-gray-900 capitalize">
-              {userRole || 'Loading...'}
-            </p>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

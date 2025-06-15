@@ -9,6 +9,42 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      children: {
+        Row: {
+          created_at: string
+          date_of_birth: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          first_name: string
+          id: string
+          last_name: string
+          medical_notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date_of_birth?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          first_name: string
+          id?: string
+          last_name: string
+          medical_notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date_of_birth?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          first_name?: string
+          id?: string
+          last_name?: string
+          medical_notes?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       contact_submissions: {
         Row: {
           created_at: string | null
@@ -48,6 +84,7 @@ export type Database = {
       enrollments: {
         Row: {
           child_age: number | null
+          child_id: string | null
           child_name: string
           completed_at: string | null
           customer_id: string | null
@@ -59,6 +96,7 @@ export type Database = {
         }
         Insert: {
           child_age?: number | null
+          child_id?: string | null
           child_name: string
           completed_at?: string | null
           customer_id?: string | null
@@ -70,6 +108,7 @@ export type Database = {
         }
         Update: {
           child_age?: number | null
+          child_id?: string | null
           child_name?: string
           completed_at?: string | null
           customer_id?: string | null
@@ -80,6 +119,13 @@ export type Database = {
           status?: Database["public"]["Enums"]["enrollment_status"] | null
         }
         Relationships: [
+          {
+            foreignKeyName: "enrollments_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "enrollments_program_id_fkey"
             columns: ["program_id"]
@@ -130,6 +176,7 @@ export type Database = {
       }
       kids_work: {
         Row: {
+          child_id: string | null
           created_at: string | null
           description: string | null
           enrollment_id: string | null
@@ -143,6 +190,7 @@ export type Database = {
           uploaded_by: string | null
         }
         Insert: {
+          child_id?: string | null
           created_at?: string | null
           description?: string | null
           enrollment_id?: string | null
@@ -156,6 +204,7 @@ export type Database = {
           uploaded_by?: string | null
         }
         Update: {
+          child_id?: string | null
           created_at?: string | null
           description?: string | null
           enrollment_id?: string | null
@@ -169,6 +218,13 @@ export type Database = {
           uploaded_by?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "kids_work_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "kids_work_enrollment_id_fkey"
             columns: ["enrollment_id"]
@@ -251,6 +307,64 @@ export type Database = {
             columns: ["related_work_id"]
             isOneToOne: false
             referencedRelation: "kids_work"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      parent_child_relationships: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          can_receive_notifications: boolean
+          can_view_work: boolean
+          child_id: string
+          created_at: string
+          id: string
+          parent_id: string
+          relationship_type: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          can_receive_notifications?: boolean
+          can_view_work?: boolean
+          child_id: string
+          created_at?: string
+          id?: string
+          parent_id: string
+          relationship_type?: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          can_receive_notifications?: boolean
+          can_view_work?: boolean
+          child_id?: string
+          created_at?: string
+          id?: string
+          parent_id?: string
+          relationship_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parent_child_relationships_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parent_child_relationships_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parent_child_relationships_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]

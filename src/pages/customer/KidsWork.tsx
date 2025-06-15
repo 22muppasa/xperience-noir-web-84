@@ -3,58 +3,89 @@ import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Image, Download, Eye, MessageSquare, Bell } from 'lucide-react';
+import { Image, Download, Eye, MessageSquare, Bell, Baby } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 const KidsWork = () => {
+  const { user } = useAuth();
   const { toast } = useToast();
 
-  // Fetch kids work data for customer
+  // Fetch kids work data for customer using new child-based associations
   const { data: kidsWork = [], isLoading, refetch } = useQuery({
-    queryKey: ['customer-kids-work'],
+    queryKey: ['customer-kids-work', user?.id],
     queryFn: async () => {
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user) throw new Error('Not authenticated');
+      if (!user?.id) return [];
 
       const { data, error } = await supabase
         .from('kids_work')
         .select(`
           *,
-          enrollments!inner(
+          children(
+            id,
+            first_name,
+            last_name
+          ),
+          enrollments(
             id,
             child_name,
-            customer_id,
-            programs!inner(title)
+            programs(title)
           )
         `)
-        .or(`parent_customer_id.eq.${user.user.id},enrollments.customer_id.eq.${user.user.id}`)
+        .or(`parent_customer_id.eq.${user.id},child_id.in.(select child_id from parent_child_relationships where parent_id = ${user.id} and can_view_work = true)`)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data || [];
-    }
+    },
+    enabled: !!user?.id
   });
 
   // Fetch notifications for this user
   const { data: notifications = [] } = useQuery({
-    queryKey: ['customer-notifications'],
+    queryKey: ['customer-notifications', user?.id],
     queryFn: async () => {
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user) throw new Error('Not authenticated');
+      if (!user?.id) return [];
 
       const { data, error } = await supabase
         .from('notifications')
         .select('*')
-        .eq('user_id', user.user.id)
+        .eq('user_id', user.id)
         .eq('type', 'kids_work')
         .order('created_at', { ascending: false })
         .limit(5);
 
       if (error) throw error;
       return data || [];
-    }
+    },
+    enabled: !!user?.id
+  });
+
+  // Fetch user's children for grouping
+  const { data: myChildren = [] } = useQuery({
+    queryKey: ['my-children-for-work', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      
+      const { data, error } = await supabase
+        .from('parent_child_relationships')
+        .select(`
+          child_id,
+          children!inner(
+            id,
+            first_name,
+            last_name
+          )
+        `)
+        .eq('parent_id', user.id)
+        .eq('can_view_work', true);
+      
+      if (error) throw error;
+      return data.map(rel => rel.children);
+    },
+    enabled: !!user?.id
   });
 
   const handleDownload = async (fileUrl: string, title: string) => {
@@ -85,6 +116,34 @@ const KidsWork = () => {
     return <Image className="h-5 w-5 text-black" />;
   };
 
+  const getChildName = (work: any) => {
+    // Try to get name from new children relationship
+    if (work.children) {
+      return `${work.children.first_name} ${work.children.last_name}`;
+    }
+    // Fallback to enrollment child_name for backwards compatibility
+    if (work.enrollments?.child_name) {
+      return work.enrollments.child_name;
+    }
+    return 'Unknown Child';
+  };
+
+  const groupWorkByChild = () => {
+    const grouped: { [key: string]: any[] } = {};
+    
+    kidsWork.forEach(work => {
+      const childKey = work.child_id || 'legacy';
+      const childName = getChildName(work);
+      
+      if (!grouped[childKey]) {
+        grouped[childKey] = [];
+      }
+      grouped[childKey].push({ ...work, childName });
+    });
+    
+    return grouped;
+  };
+
   if (isLoading) {
     return (
       <DashboardLayout>
@@ -97,6 +156,8 @@ const KidsWork = () => {
       </DashboardLayout>
     );
   }
+
+  const groupedWork = groupWorkByChild();
 
   return (
     <DashboardLayout>
@@ -148,6 +209,17 @@ const KidsWork = () => {
           <Card className="border-black bg-white">
             <CardContent className="p-6">
               <div className="flex items-center space-x-3">
+                <Baby className="h-8 w-8 text-black" />
+                <div>
+                  <p className="text-sm font-medium text-black">Children</p>
+                  <p className="text-2xl font-bold text-black">{myChildren.length}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="border-black bg-white">
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-3">
                 <MessageSquare className="h-8 w-8 text-black" />
                 <div>
                   <p className="text-sm font-medium text-black">This Month</p>
@@ -163,21 +235,10 @@ const KidsWork = () => {
               </div>
             </CardContent>
           </Card>
-          <Card className="border-black bg-white">
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-3">
-                <Download className="h-8 w-8 text-black" />
-                <div>
-                  <p className="text-sm font-medium text-black">Available Downloads</p>
-                  <p className="text-2xl font-bold text-black">{kidsWork.length}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
-        {/* Kids Work Gallery */}
-        {kidsWork.length === 0 ? (
+        {/* Kids Work Gallery - Grouped by Child */}
+        {Object.keys(groupedWork).length === 0 ? (
           <Card className="border-black bg-white">
             <CardContent className="p-12 text-center">
               <Image className="mx-auto h-16 w-16 text-black mb-4" />
@@ -189,80 +250,93 @@ const KidsWork = () => {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {kidsWork.map((work) => (
-              <Card key={work.id} className="hover:shadow-lg transition-shadow border-black bg-white">
-                <CardHeader className="pb-4">
-                  <div className="flex items-start justify-between">
-                    <CardTitle className="text-lg line-clamp-2 text-black">{work.title}</CardTitle>
-                    {getFileIcon(work.file_type)}
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Preview */}
-                  <div className="aspect-video bg-white rounded-lg flex items-center justify-center border border-black">
-                    {work.file_type?.startsWith('image/') ? (
-                      <img 
-                        src={work.file_url} 
-                        alt={work.title}
-                        className="max-w-full max-h-full object-contain rounded-lg"
-                      />
-                    ) : (
-                      <div className="text-center p-4">
-                        {getFileIcon(work.file_type)}
-                        <p className="text-sm text-black mt-2">
-                          {work.file_type === 'application/pdf' ? 'PDF Document' : 'Media File'}
-                        </p>
-                      </div>
-                    )}
-                  </div>
+          <div className="space-y-8">
+            {Object.entries(groupedWork).map(([childKey, works]) => (
+              <div key={childKey}>
+                <div className="flex items-center space-x-2 mb-4">
+                  <Baby className="h-5 w-5 text-black" />
+                  <h2 className="text-xl font-semibold text-black">
+                    {works[0]?.childName || 'Unknown Child'}
+                  </h2>
+                  <Badge variant="outline" className="text-black border-black bg-white">
+                    {works.length} work{works.length !== 1 ? 's' : ''}
+                  </Badge>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {works.map((work) => (
+                    <Card key={work.id} className="hover:shadow-lg transition-shadow border-black bg-white">
+                      <CardHeader className="pb-4">
+                        <div className="flex items-start justify-between">
+                          <CardTitle className="text-lg line-clamp-2 text-black">{work.title}</CardTitle>
+                          {getFileIcon(work.file_type)}
+                        </div>
+                      </CardHeader>
+                      <CardContent className="space-y-4">
+                        {/* Preview */}
+                        <div className="aspect-video bg-white rounded-lg flex items-center justify-center border border-black">
+                          {work.file_type?.startsWith('image/') ? (
+                            <img 
+                              src={work.file_url} 
+                              alt={work.title}
+                              className="max-w-full max-h-full object-contain rounded-lg"
+                            />
+                          ) : (
+                            <div className="text-center p-4">
+                              {getFileIcon(work.file_type)}
+                              <p className="text-sm text-black mt-2">
+                                {work.file_type === 'application/pdf' ? 'PDF Document' : 'Media File'}
+                              </p>
+                            </div>
+                          )}
+                        </div>
 
-                  {/* Work Details */}
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <Badge variant="outline" className="text-black border-black bg-white">
-                        {work.enrollments?.programs?.title || 'Unknown Program'}
-                      </Badge>
-                      <span className="text-sm text-black">
-                        {new Date(work.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                    {work.description && (
-                      <p className="text-sm text-black bg-white border border-black p-3 rounded">{work.description}</p>
-                    )}
-                    <p className="text-sm font-medium text-black">
-                      Created by: {work.enrollments?.child_name || 'Unknown Child'}
-                    </p>
-                    {work.file_size && (
-                      <p className="text-xs text-black">
-                        File size: {Math.round(work.file_size / 1024)}KB
-                      </p>
-                    )}
-                  </div>
+                        {/* Work Details */}
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <Badge variant="outline" className="text-black border-black bg-white">
+                              {work.enrollments?.programs?.title || 'Unknown Program'}
+                            </Badge>
+                            <span className="text-sm text-black">
+                              {new Date(work.created_at).toLocaleDateString()}
+                            </span>
+                          </div>
+                          {work.description && (
+                            <p className="text-sm text-black bg-white border border-black p-3 rounded">{work.description}</p>
+                          )}
+                          {work.file_size && (
+                            <p className="text-xs text-black">
+                              File size: {Math.round(work.file_size / 1024)}KB
+                            </p>
+                          )}
+                        </div>
 
-                  {/* Actions */}
-                  <div className="flex items-center space-x-2 pt-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => window.open(work.file_url, '_blank')}
-                      className="flex-1 border-black text-black hover:bg-gray-50 bg-white"
-                    >
-                      <Eye className="h-4 w-4 mr-1" />
-                      View
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => handleDownload(work.file_url, work.title)}
-                      className="flex-1 border-black text-black hover:bg-gray-50 bg-white"
-                    >
-                      <Download className="h-4 w-4 mr-1" />
-                      Download
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                        {/* Actions */}
+                        <div className="flex items-center space-x-2 pt-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => window.open(work.file_url, '_blank')}
+                            className="flex-1 border-black text-black hover:bg-gray-50 bg-white"
+                          >
+                            <Eye className="h-4 w-4 mr-1" />
+                            View
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => handleDownload(work.file_url, work.title)}
+                            className="flex-1 border-black text-black hover:bg-gray-50 bg-white"
+                          >
+                            <Download className="h-4 w-4 mr-1" />
+                            Download
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         )}

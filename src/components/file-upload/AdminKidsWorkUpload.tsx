@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,14 +9,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Upload, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import WorkTagManager from '@/components/tags/WorkTagManager';
 
 const AdminKidsWorkUpload = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedChild, setSelectedChild] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
 
@@ -99,41 +98,26 @@ const AdminKidsWorkUpload = () => {
         const selectedEnrollment = enrollments.find(e => e.id === selectedChild);
         
         // Create kids_work record
-        const { data: workData, error: dbError } = await supabase
+        const { error: dbError } = await supabase
           .from('kids_work')
           .insert({
             title,
             description: description || null,
             file_url: publicUrl,
             file_type: file.type,
-            file_size: file.size,
             enrollment_id: selectedChild,
             child_id: selectedEnrollment?.child_id || null,
             parent_customer_id: selectedEnrollment?.customer_id || null,
-          })
-          .select()
-          .single();
+          });
 
         if (dbError) throw dbError;
-
-        // Add tags to the work
-        if (selectedTags.length > 0 && workData) {
-          const tagPromises = selectedTags.map(tagId =>
-            supabase
-              .from('kids_work_tags')
-              .insert({ work_id: workData.id, tag_id: tagId })
-          );
-          await Promise.all(tagPromises);
-        }
-
-        return workData;
       });
 
       await Promise.all(uploadPromises);
 
       toast({
         title: "Upload Successful",
-        description: `${selectedFiles.length} file(s) uploaded successfully with enhanced features.`,
+        description: `${selectedFiles.length} file(s) uploaded successfully.`,
       });
 
       // Reset form
@@ -141,7 +125,6 @@ const AdminKidsWorkUpload = () => {
       setSelectedChild('');
       setTitle('');
       setDescription('');
-      setSelectedTags([]);
     } catch (error) {
       console.error('Upload error:', error);
       toast({
@@ -159,18 +142,18 @@ const AdminKidsWorkUpload = () => {
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto border-black bg-white">
+    <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-black">Upload Kids' Work</CardTitle>
-        <CardDescription className="text-black">
-          Upload artwork, projects, or other work from children with enhanced tagging and organization.
+        <CardTitle>Upload Kids' Work</CardTitle>
+        <CardDescription>
+          Upload artwork, projects, or other work from children in the programs.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="space-y-2">
-          <Label htmlFor="child-select" className="text-black">Select Child</Label>
+          <Label htmlFor="child-select">Select Child</Label>
           <Select value={selectedChild} onValueChange={setSelectedChild}>
-            <SelectTrigger className="border-black">
+            <SelectTrigger>
               <SelectValue placeholder="Choose a child from enrollments" />
             </SelectTrigger>
             <SelectContent>
@@ -187,36 +170,28 @@ const AdminKidsWorkUpload = () => {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="title" className="text-black">Title</Label>
+          <Label htmlFor="title">Title</Label>
           <Input
             id="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Enter a title for this work"
-            className="border-black"
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="description" className="text-black">Description (Optional)</Label>
+          <Label htmlFor="description">Description (Optional)</Label>
           <Input
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Add a description..."
-            className="border-black"
           />
         </div>
 
-        <WorkTagManager
-          selectedTags={selectedTags}
-          onTagsChange={setSelectedTags}
-          showCreateNew={true}
-        />
-
         <div className="space-y-4">
-          <Label className="text-black">Upload Files</Label>
-          <div className="border-2 border-dashed border-black rounded-lg p-6 text-center">
+          <Label>Upload Files</Label>
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
             <input
               type="file"
               multiple
@@ -226,11 +201,11 @@ const AdminKidsWorkUpload = () => {
               id="file-upload"
             />
             <label htmlFor="file-upload" className="cursor-pointer">
-              <Upload className="mx-auto h-12 w-12 text-black mb-4" />
-              <p className="text-sm text-black">
+              <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+              <p className="text-sm text-gray-600">
                 Click to upload files or drag and drop
               </p>
-              <p className="text-xs text-black mt-1">
+              <p className="text-xs text-gray-500 mt-1">
                 Images, videos, and PDFs up to 10MB each
               </p>
             </label>
@@ -238,15 +213,14 @@ const AdminKidsWorkUpload = () => {
 
           {selectedFiles.length > 0 && (
             <div className="space-y-2">
-              <p className="text-sm font-medium text-black">Selected Files:</p>
+              <p className="text-sm font-medium">Selected Files:</p>
               {selectedFiles.map((file, index) => (
-                <div key={index} className="flex items-center justify-between bg-gray-50 border border-black p-2 rounded">
-                  <span className="text-sm text-black truncate">{file.name}</span>
+                <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
+                  <span className="text-sm truncate">{file.name}</span>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => removeFile(index)}
-                    className="text-black hover:bg-gray-100"
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -259,7 +233,7 @@ const AdminKidsWorkUpload = () => {
         <Button 
           onClick={handleUpload} 
           disabled={isUploading || !selectedChild || !title || selectedFiles.length === 0}
-          className="w-full bg-black text-white hover:bg-gray-800"
+          className="w-full"
         >
           {isUploading ? 'Uploading...' : 'Upload Files'}
         </Button>

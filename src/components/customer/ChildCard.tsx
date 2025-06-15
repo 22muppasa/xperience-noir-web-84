@@ -30,7 +30,7 @@ interface ChildCardProps {
 }
 
 const ChildCard = ({ relationship }: ChildCardProps) => {
-  // Capitalize and format relationship type for display
+  // Format relationship type for display
   const formatRelationshipType = (type: string) => {
     switch (type) {
       case 'parent':
@@ -71,6 +71,9 @@ const ChildCard = ({ relationship }: ChildCardProps) => {
           <div className="flex items-center space-x-2 text-sm text-black">
             <Phone className="h-4 w-4" />
             <span>{relationship.children.emergency_contact_name}</span>
+            {relationship.children.emergency_contact_phone && (
+              <span className="text-gray-500">- {relationship.children.emergency_contact_phone}</span>
+            )}
           </div>
         )}
         
@@ -97,7 +100,7 @@ const ChildCard = ({ relationship }: ChildCardProps) => {
           )}
         </div>
         
-        <div className="text-xs text-black">
+        <div className="text-xs text-gray-600">
           Associated: {new Date(relationship.assigned_at).toLocaleDateString()}
         </div>
       </CardContent>

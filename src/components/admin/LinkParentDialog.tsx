@@ -22,7 +22,6 @@ interface LinkParentDialogProps {
 
 const LinkParentDialog = ({ isOpen, onOpenChange, selectedChild }: LinkParentDialogProps) => {
   const [selectedParentId, setSelectedParentId] = useState('');
-  const [relationshipType, setRelationshipType] = useState('parent');
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -42,9 +41,9 @@ const LinkParentDialog = ({ isOpen, onOpenChange, selectedChild }: LinkParentDia
     }
   });
 
-  // Link parent to child mutation
+  // Link parent to child mutation - always creates "parent" relationship
   const linkParentMutation = useMutation({
-    mutationFn: async ({ parentId, childId, relationshipType }: { parentId: string; childId: string; relationshipType: string }) => {
+    mutationFn: async ({ parentId, childId }: { parentId: string; childId: string }) => {
       const { data: user } = await supabase.auth.getUser();
       
       const { data, error } = await supabase
@@ -52,8 +51,9 @@ const LinkParentDialog = ({ isOpen, onOpenChange, selectedChild }: LinkParentDia
         .insert([{
           parent_id: parentId,
           child_id: childId,
-          relationship_type: relationshipType,
-          assigned_by: user.user?.id
+          relationship_type: 'parent', // Always set to parent
+          assigned_by: user.user?.id,
+          status: 'approved' // Auto-approve admin-created relationships
         }])
         .select();
       
@@ -82,8 +82,7 @@ const LinkParentDialog = ({ isOpen, onOpenChange, selectedChild }: LinkParentDia
     if (selectedChild && selectedParentId) {
       linkParentMutation.mutate({
         parentId: selectedParentId,
-        childId: selectedChild.id,
-        relationshipType
+        childId: selectedChild.id
       });
     }
   };
@@ -113,18 +112,8 @@ const LinkParentDialog = ({ isOpen, onOpenChange, selectedChild }: LinkParentDia
             </Select>
           </div>
           
-          <div>
-            <Label htmlFor="relationship_type" className="text-black">Relationship Type</Label>
-            <Select value={relationshipType} onValueChange={setRelationshipType}>
-              <SelectTrigger className="bg-white border-black text-black">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent className="bg-white border-black">
-                <SelectItem value="parent" className="text-black">Parent</SelectItem>
-                <SelectItem value="guardian" className="text-black">Guardian</SelectItem>
-                <SelectItem value="family_member" className="text-black">Family Member</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="text-sm text-gray-600">
+            This will create a parent relationship with full access permissions.
           </div>
           
           <Button 

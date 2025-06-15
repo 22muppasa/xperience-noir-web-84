@@ -4,9 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { BookOpen, Calendar, Users, Clock } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 import ProgramsGrid from '@/components/programs/ProgramsGrid';
 
 interface Enrollment {

@@ -57,7 +57,7 @@ const ProgramsGrid = () => {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.from({ length: 6 }).map((_, i) => (
-          <Card key={i} className="animate-pulse">
+          <Card key={i} className="animate-pulse bg-white border-black">
             <div className="h-48 bg-gray-200 rounded-t-lg"></div>
             <CardContent className="p-6">
               <div className="space-y-3">
@@ -75,9 +75,9 @@ const ProgramsGrid = () => {
   if (programs.length === 0) {
     return (
       <div className="text-center py-12">
-        <Calendar className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">No Programs Available</h3>
-        <p className="text-gray-600">Check back soon for new programs!</p>
+        <Calendar className="h-16 w-16 mx-auto text-black mb-4" />
+        <h3 className="text-lg font-semibold text-black mb-2">No Programs Available</h3>
+        <p className="text-black">Check back soon for new programs!</p>
       </div>
     );
   }
@@ -88,7 +88,7 @@ const ProgramsGrid = () => {
         const isEnrolled = enrollments.includes(program.id);
         
         return (
-          <Card key={program.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
+          <Card key={program.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300 bg-white border-black">
             {program.image_url && (
               <div className="h-48 bg-gradient-to-r from-blue-500 to-purple-600 relative">
                 <img
@@ -97,7 +97,7 @@ const ProgramsGrid = () => {
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute top-4 right-4">
-                  <Badge className="bg-white text-gray-900">
+                  <Badge className="bg-white text-black border border-black">
                     {program.status}
                   </Badge>
                 </div>
@@ -105,38 +105,38 @@ const ProgramsGrid = () => {
             )}
             
             <CardHeader>
-              <CardTitle className="line-clamp-2">{program.title}</CardTitle>
+              <CardTitle className="line-clamp-2 text-black">{program.title}</CardTitle>
             </CardHeader>
             
             <CardContent className="space-y-4">
-              <p className="text-gray-600 line-clamp-3">{program.description}</p>
+              <p className="text-black line-clamp-3">{program.description}</p>
               
               <div className="grid grid-cols-2 gap-4 text-sm">
                 {program.price && (
                   <div className="flex items-center space-x-2">
-                    <DollarSign className="h-4 w-4 text-green-600" />
-                    <span>${program.price}</span>
+                    <DollarSign className="h-4 w-4 text-black" />
+                    <span className="text-black">${program.price}</span>
                   </div>
                 )}
                 
                 {program.duration && (
                   <div className="flex items-center space-x-2">
-                    <Clock className="h-4 w-4 text-blue-600" />
-                    <span>{program.duration}</span>
+                    <Clock className="h-4 w-4 text-black" />
+                    <span className="text-black">{program.duration}</span>
                   </div>
                 )}
                 
                 {program.start_date && (
                   <div className="flex items-center space-x-2">
-                    <Calendar className="h-4 w-4 text-purple-600" />
-                    <span>{new Date(program.start_date).toLocaleDateString()}</span>
+                    <Calendar className="h-4 w-4 text-black" />
+                    <span className="text-black">{new Date(program.start_date).toLocaleDateString()}</span>
                   </div>
                 )}
                 
                 {program.max_participants && (
                   <div className="flex items-center space-x-2">
-                    <Users className="h-4 w-4 text-orange-600" />
-                    <span>Max {program.max_participants}</span>
+                    <Users className="h-4 w-4 text-black" />
+                    <span className="text-black">Max {program.max_participants}</span>
                   </div>
                 )}
               </div>

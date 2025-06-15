@@ -132,7 +132,7 @@ const UserManagement = () => {
     return (
       <div className="space-y-4">
         {Array.from({ length: 5 }).map((_, i) => (
-          <Card key={i} className="animate-pulse">
+          <Card key={i} className="animate-pulse bg-white border-black">
             <CardContent className="p-6">
               <div className="h-4 bg-gray-200 rounded mb-2"></div>
               <div className="h-4 bg-gray-200 rounded w-2/3"></div>
@@ -148,67 +148,70 @@ const UserManagement = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold">User Management</h2>
-          <p className="text-muted-foreground">Manage all users and their permissions</p>
+          <h2 className="text-2xl font-bold text-black">User Management</h2>
+          <p className="text-black">Manage all users and their permissions</p>
         </div>
         
         <Dialog open={isCreateUserOpen} onOpenChange={setIsCreateUserOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button className="bg-white text-black border border-black hover:bg-gray-100">
               <UserPlus className="h-4 w-4 mr-2" />
               Add User
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="bg-white border-black">
             <DialogHeader>
-              <DialogTitle>Create New User</DialogTitle>
+              <DialogTitle className="text-black">Create New User</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="first_name">First Name</Label>
+                  <Label htmlFor="first_name" className="text-black">First Name</Label>
                   <Input
                     id="first_name"
                     value={newUser.first_name}
                     onChange={(e) => setNewUser(prev => ({ ...prev, first_name: e.target.value }))}
+                    className="bg-white border-black text-black"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="last_name">Last Name</Label>
+                  <Label htmlFor="last_name" className="text-black">Last Name</Label>
                   <Input
                     id="last_name"
                     value={newUser.last_name}
                     onChange={(e) => setNewUser(prev => ({ ...prev, last_name: e.target.value }))}
+                    className="bg-white border-black text-black"
                   />
                 </div>
               </div>
               
               <div>
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-black">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   value={newUser.email}
                   onChange={(e) => setNewUser(prev => ({ ...prev, email: e.target.value }))}
+                  className="bg-white border-black text-black"
                 />
               </div>
               
               <div>
-                <Label htmlFor="role">Role</Label>
+                <Label htmlFor="role" className="text-black">Role</Label>
                 <Select value={newUser.role} onValueChange={(value: 'admin' | 'customer') => setNewUser(prev => ({ ...prev, role: value }))}>
-                  <SelectTrigger>
+                  <SelectTrigger className="bg-white border-black text-black">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="customer">Customer</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
+                  <SelectContent className="bg-white border-black">
+                    <SelectItem value="customer" className="text-black">Customer</SelectItem>
+                    <SelectItem value="admin" className="text-black">Admin</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               
               <Button 
                 onClick={() => createUserMutation.mutate(newUser)}
-                className="w-full"
+                className="w-full bg-white text-black border border-black hover:bg-gray-100"
                 disabled={createUserMutation.isPending}
               >
                 {createUserMutation.isPending ? 'Creating...' : 'Create User'}
@@ -221,23 +224,23 @@ const UserManagement = () => {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black h-4 w-4" />
           <Input
             placeholder="Search users..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
+            className="pl-10 bg-white border-black text-black placeholder:text-gray-500"
           />
         </div>
         
         <Select value={roleFilter} onValueChange={(value: 'all' | 'admin' | 'customer') => setRoleFilter(value)}>
-          <SelectTrigger className="w-40">
+          <SelectTrigger className="w-40 bg-white border-black text-black">
             <SelectValue />
           </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Roles</SelectItem>
-            <SelectItem value="customer">Customers</SelectItem>
-            <SelectItem value="admin">Admins</SelectItem>
+          <SelectContent className="bg-white border-black">
+            <SelectItem value="all" className="text-black">All Roles</SelectItem>
+            <SelectItem value="customer" className="text-black">Customers</SelectItem>
+            <SelectItem value="admin" className="text-black">Admins</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -245,28 +248,28 @@ const UserManagement = () => {
       {/* Users List */}
       <div className="space-y-4">
         {filteredUsers?.map((user) => (
-          <Card key={user.id}>
+          <Card key={user.id} className="bg-white border-black">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
-                  <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
+                  <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center border border-black">
                     {user.role === 'admin' ? (
-                      <Shield className="h-5 w-5 text-gray-600" />
+                      <Shield className="h-5 w-5 text-black" />
                     ) : (
-                      <User className="h-5 w-5 text-gray-600" />
+                      <User className="h-5 w-5 text-black" />
                     )}
                   </div>
                   
                   <div>
                     <div className="flex items-center space-x-2">
-                      <h3 className="font-semibold">
+                      <h3 className="font-semibold text-black">
                         {user.first_name} {user.last_name}
                       </h3>
-                      <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
+                      <Badge variant={user.role === 'admin' ? 'default' : 'secondary'} className="bg-white text-black border border-black">
                         {user.role}
                       </Badge>
                     </div>
-                    <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                    <div className="flex items-center space-x-4 text-sm text-black">
                       <div className="flex items-center space-x-1">
                         <Mail className="h-3 w-3" />
                         <span>{user.email}</span>
@@ -286,12 +289,12 @@ const UserManagement = () => {
                       updateUserRoleMutation.mutate({ userId: user.id, role: value })
                     }
                   >
-                    <SelectTrigger className="w-32">
+                    <SelectTrigger className="w-32 bg-white border-black text-black">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="customer">Customer</SelectItem>
-                      <SelectItem value="admin">Admin</SelectItem>
+                    <SelectContent className="bg-white border-black">
+                      <SelectItem value="customer" className="text-black">Customer</SelectItem>
+                      <SelectItem value="admin" className="text-black">Admin</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -302,11 +305,11 @@ const UserManagement = () => {
       </div>
 
       {filteredUsers?.length === 0 && (
-        <Card>
+        <Card className="bg-white border-black">
           <CardContent className="p-12 text-center">
-            <User className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No users found</h3>
-            <p className="text-muted-foreground">Try adjusting your search or filter criteria</p>
+            <User className="h-12 w-12 text-black mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2 text-black">No users found</h3>
+            <p className="text-black">Try adjusting your search or filter criteria</p>
           </CardContent>
         </Card>
       )}

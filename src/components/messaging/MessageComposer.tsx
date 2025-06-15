@@ -94,25 +94,25 @@ const MessageComposer = () => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button className="bg-white text-black border border-black hover:bg-gray-100">
           <MessageSquare className="h-4 w-4 mr-2" />
           Send Message
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl bg-white border-black">
         <DialogHeader>
-          <DialogTitle>Send Message to Admin</DialogTitle>
+          <DialogTitle className="text-black">Send Message to Admin</DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="recipient">Send to *</Label>
+            <Label htmlFor="recipient" className="text-black">Send to *</Label>
             <Select value={recipientId} onValueChange={setRecipientId}>
-              <SelectTrigger>
+              <SelectTrigger className="bg-white border-black text-black">
                 <SelectValue placeholder="Select an admin to message" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-white border-black">
                 {admins.map((admin) => (
-                  <SelectItem key={admin.id} value={admin.id}>
+                  <SelectItem key={admin.id} value={admin.id} className="text-black hover:bg-gray-100">
                     {admin.first_name} {admin.last_name} ({admin.email})
                   </SelectItem>
                 ))}
@@ -121,24 +121,26 @@ const MessageComposer = () => {
           </div>
           
           <div>
-            <Label htmlFor="subject">Subject *</Label>
+            <Label htmlFor="subject" className="text-black">Subject *</Label>
             <Input
               id="subject"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               placeholder="Enter message subject"
+              className="bg-white border-black text-black placeholder:text-gray-500"
               required
             />
           </div>
           
           <div>
-            <Label htmlFor="content">Message *</Label>
+            <Label htmlFor="content" className="text-black">Message *</Label>
             <Textarea
               id="content"
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Type your message here..."
               rows={6}
+              className="bg-white border-black text-black placeholder:text-gray-500"
               required
             />
           </div>
@@ -148,14 +150,14 @@ const MessageComposer = () => {
               type="button"
               variant="outline"
               onClick={() => setIsOpen(false)}
-              className="flex-1"
+              className="flex-1 bg-white text-black border-black hover:bg-gray-100"
             >
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={sendMessageMutation.isPending}
-              className="flex-1"
+              className="flex-1 bg-white text-black border border-black hover:bg-gray-100"
             >
               {sendMessageMutation.isPending ? 'Sending...' : 'Send Message'}
             </Button>

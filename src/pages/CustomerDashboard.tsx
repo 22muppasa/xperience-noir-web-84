@@ -1,4 +1,3 @@
-
 import { useAuth } from '@/contexts/AuthContext';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import WelcomeSection from '@/components/dashboard/WelcomeSection';
@@ -32,7 +31,7 @@ const CustomerDashboard = () => {
           programs(title, start_date)
         `)
         .eq('customer_id', user.id)
-        .eq('status', 'confirmed')
+        .eq('status', 'active')
         .gte('programs.start_date', new Date().toISOString().split('T')[0])
         .order('programs.start_date', { ascending: true })
         .limit(3);

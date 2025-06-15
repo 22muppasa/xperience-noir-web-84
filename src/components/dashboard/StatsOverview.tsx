@@ -40,7 +40,7 @@ const StatsOverview = () => {
       return {
         enrollments: {
           total: enrollments.length,
-          active: enrollments.filter(e => e.status === 'confirmed').length
+          active: enrollments.filter(e => e.status === 'active').length
         },
         kidsWork: kidsWork.length,
         messages: {

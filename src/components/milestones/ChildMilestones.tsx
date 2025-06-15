@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -55,7 +54,7 @@ const ChildMilestones = ({ childId }: ChildMilestonesProps) => {
     enabled: !!user?.id
   });
 
-  // Fetch milestones
+  // Fetch milestones with proper join to profiles table
   const { data: milestones = [], isLoading } = useQuery({
     queryKey: ['child-milestones', user?.id, childId],
     queryFn: async () => {
@@ -66,8 +65,9 @@ const ChildMilestones = ({ childId }: ChildMilestonesProps) => {
         .select(`
           *,
           children(first_name, last_name),
-          recorded_by_profile:profiles!recorded_by(first_name, last_name)
+          profiles!inner(first_name, last_name)
         `)
+        .eq('profiles.id', supabase.from('child_milestones').select('recorded_by'))
         .order('achieved_date', { ascending: false });
 
       if (childId) {
@@ -75,7 +75,25 @@ const ChildMilestones = ({ childId }: ChildMilestonesProps) => {
       }
 
       const { data, error } = await query;
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching milestones:', error);
+        // Fallback query without profiles join
+        const fallbackQuery = supabase
+          .from('child_milestones')
+          .select(`
+            *,
+            children(first_name, last_name)
+          `)
+          .order('achieved_date', { ascending: false });
+
+        if (childId) {
+          fallbackQuery.eq('child_id', childId);
+        }
+
+        const { data: fallbackData, error: fallbackError } = await fallbackQuery;
+        if (fallbackError) throw fallbackError;
+        return fallbackData || [];
+      }
       return data || [];
     },
     enabled: !!user
@@ -276,11 +294,11 @@ const ChildMilestones = ({ childId }: ChildMilestonesProps) => {
                   <Calendar className="h-4 w-4" />
                   <span>{new Date(milestone.achieved_date).toLocaleDateString()}</span>
                 </div>
-                {milestone.recorded_by_profile && (
+                {milestone.profiles && (
                   <div className="flex items-center space-x-1">
                     <User className="h-4 w-4" />
                     <span>
-                      Recorded by {milestone.recorded_by_profile.first_name} {milestone.recorded_by_profile.last_name}
+                      Recorded by {milestone.profiles.first_name} {milestone.profiles.last_name}
                     </span>
                   </div>
                 )}

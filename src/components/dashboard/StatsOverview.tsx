@@ -8,7 +8,7 @@ import { BookOpen, MessageSquare, Bell, TrendingUp } from 'lucide-react';
 const StatsOverview = () => {
   const { user } = useAuth();
 
-  const { data: stats, isLoading } = useQuery({
+  const { data: stats, isLoading, error } = useQuery({
     queryKey: ['dashboard-stats', user?.id],
     queryFn: async () => {
       if (!user?.id) return null;
@@ -40,7 +40,7 @@ const StatsOverview = () => {
       return {
         enrollments: {
           total: enrollments.length,
-          active: enrollments.filter(e => e.status === 'active').length
+          active: enrollments.filter(e => e.status === 'active' || e.status === 'confirmed').length
         },
         messages: {
           total: messages.length,
@@ -62,14 +62,30 @@ const StatsOverview = () => {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="animate-pulse bg-white rounded-xl h-32 border border-gray-200"></div>
+          <div key={i} className="animate-pulse bg-white rounded-xl h-32 border border-black"></div>
         ))}
       </div>
     );
   }
 
+  if (error) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="col-span-4 text-center p-8 bg-white border border-black rounded-lg">
+          <p className="text-black">Unable to load statistics. Please try again later.</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!stats) {
-    return null;
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="col-span-4 text-center p-8 bg-white border border-black rounded-lg">
+          <p className="text-black">Please log in to view your statistics.</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -79,7 +95,7 @@ const StatsOverview = () => {
         value={stats.enrollments?.active || 0}
         description={`${stats.enrollments?.total || 0} total enrollments`}
         icon={<BookOpen className="h-5 w-5" />}
-        trend={{ value: 12, isPositive: true }}
+        trend={stats.enrollments?.active > 0 ? { value: 12, isPositive: true } : undefined}
       />
       
       <DashboardCard
@@ -99,7 +115,7 @@ const StatsOverview = () => {
       <DashboardCard
         title="Kids Work"
         value={stats.kidsWork?.total || 0}
-        description="Creative projects uploaded"
+        description={stats.kidsWork?.total > 0 ? "Creative projects uploaded" : "No projects yet"}
         icon={<TrendingUp className="h-5 w-5" />}
       />
     </div>

@@ -5,6 +5,8 @@ import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   Users, 
   FileText, 
@@ -18,6 +20,31 @@ import {
 
 const AdminDashboard = () => {
   const { user } = useAuth();
+
+  // Fetch real statistics from Supabase
+  const { data: stats, isLoading } = useQuery({
+    queryKey: ['admin-dashboard-stats'],
+    queryFn: async () => {
+      const [
+        usersResult,
+        pendingWorkResult,
+        messagesResult,
+        programsResult
+      ] = await Promise.all([
+        supabase.from('profiles').select('id', { count: 'exact' }),
+        supabase.from('kids_work').select('id', { count: 'exact' }),
+        supabase.from('messages').select('id', { count: 'exact' }),
+        supabase.from('programs').select('id', { count: 'exact' })
+      ]);
+
+      return {
+        totalUsers: usersResult.count || 0,
+        pendingReviews: pendingWorkResult.count || 0,
+        totalMessages: messagesResult.count || 0,
+        activePrograms: programsResult.count || 0
+      };
+    }
+  });
 
   const quickActions = [
     {
@@ -53,17 +80,17 @@ const AdminDashboard = () => {
   const adminStats = [
     {
       title: 'Total Active Users',
-      value: '1,247',
-      change: '+12%',
+      value: isLoading ? '...' : stats?.totalUsers.toString() || '0',
+      change: stats?.totalUsers > 0 ? '+12%' : 'No users yet',
       icon: Users,
       trend: 'up'
     },
     {
-      title: 'Pending Reviews',
-      value: '23',
-      change: '-5%',
+      title: 'Kids Work Submitted',
+      value: isLoading ? '...' : stats?.pendingReviews.toString() || '0',
+      change: stats?.pendingReviews > 0 ? 'Needs review' : 'All caught up',
       icon: FileText,
-      trend: 'down'
+      trend: stats?.pendingReviews > 0 ? 'up' : 'stable'
     },
     {
       title: 'System Uptime',
@@ -74,8 +101,8 @@ const AdminDashboard = () => {
     },
     {
       title: 'Active Programs',
-      value: '8',
-      change: '+2 this month',
+      value: isLoading ? '...' : stats?.activePrograms.toString() || '0',
+      change: stats?.activePrograms > 0 ? `${stats.activePrograms} available` : 'No programs yet',
       icon: Calendar,
       trend: 'up'
     }
@@ -89,7 +116,7 @@ const AdminDashboard = () => {
           <h1 className="text-2xl md:text-3xl font-bold mb-2">
             Welcome back, Admin!
           </h1>
-          <p className="text-gray-200 mb-4">
+          <p className="text-white mb-4">
             Here's what's happening with your platform today.
           </p>
           <div className="flex flex-wrap gap-2">

@@ -8,12 +8,12 @@ interface DesktopNavProps {
 
 const DesktopNav = ({ navLinks, textColor }: DesktopNavProps) => {
   return (
-    <div className="hidden md:flex items-center space-x-4 lg:space-x-8">
+    <div className="flex items-center space-x-4">
       {navLinks.map((link) => (
         <NavLink
           key={link.name}
           to={link.path}
-          className={`text-sm lg:text-base font-medium button-hover font-poppins ${textColor} hover:text-${textColor.split('-')[1]}/70 transition-all duration-300`}
+          className={`text-sm font-medium button-hover font-poppins ${textColor} hover:text-${textColor.split('-')[1]}/70 transition-all duration-300 whitespace-nowrap`}
         >
           {link.name}
         </NavLink>

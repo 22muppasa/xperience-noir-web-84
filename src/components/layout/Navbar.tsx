@@ -30,7 +30,7 @@ const Navbar = () => {
 
   return (
     <nav className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-[95%] max-w-6xl">
-      <div className="bg-white/90 backdrop-blur-md border border-gray-200/50 rounded-xl shadow-lg px-4 sm:px-6">
+      <div className="bg-white/90 backdrop-blur-md border border-gray-200/50 rounded-lg shadow-lg px-4 sm:px-6">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
@@ -39,51 +39,49 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Desktop Navigation - Hidden on mobile */}
-          {!isMobile && (
-            <div className="flex items-center space-x-8">
-              <DesktopNav navLinks={navLinks} textColor="text-gray-900" />
+          {/* Desktop Navigation - Hidden on tablet and mobile, shown only on large screens */}
+          <div className="hidden xl:flex items-center space-x-6">
+            <DesktopNav navLinks={navLinks} textColor="text-gray-900" />
 
-              {user ? (
-                <div className="flex items-center space-x-4">
-                  <Link
-                    to={userRole === 'admin' ? '/admin' : '/dashboard'}
-                    className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-colors"
-                  >
-                    <LayoutDashboard className="h-4 w-4 mr-2" />
-                    Dashboard
-                  </Link>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleSignOut}
-                    className="flex items-center space-x-2"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    <span>Sign Out</span>
-                  </Button>
-                </div>
-              ) : (
-                <div className="flex items-center space-x-4">
-                  <Link
-                    to="/auth"
-                    className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-colors"
-                  >
-                    Sign In
-                  </Link>
-                  <Link
-                    to="/auth"
-                    className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 transition-colors"
-                  >
-                    Get Started
-                  </Link>
-                </div>
-              )}
-            </div>
-          )}
+            {user ? (
+              <div className="flex items-center space-x-3">
+                <Link
+                  to={userRole === 'admin' ? '/admin' : '/dashboard'}
+                  className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-colors"
+                >
+                  <LayoutDashboard className="h-4 w-4 mr-2" />
+                  Dashboard
+                </Link>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSignOut}
+                  className="flex items-center space-x-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>Sign Out</span>
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-3">
+                <Link
+                  to="/auth"
+                  className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/auth"
+                  className="inline-flex items-center px-3 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 transition-colors"
+                >
+                  Get Started
+                </Link>
+              </div>
+            )}
+          </div>
 
-          {/* Mobile Menu - Only shown on mobile */}
-          {isMobile && (
+          {/* Mobile Menu - Shown on tablet and mobile */}
+          <div className="xl:hidden">
             <MobileMenu
               navLinks={navLinks}
               isHomePage={false}
@@ -94,7 +92,7 @@ const Navbar = () => {
               userRole={userRole}
               onSignOut={handleSignOut}
             />
-          )}
+          </div>
         </div>
       </div>
     </nav>

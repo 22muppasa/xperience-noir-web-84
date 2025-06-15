@@ -9,6 +9,7 @@ interface QuickActionCardProps {
   gradient: string;
   onClick: () => void;
   badge?: string;
+  children?: React.ReactNode;
 }
 
 const QuickActionCard = ({ 
@@ -17,12 +18,13 @@ const QuickActionCard = ({
   icon: Icon, 
   gradient, 
   onClick, 
-  badge 
+  badge,
+  children 
 }: QuickActionCardProps) => {
   return (
     <Card 
       className="relative overflow-hidden hover:shadow-lg transition-all duration-300 hover:scale-105 cursor-pointer border-0 shadow-md group"
-      onClick={onClick}
+      onClick={children ? undefined : onClick}
     >
       {/* Background gradient overlay */}
       <div className={`absolute inset-0 ${gradient} opacity-5 group-hover:opacity-10 transition-opacity duration-300`}></div>
@@ -48,11 +50,16 @@ const QuickActionCard = ({
           </p>
         </div>
         
-        {/* Action indicator */}
-        <div className="mt-4 flex items-center text-xs font-medium text-gray-500 group-hover:text-gray-700 transition-colors duration-200">
-          <span>Click to access</span>
-          <span className="ml-1 transform group-hover:translate-x-1 transition-transform duration-200">→</span>
-        </div>
+        {children ? (
+          <div className="mt-4">
+            {children}
+          </div>
+        ) : (
+          <div className="mt-4 flex items-center text-xs font-medium text-gray-500 group-hover:text-gray-700 transition-colors duration-200">
+            <span>Click to access</span>
+            <span className="ml-1 transform group-hover:translate-x-1 transition-transform duration-200">→</span>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

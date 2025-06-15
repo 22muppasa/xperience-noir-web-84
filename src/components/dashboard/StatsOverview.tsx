@@ -76,29 +76,29 @@ const StatsOverview = () => {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <DashboardCard
         title="Active Programs"
-        value={stats.enrollments.active}
-        description={`${stats.enrollments.total} total enrollments`}
+        value={stats.enrollments?.active || 0}
+        description={`${stats.enrollments?.total || 0} total enrollments`}
         icon={<BookOpen className="h-5 w-5" />}
         trend={{ value: 12, isPositive: true }}
       />
       
       <DashboardCard
         title="Messages"
-        value={stats.messages.unread}
-        description={`${stats.messages.total} total messages`}
+        value={stats.messages?.unread || 0}
+        description={`${stats.messages?.total || 0} total messages`}
         icon={<MessageSquare className="h-5 w-5" />}
       />
       
       <DashboardCard
         title="Notifications"
-        value={stats.notifications.unread}
-        description={`${stats.notifications.total} total notifications`}
+        value={stats.notifications?.unread || 0}
+        description={`${stats.notifications?.total || 0} total notifications`}
         icon={<Bell className="h-5 w-5" />}
       />
 
       <DashboardCard
         title="Kids Work"
-        value={stats.kidsWork.total}
+        value={stats.kidsWork?.total || 0}
         description="Creative projects uploaded"
         icon={<TrendingUp className="h-5 w-5" />}
       />

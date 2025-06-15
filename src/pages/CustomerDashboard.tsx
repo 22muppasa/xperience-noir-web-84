@@ -1,105 +1,110 @@
 
 import { useAuth } from '@/contexts/AuthContext';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
-import DashboardCard from '@/components/dashboard/DashboardCard';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { User, BookOpen, MessageSquare, Image } from 'lucide-react';
+import WelcomeSection from '@/components/dashboard/WelcomeSection';
+import StatsOverview from '@/components/dashboard/StatsOverview';
+import ActivityTimeline from '@/components/dashboard/ActivityTimeline';
+import QuickActionCard from '@/components/dashboard/QuickActionCard';
+import { BookOpen, Image, MessageSquare, User } from 'lucide-react';
 
 const CustomerDashboard = () => {
   const { user } = useAuth();
 
+  const quickActions = [
+    {
+      title: "Browse Programs",
+      description: "Discover new learning opportunities and creative workshops",
+      icon: BookOpen,
+      gradient: "bg-gradient-to-r from-blue-500 to-blue-600",
+      onClick: () => console.log("Navigate to programs")
+    },
+    {
+      title: "View Kids Work",
+      description: "See your latest creative projects and achievements",
+      icon: Image,
+      gradient: "bg-gradient-to-r from-green-500 to-green-600",
+      onClick: () => console.log("Navigate to kids work"),
+      badge: "New"
+    },
+    {
+      title: "Send Message",
+      description: "Contact your instructors and get support",
+      icon: MessageSquare,
+      gradient: "bg-gradient-to-r from-purple-500 to-purple-600",
+      onClick: () => console.log("Navigate to messages"),
+      badge: "2"
+    },
+    {
+      title: "Update Profile",
+      description: "Manage your account settings and preferences",
+      icon: User,
+      gradient: "bg-gradient-to-r from-orange-500 to-orange-600",
+      onClick: () => console.log("Navigate to profile")
+    }
+  ];
+
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-8 animate-fade-in">
         {/* Welcome Section */}
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Customer Dashboard</h1>
-          <p className="text-gray-600">Welcome back, {user?.email}</p>
-        </div>
+        <WelcomeSection />
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <DashboardCard
-            title="Active Programs"
-            value="3"
-            description="Currently enrolled"
-            icon={<BookOpen className="h-5 w-5" />}
-          />
-          <DashboardCard
-            title="Kids Work"
-            value="12"
-            description="New uploads this week"
-            icon={<Image className="h-5 w-5" />}
-          />
-          <DashboardCard
-            title="Messages"
-            value="2"
-            description="Unread messages"
-            icon={<MessageSquare className="h-5 w-5" />}
-          />
-          <DashboardCard
-            title="Profile"
-            value="85%"
-            description="Profile complete"
-            icon={<User className="h-5 w-5" />}
-          />
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Your Overview</h2>
+          <StatsOverview />
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Recent Activity */}
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle>Recent Activity</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center space-x-4">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <div>
-                    <p className="text-sm font-medium">New work uploaded for Summer Camp</p>
-                    <p className="text-xs text-gray-500">2 hours ago</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                  <div>
-                    <p className="text-sm font-medium">Message from camp instructor</p>
-                    <p className="text-xs text-gray-500">1 day ago</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                  <div>
-                    <p className="text-sm font-medium">Enrolled in Art Workshop</p>
-                    <p className="text-xs text-gray-500">3 days ago</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+          {/* Activity Timeline */}
+          <div className="xl:col-span-2">
+            <ActivityTimeline />
+          </div>
 
           {/* Quick Actions */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <Button className="w-full" variant="outline">
-                Browse Programs
-              </Button>
-              <Button className="w-full" variant="outline">
-                View Kids Work
-              </Button>
-              <Button className="w-full" variant="outline">
-                Send Message
-              </Button>
-              <Button className="w-full" variant="outline">
-                Update Profile
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold text-gray-900">Quick Actions</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 gap-4">
+              {quickActions.map((action, index) => (
+                <div
+                  key={action.title}
+                  className="animate-fade-in"
+                  style={{ 
+                    animationDelay: `${index * 100 + 400}ms`,
+                    animationFillMode: 'forwards'
+                  }}
+                >
+                  <QuickActionCard {...action} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Additional Info Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-xl p-6 border border-pink-100">
+            <h3 className="font-semibold text-gray-900 mb-2">Upcoming Events</h3>
+            <p className="text-sm text-gray-600 mb-4">Art Workshop: Advanced Techniques</p>
+            <div className="text-xs text-purple-600 bg-purple-100 px-2 py-1 rounded-full inline-block">
+              Tomorrow, 2:00 PM
+            </div>
+          </div>
+          
+          <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-xl p-6 border border-blue-100">
+            <h3 className="font-semibold text-gray-900 mb-2">Learning Streak</h3>
+            <p className="text-2xl font-bold text-blue-600 mb-2">7 days</p>
+            <p className="text-xs text-gray-600">Keep up the great work!</p>
+          </div>
+          
+          <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-100">
+            <h3 className="font-semibold text-gray-900 mb-2">Next Milestone</h3>
+            <p className="text-sm text-gray-600 mb-2">Complete 3 more projects</p>
+            <div className="w-full bg-green-100 rounded-full h-2">
+              <div className="bg-green-500 h-2 rounded-full" style={{ width: '60%' }}></div>
+            </div>
+          </div>
         </div>
       </div>
     </DashboardLayout>

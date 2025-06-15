@@ -17,11 +17,11 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const DashboardSidebar = () => {
-  const { user } = useAuth();
+  const { userRole } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
-  const isAdmin = user?.user_metadata?.role === 'admin';
+  const isAdmin = userRole === 'admin';
 
   const adminMenuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },

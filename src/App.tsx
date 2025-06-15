@@ -42,11 +42,11 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<Index />} />
@@ -61,30 +61,30 @@ function App() {
               <Route path="/auth" element={<Auth />} />
 
               {/* Customer Protected Routes */}
-              <Route path="/customer" element={<ProtectedRoute><CustomerDashboard /></ProtectedRoute>} />
-              <Route path="/customer/programs" element={<ProtectedRoute><CustomerPrograms /></ProtectedRoute>} />
-              <Route path="/customer/children" element={<ProtectedRoute><CustomerChildren /></ProtectedRoute>} />
-              <Route path="/customer/kids-work" element={<ProtectedRoute><CustomerKidsWork /></ProtectedRoute>} />
-              <Route path="/customer/messages" element={<ProtectedRoute><CustomerMessages /></ProtectedRoute>} />
-              <Route path="/customer/profile" element={<ProtectedRoute><CustomerProfile /></ProtectedRoute>} />
+              <Route path="/customer" element={<ProtectedRoute requiredRole="customer"><CustomerDashboard /></ProtectedRoute>} />
+              <Route path="/customer/programs" element={<ProtectedRoute requiredRole="customer"><CustomerPrograms /></ProtectedRoute>} />
+              <Route path="/customer/children" element={<ProtectedRoute requiredRole="customer"><CustomerChildren /></ProtectedRoute>} />
+              <Route path="/customer/kids-work" element={<ProtectedRoute requiredRole="customer"><CustomerKidsWork /></ProtectedRoute>} />
+              <Route path="/customer/messages" element={<ProtectedRoute requiredRole="customer"><CustomerMessages /></ProtectedRoute>} />
+              <Route path="/customer/profile" element={<ProtectedRoute requiredRole="customer"><CustomerProfile /></ProtectedRoute>} />
 
               {/* Admin Protected Routes */}
-              <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
-              <Route path="/admin/customers" element={<ProtectedRoute adminOnly><AdminCustomers /></ProtectedRoute>} />
-              <Route path="/admin/children" element={<ProtectedRoute adminOnly><AdminChildren /></ProtectedRoute>} />
-              <Route path="/admin/programs" element={<ProtectedRoute adminOnly><AdminPrograms /></ProtectedRoute>} />
-              <Route path="/admin/kids-work" element={<ProtectedRoute adminOnly><AdminKidsWork /></ProtectedRoute>} />
-              <Route path="/admin/messages" element={<ProtectedRoute adminOnly><AdminMessages /></ProtectedRoute>} />
-              <Route path="/admin/social-posts" element={<ProtectedRoute adminOnly><AdminSocialPosts /></ProtectedRoute>} />
-              <Route path="/admin/contact-forms" element={<ProtectedRoute adminOnly><AdminContactForms /></ProtectedRoute>} />
-              <Route path="/admin/settings" element={<ProtectedRoute adminOnly><AdminSettings /></ProtectedRoute>} />
+              <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
+              <Route path="/admin/customers" element={<ProtectedRoute requiredRole="admin"><AdminCustomers /></ProtectedRoute>} />
+              <Route path="/admin/children" element={<ProtectedRoute requiredRole="admin"><AdminChildren /></ProtectedRoute>} />
+              <Route path="/admin/programs" element={<ProtectedRoute requiredRole="admin"><AdminPrograms /></ProtectedRoute>} />
+              <Route path="/admin/kids-work" element={<ProtectedRoute requiredRole="admin"><AdminKidsWork /></ProtectedRoute>} />
+              <Route path="/admin/messages" element={<ProtectedRoute requiredRole="admin"><AdminMessages /></ProtectedRoute>} />
+              <Route path="/admin/social-posts" element={<ProtectedRoute requiredRole="admin"><AdminSocialPosts /></ProtectedRoute>} />
+              <Route path="/admin/contact-forms" element={<ProtectedRoute requiredRole="admin"><AdminContactForms /></ProtectedRoute>} />
+              <Route path="/admin/settings" element={<ProtectedRoute requiredRole="admin"><AdminSettings /></ProtectedRoute>} />
 
               {/* 404 Route */}
               <Route path="*" element={<NotFound />} />
             </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
-      </AuthProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
     </QueryClientProvider>
   );
 }

@@ -30,6 +30,20 @@ interface ChildCardProps {
 }
 
 const ChildCard = ({ relationship }: ChildCardProps) => {
+  // Capitalize and format relationship type for display
+  const formatRelationshipType = (type: string) => {
+    switch (type) {
+      case 'parent':
+        return 'Parent';
+      case 'guardian':
+        return 'Guardian';
+      case 'family_member':
+        return 'Family Member';
+      default:
+        return type.charAt(0).toUpperCase() + type.slice(1);
+    }
+  };
+
   return (
     <Card className="bg-white border-black">
       <CardHeader className="pb-3">
@@ -69,7 +83,7 @@ const ChildCard = ({ relationship }: ChildCardProps) => {
         
         <div className="flex flex-wrap gap-1 pt-2">
           <Badge variant="outline" className="text-xs text-black border-black bg-white">
-            {relationship.relationship_type}
+            {formatRelationshipType(relationship.relationship_type)}
           </Badge>
           {relationship.can_view_work && (
             <Badge variant="outline" className="text-xs text-green-600 border-green-600 bg-white">

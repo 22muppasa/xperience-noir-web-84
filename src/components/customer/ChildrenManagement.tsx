@@ -46,11 +46,13 @@ interface ChildAssociationRequest {
 const ChildrenManagement = () => {
   const { user } = useAuth();
 
-  // Fetch user's approved children relationships
+  // Fetch user's approved children relationships (all relationship types)
   const { data: myChildren = [], isLoading } = useQuery({
     queryKey: ['my-children', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
+      
+      console.log('Fetching relationships for user:', user.id);
       
       const { data, error } = await supabase
         .from('parent_child_relationships')
@@ -62,17 +64,24 @@ const ChildrenManagement = () => {
         .eq('status', 'approved')
         .order('assigned_at', { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching children relationships:', error);
+        throw error;
+      }
+      
+      console.log('Fetched relationships:', data);
       return data as ParentChildRelationship[];
     },
     enabled: !!user?.id
   });
 
-  // Fetch user's pending requests
+  // Fetch user's pending requests (all relationship types)
   const { data: pendingRequests = [] } = useQuery({
     queryKey: ['pending-requests', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
+      
+      console.log('Fetching pending requests for user:', user.id);
       
       const { data, error } = await supabase
         .from('child_association_requests')
@@ -84,7 +93,12 @@ const ChildrenManagement = () => {
         .eq('status', 'pending')
         .order('requested_at', { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching pending requests:', error);
+        throw error;
+      }
+      
+      console.log('Fetched pending requests:', data);
       return data as ChildAssociationRequest[];
     },
     enabled: !!user?.id

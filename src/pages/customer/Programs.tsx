@@ -1,64 +1,56 @@
 
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
-import DashboardCard from '@/components/dashboard/DashboardCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { BookOpen, Calendar, Users, Clock } from 'lucide-react';
+import ProgramsGrid from '@/components/programs/ProgramsGrid';
+
+interface Enrollment {
+  id: string;
+  program_id: string;
+  child_name: string;
+  enrolled_at: string;
+  status: string;
+  programs: {
+    title: string;
+  };
+}
 
 const Programs = () => {
-  // Mock data for programs
-  const availablePrograms = [
-    {
-      id: 1,
-      title: 'Summer Art Camp',
-      description: 'Creative arts program for kids aged 6-12',
-      duration: '2 weeks',
-      startDate: '2024-07-01',
-      endDate: '2024-07-15',
-      price: 299,
-      maxParticipants: 20,
-      enrolled: 15,
-      category: 'Arts',
-      status: 'open'
-    },
-    {
-      id: 2,
-      title: 'STEM Workshop',
-      description: 'Science, Technology, Engineering, and Math activities',
-      duration: '1 week',
-      startDate: '2024-07-08',
-      endDate: '2024-07-12',
-      price: 199,
-      maxParticipants: 15,
-      enrolled: 12,
-      category: 'STEM',
-      status: 'open'
-    },
-    {
-      id: 3,
-      title: 'Nature Adventure',
-      description: 'Outdoor exploration and environmental education',
-      duration: '3 days',
-      startDate: '2024-07-15',
-      endDate: '2024-07-17',
-      price: 149,
-      maxParticipants: 25,
-      enrolled: 25,
-      category: 'Outdoor',
-      status: 'full'
-    }
-  ];
+  const { user } = useAuth();
 
-  const myEnrollments = [
-    {
-      id: 1,
-      programTitle: 'Summer Art Camp',
-      childName: 'Emma Johnson',
-      enrolledDate: '2024-06-15',
-      status: 'confirmed'
-    }
-  ];
+  // Fetch user's enrollments from the database
+  const { data: myEnrollments = [], isLoading: enrollmentsLoading } = useQuery({
+    queryKey: ['my-enrollments', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      
+      const { data, error } = await supabase
+        .from('enrollments')
+        .select(`
+          id,
+          program_id,
+          child_name,
+          enrolled_at,
+          status,
+          programs!inner(title)
+        `)
+        .eq('customer_id', user.id)
+        .order('enrolled_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching enrollments:', error);
+        throw error;
+      }
+      
+      return data as Enrollment[];
+    },
+    enabled: !!user?.id
+  });
 
   return (
     <DashboardLayout>
@@ -71,71 +63,60 @@ const Programs = () => {
         {/* My Enrollments */}
         <div>
           <h2 className="text-lg font-semibold mb-4 text-black">My Enrollments</h2>
-          <div className="grid gap-4">
-            {myEnrollments.map((enrollment) => (
-              <Card key={enrollment.id} className="bg-white border-black">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-medium text-black">{enrollment.programTitle}</h3>
-                      <p className="text-sm text-black">Child: {enrollment.childName}</p>
-                      <p className="text-sm text-black">Enrolled: {enrollment.enrolledDate}</p>
+          {enrollmentsLoading ? (
+            <Card className="bg-white border-black">
+              <CardContent className="p-4">
+                <div className="animate-pulse">
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                </div>
+              </CardContent>
+            </Card>
+          ) : myEnrollments.length > 0 ? (
+            <div className="grid gap-4">
+              {myEnrollments.map((enrollment) => (
+                <Card key={enrollment.id} className="bg-white border-black">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-medium text-black">{enrollment.programs.title}</h3>
+                        <p className="text-sm text-black">Child: {enrollment.child_name}</p>
+                        <p className="text-sm text-black">
+                          Enrolled: {new Date(enrollment.enrolled_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <Badge 
+                        variant="outline" 
+                        className={`${
+                          enrollment.status === 'active' 
+                            ? 'bg-green-50 text-green-700 border-green-700'
+                            : enrollment.status === 'pending'
+                            ? 'bg-yellow-50 text-yellow-700 border-yellow-700'
+                            : 'bg-gray-50 text-gray-700 border-gray-700'
+                        }`}
+                      >
+                        {enrollment.status}
+                      </Badge>
                     </div>
-                    <Badge variant="outline" className="bg-green-50 text-green-700 border-green-700">
-                      {enrollment.status}
-                    </Badge>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card className="bg-white border-black">
+              <CardContent className="p-12 text-center">
+                <BookOpen className="h-12 w-12 text-black mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2 text-black">No enrollments yet</h3>
+                <p className="text-black">Enroll in a program below to get started!</p>
+              </CardContent>
+            </Card>
+          )}
         </div>
 
         {/* Available Programs */}
         <div>
           <h2 className="text-lg font-semibold mb-4 text-black">Available Programs</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {availablePrograms.map((program) => (
-              <Card key={program.id} className="bg-white border-black hover:shadow-md transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg text-black">{program.title}</CardTitle>
-                    <Badge variant={program.status === 'open' ? 'default' : 'destructive'}>
-                      {program.status}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <p className="text-sm text-black">{program.description}</p>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center text-sm text-black">
-                      <Calendar className="h-4 w-4 mr-2 text-black" />
-                      {program.startDate} - {program.endDate}
-                    </div>
-                    <div className="flex items-center text-sm text-black">
-                      <Clock className="h-4 w-4 mr-2 text-black" />
-                      {program.duration}
-                    </div>
-                    <div className="flex items-center text-sm text-black">
-                      <Users className="h-4 w-4 mr-2 text-black" />
-                      {program.enrolled}/{program.maxParticipants} enrolled
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between pt-4">
-                    <span className="text-lg font-bold text-black">${program.price}</span>
-                    <Button 
-                      disabled={program.status === 'full'}
-                      className="w-24"
-                    >
-                      {program.status === 'full' ? 'Full' : 'Enroll'}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+          <ProgramsGrid />
         </div>
       </div>
     </DashboardLayout>

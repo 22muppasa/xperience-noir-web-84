@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, Users, DollarSign } from 'lucide-react';
+import { Calendar, Clock, Users, DollarSign, BookOpen } from 'lucide-react';
 import ProgramEnrollment from './ProgramEnrollment';
 
 interface Program {
@@ -26,13 +26,20 @@ const ProgramsGrid = () => {
   const { data: programs = [], isLoading } = useQuery({
     queryKey: ['programs'],
     queryFn: async () => {
+      console.log('Fetching programs from database...');
+      
       const { data, error } = await supabase
         .from('programs')
         .select('*')
         .eq('status', 'published')
         .order('created_at', { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching programs:', error);
+        throw error;
+      }
+      
+      console.log('Fetched programs:', data);
       return data as Program[];
     }
   });
@@ -74,11 +81,13 @@ const ProgramsGrid = () => {
 
   if (programs.length === 0) {
     return (
-      <div className="text-center py-12">
-        <Calendar className="h-16 w-16 mx-auto text-black mb-4" />
-        <h3 className="text-lg font-semibold text-black mb-2">No Programs Available</h3>
-        <p className="text-black">Check back soon for new programs!</p>
-      </div>
+      <Card className="bg-white border-black">
+        <CardContent className="p-12 text-center">
+          <BookOpen className="h-16 w-16 mx-auto text-black mb-4" />
+          <h3 className="text-lg font-semibold text-black mb-2">No Programs Available</h3>
+          <p className="text-black">There are currently no programs available. Check back soon for new programs!</p>
+        </CardContent>
+      </Card>
     );
   }
 

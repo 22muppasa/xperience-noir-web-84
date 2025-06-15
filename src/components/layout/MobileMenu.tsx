@@ -96,12 +96,11 @@ const MobileMenu = ({
               <Link
                 key={link.name}
                 to={link.path}
-                className="group px-4 py-4 text-base rounded-xl transition-all duration-200 font-poppins text-gray-700 hover:bg-gray-100/80 hover:text-gray-900 relative overflow-hidden"
+                className="group px-4 py-4 text-base rounded-xl transition-all duration-200 font-poppins text-gray-700 hover:bg-gray-100/80 hover:text-gray-900 relative overflow-hidden animate-fade-in"
                 onClick={() => handleOpenChange(false)}
                 style={{ 
-                  opacity: 0,
-                  transform: 'translateX(20px)',
-                  animation: isOpen ? `slideInFromRight 400ms ease-out forwards ${index * 50 + 100}ms` : 'none'
+                  animationDelay: `${index * 50 + 100}ms`,
+                  animationFillMode: 'forwards'
                 }}
               >
                 <span className="relative z-10">{link.name}</span>
@@ -114,11 +113,10 @@ const MobileMenu = ({
           <div className="mt-auto space-y-3">
             {user ? (
               <div 
-                className="space-y-3"
+                className="space-y-3 animate-fade-in"
                 style={{ 
-                  opacity: 0,
-                  transform: 'translateY(20px)',
-                  animation: isOpen ? 'slideInFromBottom 500ms ease-out forwards 600ms' : 'none'
+                  animationDelay: '600ms',
+                  animationFillMode: 'forwards'
                 }}
               >
                 <Link
@@ -144,11 +142,10 @@ const MobileMenu = ({
               </div>
             ) : (
               <div 
-                className="space-y-3"
+                className="space-y-3 animate-fade-in"
                 style={{ 
-                  opacity: 0,
-                  transform: 'translateY(20px)',
-                  animation: isOpen ? 'slideInFromBottom 500ms ease-out forwards 600ms' : 'none'
+                  animationDelay: '600ms',
+                  animationFillMode: 'forwards'
                 }}
               >
                 <Link
@@ -169,31 +166,6 @@ const MobileMenu = ({
             )}
           </div>
         </div>
-
-        {/* Custom animations */}
-        <style jsx>{`
-          @keyframes slideInFromRight {
-            from {
-              opacity: 0;
-              transform: translateX(20px);
-            }
-            to {
-              opacity: 1;
-              transform: translateX(0);
-            }
-          }
-
-          @keyframes slideInFromBottom {
-            from {
-              opacity: 0;
-              transform: translateY(20px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-        `}</style>
       </SheetContent>
     </Sheet>
   );

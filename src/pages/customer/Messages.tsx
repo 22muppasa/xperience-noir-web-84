@@ -53,11 +53,11 @@ const Messages = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Messages</h1>
-            <p className="text-gray-600">Communicate with camp administrators and instructors</p>
+            <h1 className="text-2xl font-bold text-black">Messages</h1>
+            <p className="text-black">Communicate with camp administrators and instructors</p>
           </div>
           <Button onClick={() => setIsComposing(!isComposing)}>
-            <Edit className="h-4 w-4 mr-2" />
+            <Edit className="h-4 w-4 mr-2 text-black" />
             Compose
           </Button>
         </div>
@@ -67,10 +67,10 @@ const Messages = () => {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
-                <Inbox className="h-5 w-5 text-blue-500" />
+                <Inbox className="h-5 w-5 text-black" />
                 <div>
-                  <p className="text-sm text-gray-600">Total Messages</p>
-                  <p className="text-2xl font-bold">{messages.length}</p>
+                  <p className="text-sm text-black">Total Messages</p>
+                  <p className="text-2xl font-bold text-black">{messages.length}</p>
                 </div>
               </div>
             </CardContent>
@@ -78,10 +78,10 @@ const Messages = () => {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
-                <MessageSquare className="h-5 w-5 text-orange-500" />
+                <MessageSquare className="h-5 w-5 text-black" />
                 <div>
-                  <p className="text-sm text-gray-600">Unread</p>
-                  <p className="text-2xl font-bold">
+                  <p className="text-sm text-black">Unread</p>
+                  <p className="text-2xl font-bold text-black">
                     {messages.filter(m => m.status === 'unread').length}
                   </p>
                 </div>
@@ -91,10 +91,10 @@ const Messages = () => {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
-                <Send className="h-5 w-5 text-green-500" />
+                <Send className="h-5 w-5 text-black" />
                 <div>
-                  <p className="text-sm text-gray-600">This Week</p>
-                  <p className="text-2xl font-bold">5</p>
+                  <p className="text-sm text-black">This Week</p>
+                  <p className="text-2xl font-bold text-black">5</p>
                 </div>
               </div>
             </CardContent>
@@ -112,17 +112,17 @@ const Messages = () => {
             {isComposing && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Compose Message</CardTitle>
+                  <CardTitle className="text-black">Compose Message</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <Input placeholder="Subject" />
+                  <Input placeholder="Subject" className="text-black" />
                   <Textarea 
                     placeholder="Your message..." 
-                    className="min-h-32"
+                    className="min-h-32 text-black"
                   />
                   <div className="flex space-x-2">
                     <Button onClick={handleSendMessage}>
-                      <Send className="h-4 w-4 mr-2" />
+                      <Send className="h-4 w-4 mr-2 text-black" />
                       Send Message
                     </Button>
                     <Button variant="outline" onClick={() => setIsComposing(false)}>
@@ -141,18 +141,18 @@ const Messages = () => {
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-2">
-                          <h3 className="font-semibold text-lg">{message.subject}</h3>
+                          <h3 className="font-semibold text-lg text-black">{message.subject}</h3>
                           {message.status === 'unread' && (
-                            <Badge variant="destructive" className="text-xs">New</Badge>
+                            <Badge variant="destructive" className="text-xs bg-black text-white">New</Badge>
                           )}
                         </div>
-                        <p className="text-sm text-gray-600 mb-2">From: {message.sender}</p>
-                        <p className="text-sm text-gray-500">{message.timestamp}</p>
+                        <p className="text-sm text-black mb-2">From: {message.sender}</p>
+                        <p className="text-sm text-black">{message.timestamp}</p>
                       </div>
                     </div>
-                    <p className="text-gray-700 line-clamp-3">{message.content}</p>
+                    <p className="text-black line-clamp-3">{message.content}</p>
                     <div className="mt-4">
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" className="text-black border-black">
                         View Full Message
                       </Button>
                     </div>
@@ -165,9 +165,9 @@ const Messages = () => {
           <TabsContent value="sent" className="space-y-4">
             <Card>
               <CardContent className="p-6 text-center">
-                <MessageSquare className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-600">No sent messages yet</p>
-                <p className="text-sm text-gray-500">Messages you send will appear here</p>
+                <MessageSquare className="h-12 w-12 text-black mx-auto mb-4" />
+                <p className="text-black">No sent messages yet</p>
+                <p className="text-sm text-black">Messages you send will appear here</p>
               </CardContent>
             </Card>
           </TabsContent>

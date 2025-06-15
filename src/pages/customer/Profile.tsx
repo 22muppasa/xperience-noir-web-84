@@ -41,8 +41,8 @@ const Profile = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Profile</h1>
-            <p className="text-gray-600">Manage your account and family information</p>
+            <h1 className="text-2xl font-bold text-black">Profile</h1>
+            <p className="text-black">Manage your account and family information</p>
           </div>
           <Button 
             onClick={() => setIsEditing(!isEditing)}
@@ -57,13 +57,13 @@ const Profile = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-semibold">Profile Completion</h3>
-                <p className="text-sm text-gray-600">Complete your profile for better service</p>
+                <h3 className="font-semibold text-black">Profile Completion</h3>
+                <p className="text-black text-sm">Complete your profile for better service</p>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-blue-600">85%</div>
-                <div className="w-24 bg-gray-200 rounded-full h-2">
-                  <div className="bg-blue-600 h-2 rounded-full" style={{ width: '85%' }}></div>
+                <div className="text-2xl font-bold text-black">85%</div>
+                <div className="w-24 bg-black rounded-full h-2">
+                  <div className="bg-white h-2 rounded-full" style={{ width: '85%' }}></div>
                 </div>
               </div>
             </div>
@@ -74,15 +74,15 @@ const Profile = () => {
           {/* Personal Information */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <User className="h-5 w-5 mr-2" />
+              <CardTitle className="flex items-center text-black">
+                <User className="h-5 w-5 mr-2 text-black" />
                 Personal Information
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="firstName">First Name</Label>
+                  <Label htmlFor="firstName" className="text-black">First Name</Label>
                   <Input
                     id="firstName"
                     value={profileData.firstName}
@@ -91,7 +91,7 @@ const Profile = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="lastName">Last Name</Label>
+                  <Label htmlFor="lastName" className="text-black">Last Name</Label>
                   <Input
                     id="lastName"
                     value={profileData.lastName}
@@ -102,18 +102,18 @@ const Profile = () => {
               </div>
               
               <div>
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-black">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   value={profileData.email}
                   disabled
-                  className="bg-gray-50"
+                  className="bg-white text-black"
                 />
               </div>
 
               <div>
-                <Label htmlFor="phone">Phone Number</Label>
+                <Label htmlFor="phone" className="text-black">Phone Number</Label>
                 <Input
                   id="phone"
                   value={profileData.phone}
@@ -123,18 +123,19 @@ const Profile = () => {
               </div>
 
               <div>
-                <Label htmlFor="address">Address</Label>
+                <Label htmlFor="address" className="text-black">Address</Label>
                 <Textarea
                   id="address"
                   value={profileData.address}
                   onChange={(e) => setProfileData({...profileData, address: e.target.value})}
                   disabled={!isEditing}
                   rows={2}
+                  className="bg-white text-black"
                 />
               </div>
 
               <div>
-                <Label htmlFor="emergency">Emergency Contact</Label>
+                <Label htmlFor="emergency" className="text-black">Emergency Contact</Label>
                 <Input
                   id="emergency"
                   value={profileData.emergencyContact}
@@ -148,13 +149,13 @@ const Profile = () => {
           {/* Children Information */}
           <Card>
             <CardHeader>
-              <CardTitle>Children Information</CardTitle>
+              <CardTitle className="text-black">Children Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {profileData.children.map((child, index) => (
                 <div key={index} className="border rounded-lg p-4 space-y-3">
                   <div>
-                    <Label htmlFor={`childName${index}`}>Child's Name</Label>
+                    <Label htmlFor={`childName${index}`} className="text-black">Child's Name</Label>
                     <Input
                       id={`childName${index}`}
                       value={child.name}
@@ -163,7 +164,7 @@ const Profile = () => {
                   </div>
                   
                   <div>
-                    <Label htmlFor={`childAge${index}`}>Age</Label>
+                    <Label htmlFor={`childAge${index}`} className="text-black">Age</Label>
                     <Input
                       id={`childAge${index}`}
                       type="number"
@@ -173,7 +174,7 @@ const Profile = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor={`allergies${index}`}>Allergies</Label>
+                    <Label htmlFor={`allergies${index}`} className="text-black">Allergies</Label>
                     <Input
                       id={`allergies${index}`}
                       value={child.allergies}
@@ -182,12 +183,13 @@ const Profile = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor={`medical${index}`}>Medical Notes</Label>
+                    <Label htmlFor={`medical${index}`} className="text-black">Medical Notes</Label>
                     <Textarea
                       id={`medical${index}`}
                       value={child.medicalNotes}
                       disabled={!isEditing}
                       rows={2}
+                      className="bg-white text-black"
                     />
                   </div>
                 </div>

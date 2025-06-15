@@ -66,7 +66,7 @@ const ChildMilestones = ({ childId }: ChildMilestonesProps) => {
         .select(`
           *,
           children(first_name, last_name),
-          profiles!child_milestones_recorded_by_fkey(first_name, last_name)
+          recorded_by_profile:profiles!recorded_by(first_name, last_name)
         `)
         .order('achieved_date', { ascending: false });
 
@@ -276,11 +276,11 @@ const ChildMilestones = ({ childId }: ChildMilestonesProps) => {
                   <Calendar className="h-4 w-4" />
                   <span>{new Date(milestone.achieved_date).toLocaleDateString()}</span>
                 </div>
-                {milestone.profiles && (
+                {milestone.recorded_by_profile && (
                   <div className="flex items-center space-x-1">
                     <User className="h-4 w-4" />
                     <span>
-                      Recorded by {milestone.profiles.first_name} {milestone.profiles.last_name}
+                      Recorded by {milestone.recorded_by_profile.first_name} {milestone.recorded_by_profile.last_name}
                     </span>
                   </div>
                 )}

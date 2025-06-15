@@ -32,12 +32,21 @@ const AdminMessages = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('messages')
-        .select(`
-          *,
-          sender:sender_id(first_name, last_name, email),
-          recipient:recipient_id(first_name, last_name, email)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
+  // Fetch user profiles for sender/recipient info
+  const { data: profiles = [] } = useQuery({
+    queryKey: ['user-profiles'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name, email');
 
       if (error) throw error;
       return data || [];
@@ -124,6 +133,16 @@ const AdminMessages = () => {
       subject: newMessage.subject,
       content: newMessage.content
     });
+  };
+
+  // Helper function to get user info
+  const getUserInfo = (userId: string | null) => {
+    if (!userId) return { name: 'Admin', email: 'System' };
+    const profile = profiles.find(p => p.id === userId);
+    return {
+      name: profile ? `${profile.first_name} ${profile.last_name}` : 'Unknown User',
+      email: profile?.email || 'Unknown'
+    };
   };
 
   const unreadCount = messages.filter(m => m.status === 'unread').length;
@@ -220,50 +239,51 @@ const AdminMessages = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {messages.map((message) => (
-                        <TableRow key={message.id}>
-                          <TableCell>
-                            <div className="text-black">
-                              <div className="font-medium">
-                                {message.sender ? 
-                                  `${message.sender.first_name} ${message.sender.last_name}` : 
-                                  'Admin'
-                                }
+                      {messages.map((message) => {
+                        const senderInfo = getUserInfo(message.sender_id);
+                        
+                        return (
+                          <TableRow key={message.id}>
+                            <TableCell>
+                              <div className="text-black">
+                                <div className="font-medium">
+                                  {senderInfo.name}
+                                </div>
+                                <div className="text-sm">
+                                  {senderInfo.email}
+                                </div>
                               </div>
-                              <div className="text-sm">
-                                {message.sender?.email || 'System'}
-                              </div>
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-black">{message.subject}</TableCell>
-                          <TableCell className="text-black">
-                            {new Date(message.created_at).toLocaleDateString()}
-                          </TableCell>
-                          <TableCell>
-                            <Badge 
-                              variant={message.status === 'unread' ? 'destructive' : 'default'}
-                              className="text-white"
-                            >
-                              {message.status}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex space-x-2">
-                              <Button size="sm" variant="outline" className="border-black text-black">
-                                <Reply className="h-4 w-4" />
-                              </Button>
-                              <Button 
-                                size="sm" 
-                                variant="outline" 
-                                className="border-black text-red-600 hover:bg-red-50"
-                                onClick={() => deleteMessageMutation.mutate(message.id)}
+                            </TableCell>
+                            <TableCell className="text-black">{message.subject}</TableCell>
+                            <TableCell className="text-black">
+                              {new Date(message.created_at).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell>
+                              <Badge 
+                                variant={message.status === 'unread' ? 'destructive' : 'default'}
+                                className="text-white"
                               >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                                {message.status}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex space-x-2">
+                                <Button size="sm" variant="outline" className="border-black text-black">
+                                  <Reply className="h-4 w-4" />
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="outline" 
+                                  className="border-black text-red-600 hover:bg-red-50"
+                                  onClick={() => deleteMessageMutation.mutate(message.id)}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 ) : (

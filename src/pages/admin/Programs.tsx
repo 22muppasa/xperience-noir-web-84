@@ -73,7 +73,7 @@ const AdminPrograms = () => {
       const { data, error } = await supabase
         .from('enrollments')
         .select('program_id, status')
-        .in('status', ['active', 'confirmed']);
+        .in('status', ['active', 'pending']);
 
       if (error) throw error;
 
@@ -93,15 +93,15 @@ const AdminPrograms = () => {
     mutationFn: async (programData: typeof newProgram) => {
       const { error } = await supabase
         .from('programs')
-        .insert([{
+        .insert({
           title: programData.title,
           description: programData.description || null,
           start_date: programData.start_date || null,
           end_date: programData.end_date || null,
           price: programData.price ? parseFloat(programData.price) : null,
           max_participants: programData.max_participants ? parseInt(programData.max_participants) : null,
-          status: 'active'
-        }]);
+          status: 'published'
+        });
 
       if (error) throw error;
     },
@@ -162,7 +162,7 @@ const AdminPrograms = () => {
     createProgramMutation.mutate(newProgram);
   };
 
-  const activePrograms = programs.filter(p => p.status === 'active');
+  const activePrograms = programs.filter(p => p.status === 'published');
   const draftPrograms = programs.filter(p => p.status === 'draft');
   const totalRevenue = programs.reduce((sum, program) => {
     const enrolled = enrollmentStats?.[program.id] || 0;
@@ -343,7 +343,7 @@ const AdminPrograms = () => {
                             </TableCell>
                             <TableCell>
                               <Badge 
-                                variant={program.status === 'active' ? 'default' : 'secondary'}
+                                variant={program.status === 'published' ? 'default' : 'secondary'}
                                 className="text-white"
                               >
                                 {program.status}

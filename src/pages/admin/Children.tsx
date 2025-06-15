@@ -1,9 +1,9 @@
-
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
+import ChildAssociationRequests from '@/components/admin/ChildAssociationRequests';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,7 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, UserPlus, Baby, Calendar, Phone, Heart, Search, Link, Unlink } from 'lucide-react';
+import { Users, UserPlus, Baby, Calendar, Phone, Heart, Search, Link, Unlink, Clock } from 'lucide-react';
 
 interface Child {
   id: string;
@@ -343,8 +343,12 @@ const AdminChildren = () => {
           />
         </div>
 
-        <Tabs defaultValue="children" className="space-y-6">
+        <Tabs defaultValue="requests" className="space-y-6">
           <TabsList className="bg-white border-black">
+            <TabsTrigger value="requests" className="flex items-center space-x-2 text-black">
+              <Clock className="h-4 w-4" />
+              <span>Association Requests</span>
+            </TabsTrigger>
             <TabsTrigger value="children" className="flex items-center space-x-2 text-black">
               <Baby className="h-4 w-4" />
               <span>Children ({filteredChildren.length})</span>
@@ -354,6 +358,10 @@ const AdminChildren = () => {
               <span>Relationships ({filteredRelationships.length})</span>
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="requests">
+            <ChildAssociationRequests />
+          </TabsContent>
 
           <TabsContent value="children">
             {filteredChildren.length === 0 ? (

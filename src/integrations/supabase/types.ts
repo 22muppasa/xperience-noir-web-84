@@ -42,6 +42,61 @@ export type Database = {
         }
         Relationships: []
       }
+      child_association_requests: {
+        Row: {
+          child_id: string
+          id: string
+          notes: string | null
+          parent_id: string
+          requested_at: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+        }
+        Insert: {
+          child_id: string
+          id?: string
+          notes?: string | null
+          parent_id: string
+          requested_at?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+        }
+        Update: {
+          child_id?: string
+          id?: string
+          notes?: string | null
+          parent_id?: string
+          requested_at?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "child_association_requests_child_id_fkey"
+            columns: ["child_id"]
+            isOneToOne: false
+            referencedRelation: "children"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "child_association_requests_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "child_association_requests_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       child_milestones: {
         Row: {
           achieved_date: string
@@ -515,6 +570,7 @@ export type Database = {
           id: string
           parent_id: string
           relationship_type: string
+          status: string | null
         }
         Insert: {
           assigned_at?: string
@@ -526,6 +582,7 @@ export type Database = {
           id?: string
           parent_id: string
           relationship_type?: string
+          status?: string | null
         }
         Update: {
           assigned_at?: string
@@ -537,6 +594,7 @@ export type Database = {
           id?: string
           parent_id?: string
           relationship_type?: string
+          status?: string | null
         }
         Relationships: [
           {
@@ -802,6 +860,10 @@ export type Database = {
           last_name: string
           email: string
         }[]
+      }
+      get_current_user_role: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       is_admin: {
         Args: { user_id: string }

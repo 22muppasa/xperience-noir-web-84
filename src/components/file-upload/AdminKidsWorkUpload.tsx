@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import { Upload, X } from 'lucide-react';
 
 interface Enrollment {
@@ -29,6 +30,7 @@ const AdminKidsWorkUpload = () => {
   const [isUploading, setIsUploading] = useState(false);
   
   const { toast } = useToast();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
 
   // Fetch enrollments with customer profiles
@@ -93,7 +95,9 @@ const AdminKidsWorkUpload = () => {
             description,
             file_url: publicUrl,
             file_type: file.type,
-            storage_path: filePath
+            file_size: file.size,
+            storage_path: filePath,
+            uploaded_by: user?.id
           });
 
         if (insertError) throw insertError;
@@ -116,6 +120,9 @@ const AdminKidsWorkUpload = () => {
       
       // Refresh relevant queries
       queryClient.invalidateQueries({ queryKey: ['kids-work'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-kids-work'] });
+      queryClient.invalidateQueries({ queryKey: ['customer-kids-work'] });
+      queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },
     onError: (error) => {
@@ -160,15 +167,15 @@ const AdminKidsWorkUpload = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Upload Kids Work</h3>
+        <h3 className="text-lg font-semibold text-black mb-4">Upload Kids Work</h3>
         
         <div className="space-y-4">
           <div>
-            <Label htmlFor="enrollment" className="text-sm font-medium text-gray-900">
+            <Label htmlFor="enrollment" className="text-sm font-medium text-black">
               Select Child
             </Label>
             <Select value={selectedEnrollment} onValueChange={setSelectedEnrollment}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full bg-white border-black text-black">
                 <SelectValue placeholder="Choose a child to upload work for..." />
               </SelectTrigger>
               <SelectContent>
@@ -182,7 +189,7 @@ const AdminKidsWorkUpload = () => {
           </div>
 
           <div>
-            <Label htmlFor="title" className="text-sm font-medium text-gray-900">
+            <Label htmlFor="title" className="text-sm font-medium text-black">
               Title (optional)
             </Label>
             <Input
@@ -190,12 +197,12 @@ const AdminKidsWorkUpload = () => {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter a title for this work..."
-              className="w-full"
+              className="w-full bg-white border-black text-black"
             />
           </div>
 
           <div>
-            <Label htmlFor="description" className="text-sm font-medium text-gray-900">
+            <Label htmlFor="description" className="text-sm font-medium text-black">
               Description (optional)
             </Label>
             <Textarea
@@ -203,22 +210,22 @@ const AdminKidsWorkUpload = () => {
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Add a description or note about this work..."
-              className="w-full"
+              className="w-full bg-white border-black text-black"
               rows={3}
             />
           </div>
 
           <div>
-            <Label htmlFor="files" className="text-sm font-medium text-gray-900">
+            <Label htmlFor="files" className="text-sm font-medium text-black">
               Select Files
             </Label>
-            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-black border-dashed rounded-md bg-white">
               <div className="space-y-1 text-center">
-                <Upload className="mx-auto h-12 w-12 text-gray-400" />
-                <div className="flex text-sm text-gray-600">
+                <Upload className="mx-auto h-12 w-12 text-black" />
+                <div className="flex text-sm text-black">
                   <label
                     htmlFor="file-upload"
-                    className="relative cursor-pointer bg-white rounded-md font-medium text-gray-900 hover:text-gray-700 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-gray-500"
+                    className="relative cursor-pointer bg-white rounded-md font-medium text-black hover:text-gray-700 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-black"
                   >
                     <span>Upload files</span>
                     <input
@@ -233,7 +240,7 @@ const AdminKidsWorkUpload = () => {
                   </label>
                   <p className="pl-1">or drag and drop</p>
                 </div>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-black">
                   Images, videos, PDFs, and documents up to 10MB each
                 </p>
               </div>
@@ -242,11 +249,11 @@ const AdminKidsWorkUpload = () => {
 
           {selectedFiles.length > 0 && (
             <div>
-              <Label className="text-sm font-medium text-gray-900">Selected Files</Label>
+              <Label className="text-sm font-medium text-black">Selected Files</Label>
               <div className="mt-2 space-y-2">
                 {selectedFiles.map((file, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded-md">
-                    <span className="text-sm text-gray-700 truncate">{file.name}</span>
+                  <div key={index} className="flex items-center justify-between p-2 bg-white border border-black rounded-md">
+                    <span className="text-sm text-black truncate">{file.name}</span>
                     <Button
                       type="button"
                       variant="ghost"
@@ -265,7 +272,7 @@ const AdminKidsWorkUpload = () => {
           <Button
             onClick={handleUpload}
             disabled={isUploading || !selectedEnrollment || selectedFiles.length === 0}
-            className="w-full bg-gray-900 hover:bg-gray-800 text-white"
+            className="w-full bg-black hover:bg-gray-800 text-white border-black"
           >
             {isUploading ? 'Uploading...' : 'Upload Kids Work'}
           </Button>

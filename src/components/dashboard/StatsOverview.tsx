@@ -13,7 +13,7 @@ const StatsOverview = () => {
     queryFn: async () => {
       if (!user?.id) return null;
 
-      const [enrollmentsResult, messagesResult, notificationsResult] = await Promise.all([
+      const [enrollmentsResult, messagesResult, notificationsResult, kidsWorkResult] = await Promise.all([
         supabase
           .from('enrollments')
           .select('id, status')
@@ -25,12 +25,17 @@ const StatsOverview = () => {
         supabase
           .from('notifications')
           .select('id, read')
-          .eq('user_id', user.id)
+          .eq('user_id', user.id),
+        supabase
+          .from('kids_work')
+          .select('id')
+          .eq('parent_customer_id', user.id)
       ]);
 
       const enrollments = enrollmentsResult.data || [];
       const messages = messagesResult.data || [];
       const notifications = notificationsResult.data || [];
+      const kidsWork = kidsWorkResult.data || [];
 
       return {
         enrollments: {
@@ -44,6 +49,9 @@ const StatsOverview = () => {
         notifications: {
           total: notifications.length,
           unread: notifications.filter(n => !n.read).length
+        },
+        kidsWork: {
+          total: kidsWork.length
         }
       };
     },
@@ -89,9 +97,9 @@ const StatsOverview = () => {
       />
 
       <DashboardCard
-        title="Progress"
-        value="Growing!"
-        description="Keep up the great work"
+        title="Kids Work"
+        value={stats.kidsWork.total}
+        description="Creative projects uploaded"
         icon={<TrendingUp className="h-5 w-5" />}
       />
     </div>

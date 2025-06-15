@@ -6,7 +6,7 @@ interface QuickActionCardProps {
   title: string;
   description: string;
   icon: LucideIcon;
-  gradient: string;
+  gradient?: string; // Make gradient optional since we're removing gradients
   onClick: () => void;
   badge?: string;
   children?: React.ReactNode;

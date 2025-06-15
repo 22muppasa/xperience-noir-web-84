@@ -53,7 +53,7 @@ const Profile = () => {
         </div>
 
         {/* Profile Completion */}
-        <Card>
+        <Card className="bg-white border-black">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -62,8 +62,8 @@ const Profile = () => {
               </div>
               <div className="text-right">
                 <div className="text-2xl font-bold text-black">85%</div>
-                <div className="w-24 bg-black rounded-full h-2">
-                  <div className="bg-white h-2 rounded-full" style={{ width: '85%' }}></div>
+                <div className="w-24 bg-gray-200 rounded-full h-2">
+                  <div className="bg-black h-2 rounded-full" style={{ width: '85%' }}></div>
                 </div>
               </div>
             </div>
@@ -72,7 +72,7 @@ const Profile = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Personal Information */}
-          <Card>
+          <Card className="bg-white border-black">
             <CardHeader>
               <CardTitle className="flex items-center text-black">
                 <User className="h-5 w-5 mr-2 text-black" />
@@ -88,6 +88,7 @@ const Profile = () => {
                     value={profileData.firstName}
                     onChange={(e) => setProfileData({...profileData, firstName: e.target.value})}
                     disabled={!isEditing}
+                    className="bg-white text-black border-gray-300"
                   />
                 </div>
                 <div>
@@ -97,6 +98,7 @@ const Profile = () => {
                     value={profileData.lastName}
                     onChange={(e) => setProfileData({...profileData, lastName: e.target.value})}
                     disabled={!isEditing}
+                    className="bg-white text-black border-gray-300"
                   />
                 </div>
               </div>
@@ -108,7 +110,7 @@ const Profile = () => {
                   type="email"
                   value={profileData.email}
                   disabled
-                  className="bg-white text-black"
+                  className="bg-gray-100 text-black border-gray-300"
                 />
               </div>
 
@@ -119,6 +121,7 @@ const Profile = () => {
                   value={profileData.phone}
                   onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
                   disabled={!isEditing}
+                  className="bg-white text-black border-gray-300"
                 />
               </div>
 
@@ -130,7 +133,7 @@ const Profile = () => {
                   onChange={(e) => setProfileData({...profileData, address: e.target.value})}
                   disabled={!isEditing}
                   rows={2}
-                  className="bg-white text-black"
+                  className="bg-white text-black border-gray-300"
                 />
               </div>
 
@@ -141,25 +144,27 @@ const Profile = () => {
                   value={profileData.emergencyContact}
                   onChange={(e) => setProfileData({...profileData, emergencyContact: e.target.value})}
                   disabled={!isEditing}
+                  className="bg-white text-black border-gray-300"
                 />
               </div>
             </CardContent>
           </Card>
 
           {/* Children Information */}
-          <Card>
+          <Card className="bg-white border-black">
             <CardHeader>
               <CardTitle className="text-black">Children Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {profileData.children.map((child, index) => (
-                <div key={index} className="border rounded-lg p-4 space-y-3">
+                <div key={index} className="border border-gray-300 bg-white rounded-lg p-4 space-y-3">
                   <div>
                     <Label htmlFor={`childName${index}`} className="text-black">Child's Name</Label>
                     <Input
                       id={`childName${index}`}
                       value={child.name}
                       disabled={!isEditing}
+                      className="bg-white text-black border-gray-300"
                     />
                   </div>
                   
@@ -170,6 +175,7 @@ const Profile = () => {
                       type="number"
                       value={child.age}
                       disabled={!isEditing}
+                      className="bg-white text-black border-gray-300"
                     />
                   </div>
 
@@ -179,6 +185,7 @@ const Profile = () => {
                       id={`allergies${index}`}
                       value={child.allergies}
                       disabled={!isEditing}
+                      className="bg-white text-black border-gray-300"
                     />
                   </div>
 
@@ -189,7 +196,7 @@ const Profile = () => {
                       value={child.medicalNotes}
                       disabled={!isEditing}
                       rows={2}
-                      className="bg-white text-black"
+                      className="bg-white text-black border-gray-300"
                     />
                   </div>
                 </div>
@@ -205,7 +212,7 @@ const Profile = () => {
         </div>
 
         {isEditing && (
-          <Card>
+          <Card className="bg-white border-black">
             <CardContent className="p-6">
               <div className="flex space-x-4">
                 <Button onClick={handleSave} className="flex-1">

@@ -64,7 +64,7 @@ const Messages = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card>
+          <Card className="bg-white border-black">
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
                 <Inbox className="h-5 w-5 text-black" />
@@ -75,7 +75,7 @@ const Messages = () => {
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="bg-white border-black">
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
                 <MessageSquare className="h-5 w-5 text-black" />
@@ -88,7 +88,7 @@ const Messages = () => {
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="bg-white border-black">
             <CardContent className="p-4">
               <div className="flex items-center space-x-2">
                 <Send className="h-5 w-5 text-black" />
@@ -110,15 +110,15 @@ const Messages = () => {
           <TabsContent value="inbox" className="space-y-4">
             {/* Compose Message */}
             {isComposing && (
-              <Card>
+              <Card className="bg-white border-black">
                 <CardHeader>
                   <CardTitle className="text-black">Compose Message</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <Input placeholder="Subject" className="text-black" />
+                  <Input placeholder="Subject" className="bg-white text-black border-gray-300" />
                   <Textarea 
                     placeholder="Your message..." 
-                    className="min-h-32 text-black"
+                    className="min-h-32 bg-white text-black border-gray-300"
                   />
                   <div className="flex space-x-2">
                     <Button onClick={handleSendMessage}>
@@ -136,7 +136,7 @@ const Messages = () => {
             {/* Messages List */}
             <div className="space-y-4">
               {messages.map((message) => (
-                <Card key={message.id} className="hover:shadow-md transition-shadow">
+                <Card key={message.id} className="bg-white border-black hover:shadow-md transition-shadow">
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
@@ -163,7 +163,7 @@ const Messages = () => {
           </TabsContent>
 
           <TabsContent value="sent" className="space-y-4">
-            <Card>
+            <Card className="bg-white border-black">
               <CardContent className="p-6 text-center">
                 <MessageSquare className="h-12 w-12 text-black mx-auto mb-4" />
                 <p className="text-black">No sent messages yet</p>

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, LogOut } from 'lucide-react';
+import { LayoutDashboard, LogOut, X } from 'lucide-react';
 
 interface MobileMenuProps {
   navLinks: Array<{ name: string; path: string }>;
@@ -29,22 +29,6 @@ const MobileMenu = ({
 }: MobileMenuProps) => {
   const { isDarkMode } = useTheme();
 
-  // Determine the correct text color based on both page and theme
-  const getTextColor = () => {
-    if (isDarkMode) {
-      return 'text-white';
-    }
-    return 'text-gray-900';
-  };
-
-  // Determine the correct background color based on both page and theme
-  const getBgColor = () => {
-    if (isDarkMode) {
-      return 'bg-gray-900';
-    }
-    return 'bg-white';
-  };
-
   const handleOpenChange = (open: boolean) => {
     if (onOpenChange) {
       onOpenChange(open);
@@ -58,52 +42,70 @@ const MobileMenu = ({
           variant="ghost"
           size="sm"
           aria-label="Toggle menu"
-          className="h-10 w-10 p-0 hover:bg-gray-100 rounded-lg"
+          className="h-10 w-10 p-0 hover:bg-gray-100/80 rounded-lg transition-all duration-200 group"
         >
-          <div className="w-6 h-6 flex flex-col items-center justify-center gap-1">
+          <div className="w-6 h-6 flex flex-col items-center justify-center gap-1.5 relative">
+            {/* Top line */}
             <span 
-              className={`block w-5 h-0.5 bg-gray-900 rounded-full transition-transform duration-300 ${
-                isOpen ? 'transform rotate-45 translate-y-1.5' : ''
+              className={`block w-5 h-0.5 bg-gray-900 rounded-full transition-all duration-300 ease-in-out transform-gpu ${
+                isOpen ? 'rotate-45 translate-y-2' : 'group-hover:w-6'
               }`}
-            ></span>
+            />
+            {/* Middle line */}
             <span 
-              className={`block w-5 h-0.5 bg-gray-900 rounded-full transition-opacity duration-300 ${
-                isOpen ? 'opacity-0' : 'opacity-100'
+              className={`block w-5 h-0.5 bg-gray-900 rounded-full transition-all duration-300 ease-in-out ${
+                isOpen ? 'opacity-0 scale-0' : 'group-hover:w-4'
               }`}
-            ></span>
+            />
+            {/* Bottom line */}
             <span 
-              className={`block w-5 h-0.5 bg-gray-900 rounded-full transition-transform duration-300 ${
-                isOpen ? 'transform -rotate-45 -translate-y-1.5' : ''
+              className={`block w-5 h-0.5 bg-gray-900 rounded-full transition-all duration-300 ease-in-out transform-gpu ${
+                isOpen ? '-rotate-45 -translate-y-2' : 'group-hover:w-6'
               }`}
-            ></span>
+            />
           </div>
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className={`${getBgColor()} border-none w-80`}>
+      <SheetContent 
+        side="right" 
+        className="w-80 bg-white/95 backdrop-blur-xl border-l border-gray-200/50 shadow-2xl"
+      >
         <div className="flex flex-col h-full py-6">
-          {/* Logo */}
-          <Link 
-            to="/" 
-            className={`text-2xl font-bold font-poppins ${getTextColor()} mb-8`}
-            onClick={() => handleOpenChange(false)}
-          >
-            <span className="tracking-tighter">XPerience</span>
-          </Link>
+          {/* Header with close button */}
+          <div className="flex items-center justify-between mb-8">
+            <Link 
+              to="/" 
+              className="text-2xl font-bold font-poppins text-gray-900 tracking-tight"
+              onClick={() => handleOpenChange(false)}
+            >
+              XPerience
+            </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleOpenChange(false)}
+              className="h-8 w-8 p-0 hover:bg-gray-100 rounded-lg"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
           
           {/* Navigation Links */}
-          <div className="flex flex-col space-y-2 mb-8">
+          <div className="flex flex-col space-y-1 mb-8">
             {navLinks.map((link, index) => (
               <Link
                 key={link.name}
                 to={link.path}
-                className={`px-4 py-3 text-base rounded-xl transition-colors font-poppins ${getTextColor()} hover:bg-gray-100`}
+                className="group px-4 py-4 text-base rounded-xl transition-all duration-200 font-poppins text-gray-700 hover:bg-gray-100/80 hover:text-gray-900 relative overflow-hidden"
                 onClick={() => handleOpenChange(false)}
                 style={{ 
                   opacity: 0,
-                  animation: isOpen ? `fadeIn 300ms ease-out forwards ${index * 50}ms` : 'none'
+                  transform: 'translateX(20px)',
+                  animation: isOpen ? `slideInFromRight 400ms ease-out forwards ${index * 50 + 100}ms` : 'none'
                 }}
               >
-                {link.name}
+                <span className="relative z-10">{link.name}</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-gray-50 to-gray-100 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left rounded-xl" />
               </Link>
             ))}
           </div>
@@ -111,14 +113,21 @@ const MobileMenu = ({
           {/* Auth Section */}
           <div className="mt-auto space-y-3">
             {user ? (
-              <>
+              <div 
+                className="space-y-3"
+                style={{ 
+                  opacity: 0,
+                  transform: 'translateY(20px)',
+                  animation: isOpen ? 'slideInFromBottom 500ms ease-out forwards 600ms' : 'none'
+                }}
+              >
                 <Link
                   to={userRole === 'admin' ? '/admin' : '/dashboard'}
-                  className="flex items-center w-full px-4 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                  className="flex items-center w-full px-4 py-3 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 bg-white/50 hover:bg-white hover:border-gray-300 transition-all duration-200 group"
                   onClick={() => handleOpenChange(false)}
                 >
-                  <LayoutDashboard className="h-4 w-4 mr-2" />
-                  Dashboard
+                  <LayoutDashboard className="h-4 w-4 mr-3 group-hover:scale-110 transition-transform duration-200" />
+                  <span>Dashboard</span>
                 </Link>
                 <Button
                   variant="outline"
@@ -127,32 +136,64 @@ const MobileMenu = ({
                     if (onSignOut) onSignOut();
                     handleOpenChange(false);
                   }}
-                  className="flex items-center justify-center w-full space-x-2"
+                  className="flex items-center justify-center w-full space-x-2 hover:bg-red-50 hover:border-red-200 hover:text-red-600 transition-all duration-200 group"
                 >
-                  <LogOut className="h-4 w-4" />
+                  <LogOut className="h-4 w-4 group-hover:scale-110 transition-transform duration-200" />
                   <span>Sign Out</span>
                 </Button>
-              </>
+              </div>
             ) : (
-              <>
+              <div 
+                className="space-y-3"
+                style={{ 
+                  opacity: 0,
+                  transform: 'translateY(20px)',
+                  animation: isOpen ? 'slideInFromBottom 500ms ease-out forwards 600ms' : 'none'
+                }}
+              >
                 <Link
                   to="/auth"
-                  className="flex items-center justify-center w-full px-4 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                  className="flex items-center justify-center w-full px-4 py-3 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 bg-white/50 hover:bg-white hover:border-gray-300 transition-all duration-200"
                   onClick={() => handleOpenChange(false)}
                 >
                   Sign In
                 </Link>
                 <Link
                   to="/auth"
-                  className="flex items-center justify-center w-full px-4 py-3 border border-transparent rounded-xl text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 transition-colors"
+                  className="flex items-center justify-center w-full px-4 py-3 border border-transparent rounded-xl text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 transition-all duration-200 hover:shadow-lg transform hover:scale-[1.02]"
                   onClick={() => handleOpenChange(false)}
                 >
                   Get Started
                 </Link>
-              </>
+              </div>
             )}
           </div>
         </div>
+
+        {/* Custom animations */}
+        <style jsx>{`
+          @keyframes slideInFromRight {
+            from {
+              opacity: 0;
+              transform: translateX(20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateX(0);
+            }
+          }
+
+          @keyframes slideInFromBottom {
+            from {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+        `}</style>
       </SheetContent>
     </Sheet>
   );

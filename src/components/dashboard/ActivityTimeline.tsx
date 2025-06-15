@@ -1,226 +1,175 @@
+
+import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Clock, BookOpen, Image, MessageSquare, Bell, ArrowRight } from 'lucide-react';
-
-interface ActivityItem {
-  id: string;
-  type: 'enrollment' | 'kids_work' | 'message' | 'notification';
-  title: string;
-  description: string;
-  timestamp: string;
-  status?: string;
-}
+import { Calendar, FileText, MessageSquare, Users, Upload } from 'lucide-react';
+import { format } from 'date-fns';
 
 const ActivityTimeline = () => {
   const { user } = useAuth();
 
   const { data: activities = [], isLoading } = useQuery({
-    queryKey: ['dashboard-activities', user?.id],
+    queryKey: ['activity-timeline', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
 
-      const [enrollmentsResult, kidsWorkResult, messagesResult, notificationsResult] = await Promise.all([
-        supabase
-          .from('enrollments')
-          .select(`
-            id,
-            enrolled_at,
-            status,
-            child_name,
-            programs(title)
-          `)
-          .eq('customer_id', user.id)
-          .order('enrolled_at', { ascending: false })
-          .limit(5),
+      // Fetch recent activities from various tables
+      const [
+        kidsWorkResult,
+        messagesResult,
+        enrollmentsResult,
+        notificationsResult
+      ] = await Promise.all([
         supabase
           .from('kids_work')
-          .select('id, title, created_at')
-          .eq('parent_customer_id', user.id)
+          .select('id, title, created_at, file_type')
           .order('created_at', { ascending: false })
           .limit(5),
         supabase
           .from('messages')
-          .select('id, subject, created_at, status, sender_id')
+          .select('id, subject, created_at, sender_id, recipient_id')
           .or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`)
           .order('created_at', { ascending: false })
           .limit(5),
         supabase
+          .from('enrollments')
+          .select('id, child_name, created_at, status')
+          .eq('customer_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(3),
+        supabase
           .from('notifications')
-          .select('id, title, message, created_at, read')
+          .select('id, title, message, created_at, type')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
-          .limit(3)
+          .limit(5)
       ]);
 
-      const activities: ActivityItem[] = [];
-
-      // Add enrollments
-      (enrollmentsResult.data || []).forEach(enrollment => {
-        activities.push({
-          id: enrollment.id,
-          type: 'enrollment',
-          title: `Enrolled in ${(enrollment as any).programs?.title || 'Program'}`,
-          description: `Child: ${enrollment.child_name}`,
-          timestamp: enrollment.enrolled_at || new Date().toISOString(),
-          status: enrollment.status
-        });
-      });
-
-      // Add kids work
-      (kidsWorkResult.data || []).forEach(work => {
-        activities.push({
-          id: work.id,
+      // Combine and sort all activities
+      const allActivities = [
+        ...(kidsWorkResult.data || []).map(item => ({
+          id: `work-${item.id}`,
           type: 'kids_work',
-          title: 'New Kids Work Uploaded',
-          description: work.title,
-          timestamp: work.created_at || new Date().toISOString()
-        });
-      });
-
-      // Add messages
-      (messagesResult.data || []).forEach(message => {
-        const isReceived = message.sender_id !== user.id;
-        activities.push({
-          id: message.id,
+          title: `New work uploaded: ${item.title}`,
+          description: `${item.file_type ? item.file_type.split('/')[0] : 'File'} uploaded`,
+          timestamp: item.created_at,
+          icon: FileText
+        })),
+        ...(messagesResult.data || []).map(item => ({
+          id: `message-${item.id}`,
           type: 'message',
-          title: isReceived ? 'Message Received' : 'Message Sent',
-          description: message.subject,
-          timestamp: message.created_at || new Date().toISOString(),
-          status: message.status
-        });
-      });
-
-      // Add notifications
-      (notificationsResult.data || []).forEach(notification => {
-        activities.push({
-          id: notification.id,
+          title: item.sender_id === user.id ? `Message sent: ${item.subject}` : `Message received: ${item.subject}`,
+          description: item.sender_id === user.id ? 'You sent a message' : 'You received a message',
+          timestamp: item.created_at,
+          icon: MessageSquare
+        })),
+        ...(enrollmentsResult.data || []).map(item => ({
+          id: `enrollment-${item.id}`,
+          type: 'enrollment',
+          title: `Enrolled: ${item.child_name}`,
+          description: `Status: ${item.status}`,
+          timestamp: item.created_at,
+          icon: Users
+        })),
+        ...(notificationsResult.data || []).map(item => ({
+          id: `notification-${item.id}`,
           type: 'notification',
-          title: notification.title,
-          description: notification.message,
-          timestamp: notification.created_at,
-          status: notification.read ? 'read' : 'unread'
-        });
-      });
+          title: item.title,
+          description: item.message,
+          timestamp: item.created_at,
+          icon: Calendar
+        }))
+      ];
 
       // Sort by timestamp and return top 10
-      return activities
+      return allActivities
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
         .slice(0, 10);
     },
     enabled: !!user?.id
   });
 
-  const getActivityIcon = (type: string) => {
-    const iconProps = { className: "h-4 w-4 text-black" };
+  const getActivityColor = (type: string) => {
     switch (type) {
-      case 'enrollment': return <BookOpen {...iconProps} />;
-      case 'kids_work': return <Image {...iconProps} />;
-      case 'message': return <MessageSquare {...iconProps} />;
-      case 'notification': return <Bell {...iconProps} />;
-      default: return <Clock {...iconProps} />;
+      case 'kids_work': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'message': return 'bg-green-100 text-green-800 border-green-200';
+      case 'enrollment': return 'bg-purple-100 text-purple-800 border-purple-200';
+      case 'notification': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      default: return 'bg-white text-black border-black';
     }
-  };
-
-  const getStatusBadge = (type: string, status?: string) => {
-    if (!status) return null;
-
-    const getVariant = () => {
-      switch (status) {
-        case 'confirmed':
-        case 'completed':
-        case 'read': return 'default';
-        case 'pending':
-        case 'unread': return 'secondary';
-        case 'cancelled': return 'destructive';
-        default: return 'outline';
-      }
-    };
-
-    return (
-      <Badge variant={getVariant()} className="text-xs px-2 py-1 font-medium">
-        {status}
-      </Badge>
-    );
   };
 
   if (isLoading) {
     return (
-      <Card className="border-gray-200 shadow-none">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-xl font-semibold text-black">Recent Activity</CardTitle>
+      <Card className="bg-white border-black">
+        <CardHeader>
+          <CardTitle className="text-black">Recent Activity</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="animate-pulse flex items-start space-x-4 p-4 bg-gray-50 rounded-lg">
-              <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
-              <div className="flex-1 space-y-2">
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+        <CardContent>
+          <div className="space-y-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="animate-pulse flex space-x-3">
+                <div className="h-8 w-8 bg-gray-200 rounded-full"></div>
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="border-gray-200 shadow-none">
-      <CardHeader className="pb-4">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-xl font-semibold text-black flex items-center space-x-2">
-            <Clock className="h-5 w-5 text-black" />
-            <span>Recent Activity</span>
-          </CardTitle>
-          <button className="text-sm text-black hover:text-white bg-transparent flex items-center space-x-1 transition-colors">
-            <span>View all</span>
-            <ArrowRight className="h-4 w-4" />
-          </button>
-        </div>
+    <Card className="bg-white border-black">
+      <CardHeader>
+        <CardTitle className="flex items-center text-black">
+          <Calendar className="mr-2 h-5 w-5" />
+          Recent Activity
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        {activities.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Clock className="h-8 w-8 text-black" />
-            </div>
-            <h3 className="text-lg font-medium text-black mb-2">No recent activity</h3>
-            <p className="text-black mb-4">Start by enrolling in programs or uploading kids work!</p>
+        {activities.length > 0 ? (
+          <div className="space-y-4">
+            {activities.map((activity) => {
+              const IconComponent = activity.icon;
+              return (
+                <div key={activity.id} className="flex items-start space-x-3 pb-3 border-b border-gray-200 last:border-b-0">
+                  <div className="flex-shrink-0">
+                    <div className="p-2 bg-white border border-black rounded-full">
+                      <IconComponent className="h-4 w-4 text-black" />
+                    </div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium text-black truncate">
+                        {activity.title}
+                      </p>
+                      <Badge className={getActivityColor(activity.type)}>
+                        {activity.type.replace('_', ' ')}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-black mt-1">
+                      {activity.description}
+                    </p>
+                    <p className="text-xs text-black mt-1">
+                      {format(new Date(activity.timestamp), 'MMM d, yyyy h:mm a')}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         ) : (
-          <div className="space-y-4">
-            {activities.map((activity, index) => (
-              <div
-                key={activity.id}
-                className="group flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors border border-transparent hover:border-gray-200"
-              >
-                <div className="flex-shrink-0 w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-black group-hover:bg-gray-200 transition-colors">
-                  {getActivityIcon(activity.type)}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between mb-1">
-                    <h4 className="text-sm font-medium text-black truncate pr-2">
-                      {activity.title}
-                    </h4>
-                    {getStatusBadge(activity.type, activity.status)}
-                  </div>
-                  <p className="text-sm text-black truncate mb-2">
-                    {activity.description}
-                  </p>
-                  <p className="text-xs text-black">
-                    {new Date(activity.timestamp).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
-                  </p>
-                </div>
-              </div>
-            ))}
+          <div className="text-center py-8">
+            <Calendar className="h-12 w-12 text-black mx-auto mb-4" />
+            <p className="text-black">No recent activity</p>
+            <p className="text-sm text-black">Your activity will appear here as you use the platform</p>
           </div>
         )}
       </CardContent>

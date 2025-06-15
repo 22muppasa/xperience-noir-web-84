@@ -1,5 +1,8 @@
 
 import React, { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import SystemMonitoring from '@/components/admin/SystemMonitoring';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,7 +12,6 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
-import { useToast } from '@/hooks/use-toast';
 import { 
   Settings as SettingsIcon, 
   Monitor, 
@@ -39,85 +41,110 @@ const AdminSettings = () => {
   });
 
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
+  // In a real implementation, you would create a settings table in Supabase
+  // For now, we'll simulate saving to localStorage and show the structure
   const handleSave = () => {
-    // In a real app, this would save to a backend
-    toast({
-      title: "Settings saved",
-      description: "Your changes have been saved successfully",
-    });
+    try {
+      localStorage.setItem('adminSettings', JSON.stringify(settings));
+      toast({
+        title: "Settings saved",
+        description: "Your changes have been saved successfully",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save settings. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSettingChange = (key: string, value: any) => {
     setSettings(prev => ({ ...prev, [key]: value }));
   };
 
+  // Load settings from localStorage on component mount
+  React.useEffect(() => {
+    try {
+      const savedSettings = localStorage.getItem('adminSettings');
+      if (savedSettings) {
+        setSettings(JSON.parse(savedSettings));
+      }
+    } catch (error) {
+      console.error('Error loading settings:', error);
+    }
+  }, []);
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h2 className="text-2xl font-bold">System Settings</h2>
-          <p className="text-muted-foreground">
+          <h2 className="text-2xl font-bold text-black">System Settings</h2>
+          <p className="text-black">
             Manage your platform configuration and monitor system health
           </p>
         </div>
 
         <Tabs defaultValue="general" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="general">
+          <TabsList className="grid w-full grid-cols-5 bg-white border-black">
+            <TabsTrigger value="general" className="text-black">
               <SettingsIcon className="h-4 w-4 mr-2" />
               General
             </TabsTrigger>
-            <TabsTrigger value="security">
+            <TabsTrigger value="security" className="text-black">
               <Shield className="h-4 w-4 mr-2" />
               Security
             </TabsTrigger>
-            <TabsTrigger value="email">
+            <TabsTrigger value="email" className="text-black">
               <Mail className="h-4 w-4 mr-2" />
               Email
             </TabsTrigger>
-            <TabsTrigger value="storage">
+            <TabsTrigger value="storage" className="text-black">
               <Database className="h-4 w-4 mr-2" />
               Storage
             </TabsTrigger>
-            <TabsTrigger value="monitoring">
+            <TabsTrigger value="monitoring" className="text-black">
               <Monitor className="h-4 w-4 mr-2" />
               Monitoring
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="general" className="space-y-6">
-            <Card>
+            <Card className="bg-white border-black">
               <CardHeader>
-                <CardTitle>General Settings</CardTitle>
+                <CardTitle className="text-black">General Settings</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="siteName">Site Name</Label>
+                    <Label htmlFor="siteName" className="text-black">Site Name</Label>
                     <Input
                       id="siteName"
                       value={settings.siteName}
                       onChange={(e) => handleSettingChange('siteName', e.target.value)}
+                      className="bg-white text-black border-black"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="siteDescription">Site Description</Label>
+                    <Label htmlFor="siteDescription" className="text-black">Site Description</Label>
                     <Input
                       id="siteDescription"
                       value={settings.siteDescription}
                       onChange={(e) => handleSettingChange('siteDescription', e.target.value)}
+                      className="bg-white text-black border-black"
                     />
                   </div>
                 </div>
 
-                <Separator />
+                <Separator className="bg-black" />
 
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label>Allow New Registrations</Label>
-                      <p className="text-sm text-muted-foreground">
+                      <Label className="text-black">Allow New Registrations</Label>
+                      <p className="text-sm text-black">
                         Allow new users to register for accounts
                       </p>
                     </div>
@@ -129,8 +156,8 @@ const AdminSettings = () => {
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label>Maintenance Mode</Label>
-                      <p className="text-sm text-muted-foreground">
+                      <Label className="text-black">Maintenance Mode</Label>
+                      <p className="text-sm text-black">
                         Temporarily disable the platform for maintenance
                       </p>
                     </div>
@@ -142,8 +169,8 @@ const AdminSettings = () => {
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <Label>Enable Notifications</Label>
-                      <p className="text-sm text-muted-foreground">
+                      <Label className="text-black">Enable Notifications</Label>
+                      <p className="text-sm text-black">
                         Send email notifications for important events
                       </p>
                     </div>
@@ -158,15 +185,15 @@ const AdminSettings = () => {
           </TabsContent>
 
           <TabsContent value="security" className="space-y-6">
-            <Card>
+            <Card className="bg-white border-black">
               <CardHeader>
-                <CardTitle>Security Settings</CardTitle>
+                <CardTitle className="text-black">Security Settings</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <Label>Require Email Verification</Label>
-                    <p className="text-sm text-muted-foreground">
+                    <Label className="text-black">Require Email Verification</Label>
+                    <p className="text-sm text-black">
                       Users must verify their email before accessing the platform
                     </p>
                   </div>
@@ -176,33 +203,33 @@ const AdminSettings = () => {
                   />
                 </div>
 
-                <Separator />
+                <Separator className="bg-black" />
 
                 <div>
-                  <Label>Session Timeout</Label>
-                  <p className="text-sm text-muted-foreground mb-2">
+                  <Label className="text-black">Session Timeout</Label>
+                  <p className="text-sm text-black mb-2">
                     Automatically log out users after inactivity
                   </p>
-                  <Input placeholder="24 hours" />
+                  <Input placeholder="24 hours" className="bg-white text-black border-black" />
                 </div>
 
                 <div>
-                  <Label>Password Policy</Label>
-                  <p className="text-sm text-muted-foreground mb-2">
+                  <Label className="text-black">Password Policy</Label>
+                  <p className="text-sm text-black mb-2">
                     Minimum password requirements
                   </p>
                   <div className="space-y-2">
                     <div className="flex items-center space-x-2">
-                      <input type="checkbox" defaultChecked />
-                      <span className="text-sm">At least 8 characters</span>
+                      <input type="checkbox" defaultChecked className="border-black" />
+                      <span className="text-sm text-black">At least 8 characters</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <input type="checkbox" defaultChecked />
-                      <span className="text-sm">Include uppercase letters</span>
+                      <input type="checkbox" defaultChecked className="border-black" />
+                      <span className="text-sm text-black">Include uppercase letters</span>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <input type="checkbox" defaultChecked />
-                      <span className="text-sm">Include numbers</span>
+                      <input type="checkbox" defaultChecked className="border-black" />
+                      <span className="text-sm text-black">Include numbers</span>
                     </div>
                   </div>
                 </div>
@@ -211,95 +238,103 @@ const AdminSettings = () => {
           </TabsContent>
 
           <TabsContent value="email" className="space-y-6">
-            <Card>
+            <Card className="bg-white border-black">
               <CardHeader>
-                <CardTitle>Email Configuration</CardTitle>
+                <CardTitle className="text-black">Email Configuration</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="smtpServer">SMTP Server</Label>
+                    <Label htmlFor="smtpServer" className="text-black">SMTP Server</Label>
                     <Input
                       id="smtpServer"
                       placeholder="smtp.gmail.com"
                       value={settings.smtpServer}
                       onChange={(e) => handleSettingChange('smtpServer', e.target.value)}
+                      className="bg-white text-black border-black"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="smtpPort">SMTP Port</Label>
+                    <Label htmlFor="smtpPort" className="text-black">SMTP Port</Label>
                     <Input
                       id="smtpPort"
                       placeholder="587"
                       value={settings.smtpPort}
                       onChange={(e) => handleSettingChange('smtpPort', e.target.value)}
+                      className="bg-white text-black border-black"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="smtpUsername">SMTP Username</Label>
+                    <Label htmlFor="smtpUsername" className="text-black">SMTP Username</Label>
                     <Input
                       id="smtpUsername"
                       type="email"
                       placeholder="your-email@domain.com"
                       value={settings.smtpUsername}
                       onChange={(e) => handleSettingChange('smtpUsername', e.target.value)}
+                      className="bg-white text-black border-black"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="smtpPassword">SMTP Password</Label>
+                    <Label htmlFor="smtpPassword" className="text-black">SMTP Password</Label>
                     <Input
                       id="smtpPassword"
                       type="password"
                       placeholder="••••••••"
                       value={settings.smtpPassword}
                       onChange={(e) => handleSettingChange('smtpPassword', e.target.value)}
+                      className="bg-white text-black border-black"
                     />
                   </div>
                 </div>
 
-                <Button variant="outline">Test Email Configuration</Button>
+                <Button variant="outline" className="border-black text-black hover:bg-gray-50">
+                  Test Email Configuration
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>
 
           <TabsContent value="storage" className="space-y-6">
-            <Card>
+            <Card className="bg-white border-black">
               <CardHeader>
-                <CardTitle>Storage Settings</CardTitle>
+                <CardTitle className="text-black">Storage Settings</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="maxFileSize">Maximum File Size (MB)</Label>
+                  <Label htmlFor="maxFileSize" className="text-black">Maximum File Size (MB)</Label>
                   <Input
                     id="maxFileSize"
                     type="number"
                     value={settings.maxFileSize}
                     onChange={(e) => handleSettingChange('maxFileSize', e.target.value)}
+                    className="bg-white text-black border-black"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="allowedFileTypes">Allowed File Types</Label>
+                  <Label htmlFor="allowedFileTypes" className="text-black">Allowed File Types</Label>
                   <Input
                     id="allowedFileTypes"
                     placeholder="jpg,png,gif,pdf,doc,docx"
                     value={settings.allowedFileTypes}
                     onChange={(e) => handleSettingChange('allowedFileTypes', e.target.value)}
+                    className="bg-white text-black border-black"
                   />
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <p className="text-sm text-black mt-1">
                     Comma-separated list of allowed file extensions
                   </p>
                 </div>
 
-                <Separator />
+                <Separator className="bg-black" />
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <Label>Enable Automatic Backups</Label>
-                    <p className="text-sm text-muted-foreground">
+                    <Label className="text-black">Enable Automatic Backups</Label>
+                    <p className="text-sm text-black">
                       Automatically backup data and files
                     </p>
                   </div>
@@ -310,9 +345,9 @@ const AdminSettings = () => {
                 </div>
 
                 <div>
-                  <Label>Backup Frequency</Label>
+                  <Label className="text-black">Backup Frequency</Label>
                   <select 
-                    className="w-full mt-1 p-2 border rounded-md"
+                    className="w-full mt-1 p-2 border rounded-md bg-white text-black border-black"
                     value={settings.backupFrequency}
                     onChange={(e) => handleSettingChange('backupFrequency', e.target.value)}
                   >
@@ -332,8 +367,36 @@ const AdminSettings = () => {
         </Tabs>
 
         <div className="flex justify-end space-x-2">
-          <Button variant="outline">Reset to Defaults</Button>
-          <Button onClick={handleSave}>Save Changes</Button>
+          <Button 
+            variant="outline" 
+            className="border-black text-black hover:bg-gray-50"
+            onClick={() => {
+              setSettings({
+                siteName: 'Kids Work Platform',
+                siteDescription: 'A platform for showcasing children\'s creative work',
+                allowRegistration: true,
+                requireEmailVerification: true,
+                enableNotifications: true,
+                maintenanceMode: false,
+                maxFileSize: '10',
+                allowedFileTypes: 'jpg,png,gif,pdf,doc,docx',
+                smtpServer: '',
+                smtpPort: '587',
+                smtpUsername: '',
+                smtpPassword: '',
+                enableBackups: true,
+                backupFrequency: 'daily'
+              });
+            }}
+          >
+            Reset to Defaults
+          </Button>
+          <Button 
+            onClick={handleSave}
+            className="bg-black text-white hover:bg-gray-800"
+          >
+            Save Changes
+          </Button>
         </div>
       </div>
     </DashboardLayout>

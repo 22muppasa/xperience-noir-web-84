@@ -1,112 +1,104 @@
 
-import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useTheme } from '@/contexts/ThemeContext';
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { useIsMobile } from '@/hooks/use-mobile';
+import Logo from './Logo';
+import DesktopNav from './DesktopNav';
+import MobileMenu from './MobileMenu';
 import { Button } from '@/components/ui/button';
-import Logo from '@/components/layout/Logo';
-import MobileMenu from '@/components/layout/MobileMenu';
-import DesktopNav from '@/components/layout/DesktopNav';
+import { LayoutDashboard, LogOut } from 'lucide-react';
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const location = useLocation();
-  const isHomePage = location.pathname === '/';
-  const { isDarkMode } = useTheme();
-  const { user, userRole } = useAuth();
-  const isMobile = useIsMobile();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, userRole, signOut } = useAuth();
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setScrolled(true);
-      } else {
-        setScrolled(false);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  // Close mobile menu when resizing to desktop
-  useEffect(() => {
-    if (!isMobile && isOpen) {
-      setIsOpen(false);
-    }
-  }, [isMobile, isOpen]);
-
-  const navLinks = [
-    { name: 'Programs', path: '/programs' },
-    { name: 'Consulting', path: '/consulting' },
-    { name: 'Get Involved', path: '/get-involved' },
-    { name: 'Social Hub', path: '/social-hub' },
-    { name: 'About', path: '/about' },
-    { name: 'Contact', path: '/contact' }
-  ];
-
-  // Use black text regardless of page with white background
-  const getTextColor = () => {
-    if (isDarkMode) {
-      return 'text-white';
-    }
-    return 'text-black';
+  const handleSignOut = async () => {
+    await signOut();
   };
-
-  // Use white background regardless of page
-  const getBgColor = () => {
-    if (isDarkMode) {
-      return 'bg-black';
-    }
-    return 'bg-white';
-  };
-
-  // Apply different styles based on scroll state
-  const navbarClasses = `w-full max-w-[90rem] rounded-lg ${getBgColor()} transition-all duration-300 ${
-    scrolled ? 'shadow-md' : ''
-  }`;
 
   return (
-    <div className="fixed top-0 z-50 w-full flex justify-center pt-4 px-4 md:px-6 lg:px-8">
-      <nav className={navbarClasses}>
-        <div className="container mx-auto flex h-16 md:h-20 items-center justify-between px-4 md:px-6 lg:px-8 transition-all duration-300">
-          {/* Logo */}
-          <Logo textColor={getTextColor()} />
-          
+    <nav className="bg-white shadow-lg fixed w-full top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between h-16">
+          <div className="flex items-center">
+            <Link to="/" className="flex-shrink-0">
+              <Logo />
+            </Link>
+          </div>
+
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-4 lg:space-x-8">
-            <DesktopNav navLinks={navLinks} textColor={getTextColor()} />
+          <div className="hidden md:flex items-center space-x-8">
+            <DesktopNav />
             
-            {/* Auth Button */}
             {user ? (
-              <Button 
-                onClick={() => {
-                  const dashboardPath = userRole === 'admin' ? '/admin' : '/dashboard';
-                  window.location.href = dashboardPath;
-                }}
-                className="ml-4"
-              >
-                Dashboard
-              </Button>
+              <div className="flex items-center space-x-4">
+                <Link 
+                  to={userRole === 'admin' ? '/admin' : '/dashboard'}
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-colors"
+                >
+                  <LayoutDashboard className="h-4 w-4 mr-2" />
+                  Dashboard
+                </Link>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleSignOut}
+                  className="flex items-center space-x-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span>Sign Out</span>
+                </Button>
+              </div>
             ) : (
-              <Button 
-                onClick={() => window.location.href = '/auth'}
-                className="ml-4"
-              >
-                Sign In
-              </Button>
+              <div className="flex items-center space-x-4">
+                <Link 
+                  to="/auth"
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link 
+                  to="/auth"
+                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 transition-colors"
+                >
+                  Get Started
+                </Link>
+              </div>
             )}
           </div>
 
-          {/* Mobile Menu Button */}
-          <div className="md:hidden h-full flex items-center">
-            <MobileMenu navLinks={navLinks} isHomePage={isHomePage} scrolled={scrolled} />
+          {/* Mobile menu button */}
+          <div className="md:hidden flex items-center">
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-blue-500"
+            >
+              <span className="sr-only">Open main menu</span>
+              <svg
+                className="block h-6 w-6"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+            </button>
           </div>
         </div>
-      </nav>
-    </div>
+      </div>
+
+      {/* Mobile menu */}
+      <MobileMenu 
+        isOpen={isMobileMenuOpen} 
+        onClose={() => setIsMobileMenuOpen(false)} 
+      />
+    </nav>
   );
 };
 

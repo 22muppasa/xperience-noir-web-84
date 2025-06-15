@@ -137,6 +137,7 @@ export type Database = {
           file_type: string | null
           file_url: string | null
           id: string
+          parent_customer_id: string | null
           storage_path: string | null
           title: string
           uploaded_by: string | null
@@ -149,6 +150,7 @@ export type Database = {
           file_type?: string | null
           file_url?: string | null
           id?: string
+          parent_customer_id?: string | null
           storage_path?: string | null
           title: string
           uploaded_by?: string | null
@@ -161,6 +163,7 @@ export type Database = {
           file_type?: string | null
           file_url?: string | null
           id?: string
+          parent_customer_id?: string | null
           storage_path?: string | null
           title?: string
           uploaded_by?: string | null
@@ -210,6 +213,47 @@ export type Database = {
           subject?: string
         }
         Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          read: boolean
+          related_work_id: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          read?: boolean
+          related_work_id?: string | null
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          read?: boolean
+          related_work_id?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_related_work_id_fkey"
+            columns: ["related_work_id"]
+            isOneToOne: false
+            referencedRelation: "kids_work"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {

@@ -1,198 +1,277 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import { Navigate, useLocation } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Eye, EyeOff } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Eye, EyeOff, Mail, Lock, User, AlertCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Auth = () => {
-  const { user, signIn, signUp, loading, userRole } = useAuth();
-  const location = useLocation();
-  const [isSignUp, setIsSignUp] = useState(false);
+  const { signIn, signUp } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+  const [signInData, setSignInData] = useState({ email: '', password: '' });
+  const [signUpData, setSignUpData] = useState({ 
+    email: '', 
+    password: '', 
+    confirmPassword: '',
     firstName: '',
-    lastName: '',
+    lastName: ''
   });
 
-  // Redirect if already authenticated
-  if (user && userRole) {
-    const from = location.state?.from?.pathname;
-    if (from && (from.startsWith('/admin') || from.startsWith('/dashboard'))) {
-      return <Navigate to={from} replace />;
-    }
-    
-    // Default redirect based on role
-    const defaultPath = userRole === 'admin' ? '/admin' : '/dashboard';
-    return <Navigate to={defaultPath} replace />;
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    setIsLoading(true);
+    setError('');
 
-    try {
-      console.log('Form submission started:', { isSignUp, email: formData.email });
-      
-      if (isSignUp) {
-        console.log('Attempting signup...');
-        const result = await signUp(formData.email, formData.password, formData.firstName, formData.lastName);
-        console.log('Signup result:', result);
-      } else {
-        console.log('Attempting signin...');
-        const result = await signIn(formData.email, formData.password);
-        console.log('Signin result:', result);
-      }
-    } catch (error) {
-      console.error('Form submission error:', error);
-    } finally {
-      setIsSubmitting(false);
+    const { error } = await signIn(signInData.email, signInData.password);
+    
+    if (error) {
+      setError(error.message);
     }
+    setIsLoading(false);
   };
 
-  const toggleMode = () => {
-    setIsSignUp(!isSignUp);
-    setFormData({
-      email: '',
-      password: '',
-      firstName: '',
-      lastName: '',
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setError('');
+
+    if (signUpData.password !== signUpData.confirmPassword) {
+      setError('Passwords do not match');
+      setIsLoading(false);
+      return;
+    }
+
+    if (signUpData.password.length < 6) {
+      setError('Password must be at least 6 characters');
+      setIsLoading(false);
+      return;
+    }
+
+    const { error } = await signUp(signUpData.email, signUpData.password, {
+      first_name: signUpData.firstName,
+      last_name: signUpData.lastName
     });
+    
+    if (error) {
+      setError(error.message);
+    }
+    setIsLoading(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
-          <h2 className="mt-6 text-3xl font-bold text-gray-900">
-            {isSignUp ? 'Create your account' : 'Sign in to your account'}
-          </h2>
-          <p className="mt-2 text-sm text-gray-600">
-            {isSignUp ? 'Join XPerience today' : 'Welcome back to XPerience'}
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <Link to="/" className="inline-block">
+            <h1 className="text-3xl font-bold text-gray-900">KidsCreate</h1>
+          </Link>
+          <p className="text-gray-600 mt-2">Welcome back! Please sign in to your account</p>
         </div>
 
-        <Card>
+        <Card className="shadow-xl border-0">
           <CardHeader>
-            <CardTitle className="text-center">
-              {isSignUp ? 'Sign Up' : 'Sign In'}
-            </CardTitle>
+            <CardTitle className="text-2xl text-center text-gray-900">Account Access</CardTitle>
+            <CardDescription className="text-center text-gray-600">
+              Sign in to your existing account or create a new one
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {isSignUp && (
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <label htmlFor="firstName" className="sr-only">
-                      First Name
-                    </label>
-                    <input
-                      id="firstName"
-                      name="firstName"
-                      type="text"
-                      required
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                      placeholder="First name"
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="lastName" className="sr-only">
-                      Last Name
-                    </label>
-                    <input
-                      id="lastName"
-                      name="lastName"
-                      type="text"
-                      required
-                      value={formData.lastName}
-                      onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                      placeholder="Last name"
-                    />
-                  </div>
-                </div>
+            <Tabs defaultValue="signin" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-6">
+                <TabsTrigger value="signin" className="text-sm font-medium">
+                  Sign In
+                </TabsTrigger>
+                <TabsTrigger value="signup" className="text-sm font-medium">
+                  Sign Up
+                </TabsTrigger>
+              </TabsList>
+
+              {error && (
+                <Alert variant="destructive" className="mb-6">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
               )}
 
-              <div>
-                <label htmlFor="email" className="sr-only">
-                  Email address
-                </label>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                  placeholder="Email address"
-                />
-              </div>
+              <TabsContent value="signin">
+                <form onSubmit={handleSignIn} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="signin-email" className="text-sm font-medium text-gray-900">
+                      Email
+                    </Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="signin-email"
+                        type="email"
+                        placeholder="Enter your email"
+                        value={signInData.email}
+                        onChange={(e) => setSignInData({ ...signInData, email: e.target.value })}
+                        className="pl-10 h-12 border-gray-300 focus:border-gray-900 focus:ring-gray-900"
+                        required
+                      />
+                    </div>
+                  </div>
 
-              <div className="relative">
-                <label htmlFor="password" className="sr-only">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete={isSignUp ? 'new-password' : 'current-password'}
-                  required
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
-                  placeholder="Password"
-                />
-                <button
-                  type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                  onClick={() => setShowPassword(!showPassword)}
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4 text-gray-400" />
-                  ) : (
-                    <Eye className="h-4 w-4 text-gray-400" />
-                  )}
-                </button>
-              </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signin-password" className="text-sm font-medium text-gray-900">
+                      Password
+                    </Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="signin-password"
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Enter your password"
+                        value={signInData.password}
+                        onChange={(e) => setSignInData({ ...signInData, password: e.target.value })}
+                        className="pl-10 pr-10 h-12 border-gray-300 focus:border-gray-900 focus:ring-gray-900"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </div>
 
-              <Button
-                type="submit"
-                disabled={isSubmitting || loading}
-                className="w-full bg-black text-white hover:bg-gray-900"
+                  <Button 
+                    type="submit" 
+                    className="w-full h-12 bg-gray-900 hover:bg-gray-800 text-white font-medium"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Signing In...' : 'Sign In'}
+                  </Button>
+                </form>
+              </TabsContent>
+
+              <TabsContent value="signup">
+                <form onSubmit={handleSignUp} className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName" className="text-sm font-medium text-gray-900">
+                        First Name
+                      </Label>
+                      <div className="relative">
+                        <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                        <Input
+                          id="firstName"
+                          type="text"
+                          placeholder="First name"
+                          value={signUpData.firstName}
+                          onChange={(e) => setSignUpData({ ...signUpData, firstName: e.target.value })}
+                          className="pl-10 h-12 border-gray-300 focus:border-gray-900 focus:ring-gray-900"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="lastName" className="text-sm font-medium text-gray-900">
+                        Last Name
+                      </Label>
+                      <Input
+                        id="lastName"
+                        type="text"
+                        placeholder="Last name"
+                        value={signUpData.lastName}
+                        onChange={(e) => setSignUpData({ ...signUpData, lastName: e.target.value })}
+                        className="h-12 border-gray-300 focus:border-gray-900 focus:ring-gray-900"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-email" className="text-sm font-medium text-gray-900">
+                      Email
+                    </Label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="signup-email"
+                        type="email"
+                        placeholder="Enter your email"
+                        value={signUpData.email}
+                        onChange={(e) => setSignUpData({ ...signUpData, email: e.target.value })}
+                        className="pl-10 h-12 border-gray-300 focus:border-gray-900 focus:ring-gray-900"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-password" className="text-sm font-medium text-gray-900">
+                      Password
+                    </Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="signup-password"
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Create a password"
+                        value={signUpData.password}
+                        onChange={(e) => setSignUpData({ ...signUpData, password: e.target.value })}
+                        className="pl-10 pr-10 h-12 border-gray-300 focus:border-gray-900 focus:ring-gray-900"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-900">
+                      Confirm Password
+                    </Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                      <Input
+                        id="confirmPassword"
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="Confirm your password"
+                        value={signUpData.confirmPassword}
+                        onChange={(e) => setSignUpData({ ...signUpData, confirmPassword: e.target.value })}
+                        className="pl-10 h-12 border-gray-300 focus:border-gray-900 focus:ring-gray-900"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <Button 
+                    type="submit" 
+                    className="w-full h-12 bg-gray-900 hover:bg-gray-800 text-white font-medium"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Creating Account...' : 'Create Account'}
+                  </Button>
+                </form>
+              </TabsContent>
+            </Tabs>
+
+            <div className="mt-6 text-center">
+              <Link 
+                to="/" 
+                className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
               >
-                {isSubmitting ? 'Processing...' : (isSignUp ? 'Sign Up' : 'Sign In')}
-              </Button>
-
-              <div className="text-center">
-                <button
-                  type="button"
-                  onClick={toggleMode}
-                  className="text-sm text-black hover:underline"
-                >
-                  {isSignUp 
-                    ? 'Already have an account? Sign in' 
-                    : "Don't have an account? Sign up"
-                  }
-                </button>
-              </div>
-            </form>
+                ← Back to Homepage
+              </Link>
+            </div>
           </CardContent>
         </Card>
       </div>

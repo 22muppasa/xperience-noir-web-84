@@ -106,8 +106,8 @@ const Navbar = () => {
       {/* Mobile menu */}
       <MobileMenu 
         navLinks={navLinks}
-        isOpen={isMobileMenuOpen} 
-        onClose={() => setIsMobileMenuOpen(false)} 
+        isHomePage={false}
+        scrolled={false}
       />
     </nav>
   );

@@ -42,9 +42,9 @@ interface KidsWork {
     child_name: string;
     customer_id: string;
     profiles?: {
-      first_name: string;
-      last_name: string;
-    };
+      first_name?: string;
+      last_name?: string;
+    } | null;
   };
 }
 
@@ -68,7 +68,7 @@ const AdminKidsWork = () => {
           enrollments!inner (
             child_name,
             customer_id,
-            profiles!enrollments_customer_id_fkey (
+            profiles:customer_id (
               first_name,
               last_name
             )

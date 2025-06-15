@@ -23,7 +23,7 @@ const Navbar = () => {
     { name: 'Programs', path: '/programs' },
     { name: 'Consulting', path: '/consulting' },
     { name: 'Get Involved', path: '/get-involved' },
-    { name: 'Social Hub', path: '/social-hub' },
+    { name: 'Social Hub', path: '/social' },
     { name: 'About', path: '/about' },
     { name: 'Contact', path: '/contact' }
   ];
@@ -46,7 +46,7 @@ const Navbar = () => {
             {user ? (
               <div className="flex items-center space-x-3">
                 <Link
-                  to={userRole === 'admin' ? '/admin' : '/dashboard'}
+                  to={userRole === 'admin' ? '/admin' : '/customer'}
                   className="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 hover:border-gray-400 transition-colors"
                 >
                   <LayoutDashboard className="h-4 w-4 mr-2" />

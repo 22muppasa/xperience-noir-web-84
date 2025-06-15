@@ -120,7 +120,7 @@ const MobileMenu = ({
                 }}
               >
                 <Link
-                  to={userRole === 'admin' ? '/admin' : '/dashboard'}
+                  to={userRole === 'admin' ? '/admin' : '/customer'}
                   className="flex items-center w-full px-4 py-3 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 bg-white/50 hover:bg-white hover:border-gray-300 transition-all duration-200 group"
                   onClick={() => handleOpenChange(false)}
                 >

@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import Index from "./pages/Index";
@@ -56,9 +56,13 @@ function App() {
               <Route path="/get-involved" element={<GetInvolved />} />
               <Route path="/blog" element={<Blog />} />
               <Route path="/social" element={<SocialHub />} />
+              <Route path="/social-hub" element={<Navigate to="/social" replace />} />
               <Route path="/consulting" element={<Consulting />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/auth" element={<Auth />} />
+
+              {/* Dashboard Redirect - for backward compatibility */}
+              <Route path="/dashboard" element={<Navigate to="/customer" replace />} />
 
               {/* Customer Protected Routes */}
               <Route path="/customer" element={<ProtectedRoute requiredRole="customer"><CustomerDashboard /></ProtectedRoute>} />

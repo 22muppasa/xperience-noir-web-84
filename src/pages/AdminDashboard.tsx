@@ -25,28 +25,28 @@ const AdminDashboard = () => {
       description: 'View and manage all user accounts',
       icon: Users,
       href: '/admin/customers',
-      color: 'bg-blue-500'
+      color: 'bg-black'
     },
     {
       title: 'Review Kids Work',
       description: 'Review and approve submitted work',
       icon: FileText,
       href: '/admin/kids-work',
-      color: 'bg-green-500'
+      color: 'bg-black'
     },
     {
       title: 'Messages',
       description: 'Manage user communications',
       icon: MessageSquare,
       href: '/admin/messages',
-      color: 'bg-purple-500'
+      color: 'bg-black'
     },
     {
       title: 'System Settings',
       description: 'Configure system preferences',
       icon: Settings,
       href: '/admin/settings',
-      color: 'bg-gray-500'
+      color: 'bg-black'
     }
   ];
 
@@ -85,19 +85,19 @@ const AdminDashboard = () => {
     <DashboardLayout>
       <div className="space-y-8">
         {/* Welcome Section */}
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg p-6 text-white">
+        <div className="bg-black rounded-lg p-6 text-white">
           <h1 className="text-2xl md:text-3xl font-bold mb-2">
             Welcome back, Admin!
           </h1>
-          <p className="text-blue-100 mb-4">
+          <p className="text-gray-200 mb-4">
             Here's what's happening with your platform today.
           </p>
           <div className="flex flex-wrap gap-2">
-            <Button variant="secondary" size="sm">
+            <Button variant="secondary" size="sm" className="bg-white text-black hover:bg-gray-100">
               <Shield className="h-4 w-4 mr-2" />
               System Health: Good
             </Button>
-            <Button variant="secondary" size="sm">
+            <Button variant="secondary" size="sm" className="bg-white text-black hover:bg-gray-100">
               <BarChart3 className="h-4 w-4 mr-2" />
               View Analytics
             </Button>
@@ -107,17 +107,17 @@ const AdminDashboard = () => {
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {adminStats.map((stat, index) => (
-            <Card key={index}>
+            <Card key={index} className="bg-white border-black">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-                <stat.icon className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium text-black">{stat.title}</CardTitle>
+                <stat.icon className="h-4 w-4 text-black" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
+                <div className="text-2xl font-bold text-black">{stat.value}</div>
                 <p className={`text-xs ${
                   stat.trend === 'up' ? 'text-green-600' : 
                   stat.trend === 'down' ? 'text-red-600' : 
-                  'text-muted-foreground'
+                  'text-black'
                 }`}>
                   {stat.change}
                 </p>
@@ -127,9 +127,9 @@ const AdminDashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <Card>
+        <Card className="bg-white border-black">
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
+            <CardTitle className="text-black">Quick Actions</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -137,15 +137,15 @@ const AdminDashboard = () => {
                 <Button
                   key={index}
                   variant="outline"
-                  className="h-auto p-4 flex flex-col items-start space-y-2"
+                  className="h-auto p-4 flex flex-col items-start space-y-2 border-black bg-white hover:bg-gray-50 text-black"
                   onClick={() => window.location.href = action.href}
                 >
                   <div className={`p-2 rounded-lg ${action.color} text-white`}>
                     <action.icon className="h-5 w-5" />
                   </div>
                   <div className="text-left">
-                    <h3 className="font-semibold text-sm">{action.title}</h3>
-                    <p className="text-xs text-muted-foreground">{action.description}</p>
+                    <h3 className="font-semibold text-sm text-black">{action.title}</h3>
+                    <p className="text-xs text-black">{action.description}</p>
                   </div>
                 </Button>
               ))}
@@ -154,9 +154,9 @@ const AdminDashboard = () => {
         </Card>
 
         {/* Analytics Dashboard */}
-        <Card>
+        <Card className="bg-white border-black">
           <CardHeader>
-            <CardTitle>Analytics Overview</CardTitle>
+            <CardTitle className="text-black">Analytics Overview</CardTitle>
           </CardHeader>
           <CardContent>
             <AnalyticsDashboard />

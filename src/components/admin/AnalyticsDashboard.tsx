@@ -73,13 +73,13 @@ const AnalyticsDashboard = () => {
     }
   });
 
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
+  const COLORS = ['#000000', '#666666', '#333333', '#999999'];
 
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {Array.from({ length: 6 }).map((_, i) => (
-          <Card key={i} className="animate-pulse">
+          <Card key={i} className="animate-pulse bg-white border-black">
             <CardContent className="p-6">
               <div className="h-4 bg-gray-200 rounded mb-2"></div>
               <div className="h-8 bg-gray-200 rounded"></div>
@@ -94,62 +94,62 @@ const AnalyticsDashboard = () => {
     <div className="space-y-6">
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-        <Card>
+        <Card className="bg-white border-black">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-black">Total Users</CardTitle>
+            <Users className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics?.totals.users}</div>
+            <div className="text-2xl font-bold text-black">{analytics?.totals.users}</div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white border-black">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Kids Work</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-black">Kids Work</CardTitle>
+            <FileText className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics?.totals.kidsWork}</div>
+            <div className="text-2xl font-bold text-black">{analytics?.totals.kidsWork}</div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white border-black">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Messages</CardTitle>
-            <MessageSquare className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-black">Messages</CardTitle>
+            <MessageSquare className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics?.totals.messages}</div>
+            <div className="text-2xl font-bold text-black">{analytics?.totals.messages}</div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white border-black">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">File Uploads</CardTitle>
-            <Upload className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-black">File Uploads</CardTitle>
+            <Upload className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics?.totals.uploads}</div>
+            <div className="text-2xl font-bold text-black">{analytics?.totals.uploads}</div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white border-black">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Programs</CardTitle>
-            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-black">Programs</CardTitle>
+            <Calendar className="h-4 w-4 text-black" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{analytics?.totals.programs}</div>
+            <div className="text-2xl font-bold text-black">{analytics?.totals.programs}</div>
           </CardContent>
         </Card>
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
+        <Card className="bg-white border-black">
           <CardHeader>
-            <CardTitle>7-Day Growth Trend</CardTitle>
+            <CardTitle className="text-black">7-Day Growth Trend</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -158,16 +158,16 @@ const AnalyticsDashboard = () => {
                 <XAxis dataKey="date" />
                 <YAxis />
                 <Tooltip />
-                <Line type="monotone" dataKey="users" stroke="#8884d8" name="New Users" />
-                <Line type="monotone" dataKey="submissions" stroke="#82ca9d" name="Submissions" />
+                <Line type="monotone" dataKey="users" stroke="#000000" name="New Users" />
+                <Line type="monotone" dataKey="submissions" stroke="#666666" name="Submissions" />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-white border-black">
           <CardHeader>
-            <CardTitle>User Distribution</CardTitle>
+            <CardTitle className="text-black">User Distribution</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -179,7 +179,7 @@ const AnalyticsDashboard = () => {
                   labelLine={false}
                   label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
                   outerRadius={80}
-                  fill="#8884d8"
+                  fill="#000000"
                   dataKey="value"
                 >
                   {analytics?.roleData?.map((entry, index) => (

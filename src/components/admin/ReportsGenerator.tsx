@@ -114,9 +114,9 @@ const ReportsGenerator = () => {
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="bg-white border-black">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
+          <CardTitle className="flex items-center space-x-2 text-black">
             <FileText className="h-5 w-5" />
             <span>Generate Reports</span>
           </CardTitle>
@@ -124,9 +124,9 @@ const ReportsGenerator = () => {
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="reportType">Report Type</Label>
+              <Label htmlFor="reportType" className="text-black">Report Type</Label>
               <Select value={reportType} onValueChange={setReportType}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-white border-black text-black">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -143,9 +143,9 @@ const ReportsGenerator = () => {
             </div>
 
             <div>
-              <Label htmlFor="dateRange">Date Range</Label>
+              <Label htmlFor="dateRange" className="text-black">Date Range</Label>
               <Select value={dateRange} onValueChange={setDateRange}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-white border-black text-black">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -162,7 +162,7 @@ const ReportsGenerator = () => {
           <Button 
             onClick={generateReport}
             disabled={isGenerating}
-            className="w-full"
+            className="w-full bg-black hover:bg-gray-800 text-white border-black"
           >
             <Download className="h-4 w-4 mr-2" />
             {isGenerating ? 'Generating Report...' : 'Generate & Download Report'}
@@ -171,21 +171,21 @@ const ReportsGenerator = () => {
       </Card>
 
       {reportPreview && (
-        <Card>
+        <Card className="bg-white border-black">
           <CardHeader>
-            <CardTitle>Report Preview</CardTitle>
+            <CardTitle className="text-black">Report Preview</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <h4 className="font-medium">{reportPreview.title}</h4>
-              <div className="bg-gray-50 p-4 rounded-lg">
+              <h4 className="font-medium text-black">{reportPreview.title}</h4>
+              <div className="bg-gray-50 border border-black p-4 rounded-lg">
                 {reportPreview.preview.map((item, index) => (
-                  <div key={index} className="text-sm text-gray-600 py-1">
+                  <div key={index} className="text-sm text-black py-1">
                     {item}
                   </div>
                 ))}
                 {reportPreview.preview.length === 0 && (
-                  <p className="text-sm text-gray-500">No data available for this report</p>
+                  <p className="text-sm text-black">No data available for this report</p>
                 )}
               </div>
             </div>

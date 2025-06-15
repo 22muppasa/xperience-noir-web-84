@@ -1,46 +1,89 @@
 
-import DashboardLayout from '@/components/dashboard/DashboardLayout';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Image, Download, Eye, Search, Upload, Trash2 } from 'lucide-react';
-import AdminKidsWorkUpload from '@/components/file-upload/AdminKidsWorkUpload';
+import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import DashboardLayout from '@/components/dashboard/DashboardLayout';
+import AdminKidsWorkUpload from '@/components/file-upload/AdminKidsWorkUpload';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  FileText, 
+  Image, 
+  Video, 
+  Download, 
+  Trash2, 
+  Upload,
+  Eye,
+  Calendar,
+  User
+} from 'lucide-react';
+import { format } from 'date-fns';
+
+interface KidsWork {
+  id: string;
+  title: string;
+  description: string;
+  file_url: string;
+  file_type: string;
+  created_at: string;
+  uploaded_by_admin: boolean;
+  enrollment_id: string;
+  enrollments: {
+    child_name: string;
+    customer_id: string;
+    profiles?: {
+      first_name: string;
+      last_name: string;
+    };
+  };
+}
 
 const AdminKidsWork = () => {
+  const [selectedWork, setSelectedWork] = useState<KidsWork | null>(null);
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [workToDelete, setWorkToDelete] = useState<KidsWork | null>(null);
+  
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [searchTerm, setSearchTerm] = useState('');
 
-  // Fetch all kids work for admin
-  const { data: kidsWork = [], isLoading, refetch } = useQuery({
+  // Fetch all kids work with enrollment and profile data
+  const { data: kidsWork = [], isLoading } = useQuery({
     queryKey: ['admin-kids-work'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('kids_work')
         .select(`
           *,
-          enrollments(
-            id,
+          enrollments!inner (
             child_name,
             customer_id,
-            programs(title),
-            profiles!enrollments_customer_id_fkey(first_name, last_name)
+            profiles!enrollments_customer_id_fkey (
+              first_name,
+              last_name
+            )
           )
         `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      return data as KidsWork[];
     }
   });
 
   // Delete kids work mutation
-  const deleteWorkMutation = useMutation({
+  const deleteMutation = useMutation({
     mutationFn: async (workId: string) => {
       const { error } = await supabase
         .from('kids_work')
@@ -51,68 +94,94 @@ const AdminKidsWork = () => {
     },
     onSuccess: () => {
       toast({
-        title: "Work deleted",
-        description: "Kids work has been deleted successfully",
+        title: "Success",
+        description: "Kids work deleted successfully."
       });
       queryClient.invalidateQueries({ queryKey: ['admin-kids-work'] });
+      setIsDeleteDialogOpen(false);
+      setWorkToDelete(null);
     },
-    onError: (error: any) => {
+    onError: (error) => {
+      console.error('Delete error:', error);
       toast({
-        title: "Delete failed",
-        description: error.message || "Failed to delete work",
-        variant: "destructive",
+        title: "Error",
+        description: "Failed to delete kids work. Please try again.",
+        variant: "destructive"
       });
     }
   });
 
-  const handleDownload = async (fileUrl: string, title: string) => {
-    try {
-      const response = await fetch(fileUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = title;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    } catch (error) {
-      toast({
-        title: "Download failed",
-        description: "Failed to download file",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleDelete = (workId: string) => {
-    if (window.confirm('Are you sure you want to delete this work? This action cannot be undone.')) {
-      deleteWorkMutation.mutate(workId);
-    }
-  };
-
   const getFileIcon = (fileType: string) => {
-    if (fileType?.startsWith('image/')) {
-      return <Image className="h-5 w-5 text-blue-600" />;
-    }
-    return <Image className="h-5 w-5 text-gray-600" />;
+    if (fileType.startsWith('image/')) return <Image className="h-5 w-5" />;
+    if (fileType.startsWith('video/')) return <Video className="h-5 w-5" />;
+    return <FileText className="h-5 w-5" />;
   };
 
-  // Filter kids work based on search term
-  const filteredKidsWork = kidsWork.filter(work => 
-    work.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    work.enrollments?.child_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    work.enrollments?.programs?.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const getFileTypeColor = (fileType: string) => {
+    if (fileType.startsWith('image/')) return 'bg-green-100 text-green-800';
+    if (fileType.startsWith('video/')) return 'bg-blue-100 text-blue-800';
+    return 'bg-gray-100 text-gray-800';
+  };
+
+  const handleView = (work: KidsWork) => {
+    setSelectedWork(work);
+    setIsViewDialogOpen(true);
+  };
+
+  const handleDelete = (work: KidsWork) => {
+    setWorkToDelete(work);
+    setIsDeleteDialogOpen(true);
+  };
+
+  const handleDownload = (work: KidsWork) => {
+    window.open(work.file_url, '_blank');
+  };
+
+  const renderFilePreview = (work: KidsWork) => {
+    if (work.file_type.startsWith('image/')) {
+      return (
+        <img 
+          src={work.file_url} 
+          alt={work.title}
+          className="max-w-full max-h-96 object-contain rounded-lg"
+        />
+      );
+    }
+    
+    if (work.file_type.startsWith('video/')) {
+      return (
+        <video 
+          src={work.file_url} 
+          controls
+          className="max-w-full max-h-96 rounded-lg"
+        />
+      );
+    }
+    
+    return (
+      <div className="flex items-center justify-center p-8 bg-gray-50 rounded-lg">
+        <div className="text-center">
+          <FileText className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+          <p className="text-gray-600">Preview not available for this file type</p>
+          <Button 
+            onClick={() => handleDownload(work)}
+            className="mt-4"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Download File
+          </Button>
+        </div>
+      </div>
+    );
+  };
 
   if (isLoading) {
     return (
       <DashboardLayout>
-        <div className="flex items-center justify-center h-64">
+        <div className="flex items-center justify-center min-h-96">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-            <p className="mt-2 text-gray-900">Loading kids work...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading kids work...</p>
           </div>
         </div>
       </DashboardLayout>
@@ -121,184 +190,197 @@ const AdminKidsWork = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Kids Work Management</h1>
-            <p className="text-gray-700 mt-1">Upload and manage children's creative work</p>
-          </div>
-          <AdminKidsWorkUpload onUploadComplete={() => refetch()} />
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Kids Work Management</h1>
+          <p className="text-gray-600 mt-2">Upload and manage children's creative work and projects</p>
         </div>
 
-        {/* Search and Stats */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          <Card className="lg:col-span-1 border-gray-200">
-            <CardContent className="p-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Search by title, child, or program..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 border-gray-300"
-                />
+        <Tabs defaultValue="upload" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="upload" className="flex items-center space-x-2">
+              <Upload className="h-4 w-4" />
+              <span>Upload Work</span>
+            </TabsTrigger>
+            <TabsTrigger value="manage" className="flex items-center space-x-2">
+              <Eye className="h-4 w-4" />
+              <span>Manage Work</span>
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="upload">
+            <Card>
+              <CardHeader>
+                <CardTitle>Upload New Kids Work</CardTitle>
+                <CardDescription>
+                  Upload photos, videos, or documents of children's creative work and projects
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <AdminKidsWorkUpload />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="manage">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold text-gray-900">All Kids Work</h2>
+                <Badge variant="secondary" className="text-sm">
+                  {kidsWork.length} items
+                </Badge>
               </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="border-gray-200">
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-3">
-                <Upload className="h-6 w-6 text-blue-600" />
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Total Works</p>
-                  <p className="text-xl font-bold text-gray-900">{kidsWork.length}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
 
-          <Card className="border-gray-200">
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-3">
-                <Image className="h-6 w-6 text-green-600" />
-                <div>
-                  <p className="text-sm font-medium text-gray-900">This Week</p>
-                  <p className="text-xl font-bold text-gray-900">
-                    {kidsWork.filter(work => {
-                      const workDate = new Date(work.created_at);
-                      const weekAgo = new Date();
-                      weekAgo.setDate(weekAgo.getDate() - 7);
-                      return workDate > weekAgo;
-                    }).length}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-gray-200">
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-3">
-                <Download className="h-6 w-6 text-purple-600" />
-                <div>
-                  <p className="text-sm font-medium text-gray-900">Images</p>
-                  <p className="text-xl font-bold text-gray-900">
-                    {kidsWork.filter(work => work.file_type?.startsWith('image/')).length}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Kids Work Gallery */}
-        {filteredKidsWork.length === 0 ? (
-          <Card className="border-gray-200">
-            <CardContent className="p-12 text-center">
-              <Upload className="mx-auto h-16 w-16 text-gray-400 mb-4" />
-              <h3 className="text-xl font-medium text-gray-900 mb-2">
-                {searchTerm ? 'No matching results' : 'No work uploaded yet'}
-              </h3>
-              <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                {searchTerm 
-                  ? 'Try adjusting your search terms to find what you\'re looking for.'
-                  : 'Start uploading children\'s creative work to showcase their progress and achievements.'
-                }
-              </p>
-              {!searchTerm && <AdminKidsWorkUpload onUploadComplete={() => refetch()} />}
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredKidsWork.map((work) => (
-              <Card key={work.id} className="hover:shadow-lg transition-shadow border-gray-200">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <CardTitle className="text-base line-clamp-2 text-gray-900">{work.title}</CardTitle>
-                    {getFileIcon(work.file_type)}
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Preview */}
-                  <div className="aspect-video bg-gray-100 rounded-lg flex items-center justify-center border">
-                    {work.file_type?.startsWith('image/') ? (
-                      <img 
-                        src={work.file_url} 
-                        alt={work.title}
-                        className="max-w-full max-h-full object-contain rounded-lg"
-                      />
-                    ) : (
-                      <div className="text-center p-3">
-                        {getFileIcon(work.file_type)}
-                        <p className="text-xs text-gray-600 mt-1">
-                          {work.file_type === 'application/pdf' ? 'PDF' : 'Media'}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Work Details */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Badge variant="outline" className="text-xs">
-                        {work.enrollments?.programs?.title || 'No Program'}
-                      </Badge>
-                      <span className="text-xs text-gray-500">
-                        {new Date(work.created_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                    
-                    <div className="text-sm space-y-1">
-                      <p className="font-medium text-gray-900">
-                        {work.enrollments?.child_name || 'Unknown Child'}
-                      </p>
-                      <p className="text-gray-600 text-xs">
-                        Parent: {work.enrollments?.profiles?.first_name} {work.enrollments?.profiles?.last_name}
-                      </p>
-                    </div>
-
-                    {work.description && (
-                      <p className="text-xs text-gray-600 bg-gray-50 p-2 rounded line-clamp-2">
-                        {work.description}
-                      </p>
-                    )}
-                  </div>
-
-                  {/* Actions */}
-                  <div className="flex items-center space-x-1">
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => window.open(work.file_url, '_blank')}
-                      className="flex-1 text-xs h-8"
-                    >
-                      <Eye className="h-3 w-3 mr-1" />
-                      View
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => handleDownload(work.file_url, work.title)}
-                      className="flex-1 text-xs h-8"
-                    >
-                      <Download className="h-3 w-3 mr-1" />
-                      Download
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => handleDelete(work.id)}
-                      className="h-8 w-8 p-0 text-red-600 hover:bg-red-50"
-                    >
-                      <Trash2 className="h-3 w-3" />
+              {kidsWork.length === 0 ? (
+                <Card className="p-8">
+                  <div className="text-center">
+                    <Upload className="h-16 w-16 text-gray-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 mb-2">No kids work uploaded yet</h3>
+                    <p className="text-gray-600 mb-4">Start by uploading some children's creative work and projects.</p>
+                    <Button onClick={() => document.querySelector('[value="upload"]')?.click()}>
+                      Upload First Work
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+                </Card>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {kidsWork.map((work) => (
+                    <Card key={work.id} className="hover:shadow-md transition-shadow">
+                      <CardHeader className="pb-3">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center space-x-2">
+                            {getFileIcon(work.file_type)}
+                            <div className="min-w-0 flex-1">
+                              <h3 className="font-medium text-gray-900 truncate">{work.title}</h3>
+                              <p className="text-sm text-gray-600">
+                                {work.enrollments.child_name}
+                              </p>
+                            </div>
+                          </div>
+                          <Badge className={getFileTypeColor(work.file_type)}>
+                            {work.file_type.split('/')[0]}
+                          </Badge>
+                        </div>
+                      </CardHeader>
+                      
+                      <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                          <div className="flex items-center space-x-2 text-sm text-gray-600">
+                            <User className="h-4 w-4" />
+                            <span>
+                              Parent: {work.enrollments.profiles?.first_name || 'Unknown'} {work.enrollments.profiles?.last_name || 'Parent'}
+                            </span>
+                          </div>
+                          
+                          <div className="flex items-center space-x-2 text-sm text-gray-600">
+                            <Calendar className="h-4 w-4" />
+                            <span>{format(new Date(work.created_at), 'MMM d, yyyy')}</span>
+                          </div>
+                        </div>
+
+                        {work.description && (
+                          <p className="text-sm text-gray-700 line-clamp-2">{work.description}</p>
+                        )}
+
+                        <div className="flex space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleView(work)}
+                            className="flex-1"
+                          >
+                            <Eye className="h-4 w-4 mr-1" />
+                            View
+                          </Button>
+                          
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDownload(work)}
+                          >
+                            <Download className="h-4 w-4" />
+                          </Button>
+                          
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDelete(work)}
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
+
+        {/* View Dialog */}
+        <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{selectedWork?.title}</DialogTitle>
+              <DialogDescription>
+                Work by {selectedWork?.enrollments.child_name} • 
+                Uploaded {selectedWork ? format(new Date(selectedWork.created_at), 'MMM d, yyyy') : ''}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              {selectedWork?.description && (
+                <div>
+                  <h4 className="font-medium text-gray-900 mb-2">Description</h4>
+                  <p className="text-gray-700">{selectedWork.description}</p>
+                </div>
+              )}
+              
+              <div>
+                <h4 className="font-medium text-gray-900 mb-2">Preview</h4>
+                {selectedWork && renderFilePreview(selectedWork)}
+              </div>
+            </div>
+            
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsViewDialogOpen(false)}>
+                Close
+              </Button>
+              {selectedWork && (
+                <Button onClick={() => handleDownload(selectedWork)}>
+                  <Download className="h-4 w-4 mr-2" />
+                  Download
+                </Button>
+              )}
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Delete Kids Work</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to delete "{workToDelete?.title}"? This action cannot be undone.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button 
+                variant="destructive" 
+                onClick={() => workToDelete && deleteMutation.mutate(workToDelete.id)}
+                disabled={deleteMutation.isPending}
+              >
+                {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </DashboardLayout>
   );

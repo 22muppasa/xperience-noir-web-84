@@ -51,16 +51,16 @@ const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <AuthProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            {loading ? (
-              <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black z-50">
-                <Loader />
-              </div>
-            ) : (
-              <BrowserRouter>
+        <BrowserRouter>
+          <AuthProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              {loading ? (
+                <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black z-50">
+                  <Loader />
+                </div>
+              ) : (
                 <div className="flex flex-col min-h-screen transition-colors duration-300">
                   <Routes>
                     {/* Public routes */}
@@ -203,10 +203,10 @@ const App: React.FC = () => {
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </div>
-              </BrowserRouter>
-            )}
-          </TooltipProvider>
-        </AuthProvider>
+              )}
+            </TooltipProvider>
+          </AuthProvider>
+        </BrowserRouter>
       </ThemeProvider>
     </QueryClientProvider>
   );

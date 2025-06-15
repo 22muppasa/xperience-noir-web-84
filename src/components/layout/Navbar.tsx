@@ -16,19 +16,29 @@ const Navbar = () => {
     await signOut();
   };
 
+  const navLinks = [
+    { href: '/', label: 'Home' },
+    { href: '/programs', label: 'Programs' },
+    { href: '/consulting', label: 'Consulting' },
+    { href: '/get-involved', label: 'Get Involved' },
+    { href: '/social-hub', label: 'Social Hub' },
+    { href: '/about', label: 'About' },
+    { href: '/contact', label: 'Contact' }
+  ];
+
   return (
     <nav className="bg-white shadow-lg fixed w-full top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0">
-              <Logo />
+              <Logo textColor="text-gray-900" />
             </Link>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <DesktopNav />
+            <DesktopNav navLinks={navLinks} textColor="text-gray-900" />
             
             {user ? (
               <div className="flex items-center space-x-4">
@@ -95,6 +105,7 @@ const Navbar = () => {
 
       {/* Mobile menu */}
       <MobileMenu 
+        navLinks={navLinks}
         isOpen={isMobileMenuOpen} 
         onClose={() => setIsMobileMenuOpen(false)} 
       />

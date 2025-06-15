@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -35,19 +34,22 @@ const UserManagement = () => {
     phone: '',
     date_of_birth: ''
   });
-  
+
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: users, isLoading } = useQuery({
+  const { data: users, isLoading, error, refetch } = useQuery({
     queryKey: ['admin-users'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
         .order('created_at', { ascending: false });
-      
-      if (error) throw error;
+
+      if (error) {
+        console.error('[UserManagement] Failed to fetch users:', error);
+        throw error;
+      }
       return data as Profile[];
     }
   });
@@ -58,7 +60,7 @@ const UserManagement = () => {
         .from('profiles')
         .update({ role })
         .eq('id', userId);
-      
+
       if (error) throw error;
       return data;
     },
@@ -88,7 +90,7 @@ const UserManagement = () => {
           id: crypto.randomUUID(), // In real app, this would come from auth.users
           ...userData
         }]);
-      
+
       if (error) throw error;
       return data;
     },
@@ -118,13 +120,13 @@ const UserManagement = () => {
   });
 
   const filteredUsers = users?.filter(user => {
-    const matchesSearch = searchTerm === '' || 
+    const matchesSearch = searchTerm === '' ||
       user.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.last_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email?.toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     const matchesRole = roleFilter === 'all' || user.role === roleFilter;
-    
+
     return matchesSearch && matchesRole;
   });
 
@@ -139,6 +141,31 @@ const UserManagement = () => {
             </CardContent>
           </Card>
         ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-xl mx-auto mt-16">
+        <Card className="bg-red-50 border-red-300">
+          <CardHeader>
+            <CardTitle className="text-red-900">Error loading users</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-red-700 mb-2">
+              We couldn't retrieve user data from the database at this time.
+            </div>
+            <div className="text-sm text-red-500 mb-4">
+              {error instanceof Error
+                ? error.message
+                : "The database service may be temporarily unavailable. Please try again later."}
+            </div>
+            <Button className="bg-black text-white" onClick={() => refetch()}>
+              Retry
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }

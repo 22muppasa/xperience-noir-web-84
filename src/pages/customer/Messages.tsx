@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -152,7 +151,7 @@ const Messages = () => {
                     </div>
                     <p className="text-black line-clamp-3">{message.content}</p>
                     <div className="mt-4">
-                      <Button variant="outline" size="sm" className="text-black border-black">
+                      <Button variant="outline" size="sm" className="text-white bg-black border-black hover:bg-gray-800">
                         View Full Message
                       </Button>
                     </div>

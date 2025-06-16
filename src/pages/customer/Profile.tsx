@@ -162,7 +162,10 @@ const Profile = () => {
               </div>
               <div className="text-right">
                 <div className="text-2xl font-bold text-black">{completionPercentage}%</div>
-                <Progress value={completionPercentage} className="w-24 h-2 mt-2" />
+                <Progress 
+                  value={completionPercentage} 
+                  className="w-24 h-2 mt-2 [&>div]:bg-black" 
+                />
               </div>
             </div>
           </CardContent>

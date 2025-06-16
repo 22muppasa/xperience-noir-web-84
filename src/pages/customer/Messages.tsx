@@ -172,49 +172,49 @@ const Messages = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-black">Messages</h1>
-            <p className="text-gray-600">Communicate with camp administrators and instructors</p>
+            <h1 className="text-3xl font-bold text-black">Messages</h1>
+            <p className="text-gray-700 text-base mt-1">Communicate with camp administrators and instructors</p>
           </div>
           <MessageComposer replyTo={selectedReply} />
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="bg-white border border-gray-200 shadow-sm">
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <Inbox className="h-5 w-5 text-blue-600" />
+          <Card className="bg-white border-2 border-gray-300 shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-blue-100 rounded-xl">
+                  <Inbox className="h-6 w-6 text-blue-700" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Total Messages</p>
-                  <p className="text-2xl font-bold text-gray-900">{messages.length}</p>
+                  <p className="text-sm font-medium text-gray-700">Total Messages</p>
+                  <p className="text-3xl font-bold text-black">{messages.length}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-white border border-gray-200 shadow-sm">
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-red-100 rounded-lg">
-                  <MessageSquare className="h-5 w-5 text-red-600" />
+          <Card className="bg-white border-2 border-gray-300 shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-red-100 rounded-xl">
+                  <MessageSquare className="h-6 w-6 text-red-700" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Unread</p>
-                  <p className="text-2xl font-bold text-gray-900">{unreadCount}</p>
+                  <p className="text-sm font-medium text-gray-700">Unread</p>
+                  <p className="text-3xl font-bold text-black">{unreadCount}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-white border border-gray-200 shadow-sm">
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-3">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <Send className="h-5 w-5 text-green-600" />
+          <Card className="bg-white border-2 border-gray-300 shadow-lg">
+            <CardContent className="p-6">
+              <div className="flex items-center space-x-4">
+                <div className="p-3 bg-green-100 rounded-xl">
+                  <Send className="h-6 w-6 text-green-700" />
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">This Week</p>
-                  <p className="text-2xl font-bold text-gray-900">{thisWeekCount}</p>
+                  <p className="text-sm font-medium text-gray-700">This Week</p>
+                  <p className="text-3xl font-bold text-black">{thisWeekCount}</p>
                 </div>
               </div>
             </CardContent>
@@ -222,14 +222,23 @@ const Messages = () => {
         </div>
 
         <Tabs defaultValue="inbox" className="w-full">
-          <TabsList className="bg-gray-100">
-            <TabsTrigger value="inbox" className="data-[state=active]:bg-white">
-              Inbox {unreadCount > 0 && <Badge variant="destructive" className="ml-2 text-xs">{unreadCount}</Badge>}
+          <TabsList className="bg-gray-200 border border-gray-300">
+            <TabsTrigger value="inbox" className="data-[state=active]:bg-white data-[state=active]:border data-[state=active]:border-gray-400 font-medium">
+              <div className="flex items-center space-x-2">
+                <span>Inbox</span>
+                {unreadCount > 0 && (
+                  <Badge className="bg-red-600 text-white border-0 px-2 py-0.5 text-xs font-bold">
+                    {unreadCount}
+                  </Badge>
+                )}
+              </div>
             </TabsTrigger>
-            <TabsTrigger value="sent" className="data-[state=active]:bg-white">Sent</TabsTrigger>
+            <TabsTrigger value="sent" className="data-[state=active]:bg-white data-[state=active]:border data-[state=active]:border-gray-400 font-medium">
+              Sent
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="inbox" className="space-y-4">
+          <TabsContent value="inbox" className="space-y-4 mt-6">
             <div className="space-y-4">
               {messages.length > 0 ? (
                 messages
@@ -237,45 +246,45 @@ const Messages = () => {
                   .map((message) => (
                     <Card 
                       key={message.id} 
-                      className={`bg-white border transition-all duration-200 hover:shadow-md ${
+                      className={`bg-white transition-all duration-200 hover:shadow-xl ${
                         message.status === 'unread' 
-                          ? 'border-blue-300 bg-blue-50/50 shadow-sm' 
-                          : 'border-gray-200'
+                          ? 'border-2 border-blue-400 bg-blue-50 shadow-lg' 
+                          : 'border-2 border-gray-300 hover:border-gray-400'
                       }`}
                     >
                       <CardContent className="p-6">
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex-1">
-                            <div className="flex items-center space-x-3 mb-2">
-                              <h3 className="font-semibold text-lg text-gray-900">{message.subject}</h3>
+                            <div className="flex items-center space-x-3 mb-3">
+                              <h3 className="font-bold text-xl text-black">{message.subject}</h3>
                               {message.status === 'unread' && (
-                                <Badge variant="destructive" className="text-xs bg-red-500 text-white px-2 py-1">
-                                  New
+                                <Badge className="bg-red-600 text-white border-0 px-3 py-1 text-sm font-bold">
+                                  NEW
                                 </Badge>
                               )}
                               {message.status === 'read' && (
-                                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                                <CheckCircle2 className="h-5 w-5 text-green-600" />
                               )}
                             </div>
-                            <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
-                              <span className="font-medium">From: {getSenderName(message)}</span>
-                              <div className="flex items-center space-x-1">
-                                <Clock className="h-3 w-3" />
-                                <span>{formatTime(message.created_at)}</span>
+                            <div className="flex items-center space-x-4 text-sm text-gray-800 mb-4">
+                              <span className="font-semibold">From: {getSenderName(message)}</span>
+                              <div className="flex items-center space-x-2">
+                                <Clock className="h-4 w-4 text-gray-700" />
+                                <span className="font-medium">{formatTime(message.created_at)}</span>
                               </div>
                             </div>
                           </div>
                         </div>
-                        <div className="mb-4">
-                          <p className="text-gray-700 whitespace-pre-wrap line-clamp-3">{message.content}</p>
+                        <div className="mb-6">
+                          <p className="text-gray-800 whitespace-pre-wrap line-clamp-3 text-base leading-relaxed">{message.content}</p>
                         </div>
-                        <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-4">
                           <Button 
                             onClick={() => handleReply(message)}
                             size="sm" 
-                            className="bg-blue-600 hover:bg-blue-700 text-white border-0 shadow-sm"
+                            className="bg-blue-700 hover:bg-blue-800 text-white border-0 shadow-md px-4 py-2 font-semibold"
                           >
-                            <Reply className="h-4 w-4 mr-2" />
+                            <Reply className="h-5 w-5 mr-2" />
                             Reply
                           </Button>
                           {message.status === 'unread' && (
@@ -283,10 +292,10 @@ const Messages = () => {
                               variant="outline" 
                               size="sm" 
                               onClick={() => handleMarkAsRead(message.id)}
-                              className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                              className="border-2 border-gray-400 text-gray-900 hover:bg-gray-100 hover:border-gray-500 px-4 py-2 font-semibold"
                               disabled={markAsReadMutation.isPending}
                             >
-                              <CheckCircle2 className="h-4 w-4 mr-2" />
+                              <CheckCircle2 className="h-5 w-5 mr-2" />
                               {markAsReadMutation.isPending ? 'Marking...' : 'Mark as Read'}
                             </Button>
                           )}
@@ -295,59 +304,62 @@ const Messages = () => {
                     </Card>
                   ))
               ) : (
-                <Card className="bg-white border border-gray-200">
-                  <CardContent className="p-8 text-center">
-                    <div className="p-3 bg-gray-100 rounded-full w-fit mx-auto mb-4">
-                      <MessageSquare className="h-8 w-8 text-gray-400" />
+                <Card className="bg-white border-2 border-gray-300">
+                  <CardContent className="p-12 text-center">
+                    <div className="p-4 bg-gray-200 rounded-full w-fit mx-auto mb-6">
+                      <MessageSquare className="h-12 w-12 text-gray-600" />
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No messages yet</h3>
-                    <p className="text-gray-600">Messages from administrators will appear here</p>
+                    <h3 className="text-xl font-bold text-black mb-3">No messages yet</h3>
+                    <p className="text-gray-700 text-base">Messages from administrators will appear here</p>
                   </CardContent>
                 </Card>
               )}
             </div>
           </TabsContent>
 
-          <TabsContent value="sent" className="space-y-4">
+          <TabsContent value="sent" className="space-y-4 mt-6">
             <div className="space-y-4">
               {messages.length > 0 ? (
                 messages
                   .filter(m => m.sender_id === user?.id)
                   .map((message) => (
-                    <Card key={message.id} className="bg-white border border-gray-200 hover:shadow-md transition-shadow">
+                    <Card key={message.id} className="bg-white border-2 border-gray-300 hover:shadow-xl hover:border-gray-400 transition-all duration-200">
                       <CardContent className="p-6">
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex-1">
-                            <h3 className="font-semibold text-lg text-gray-900 mb-2">{message.subject}</h3>
-                            <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
-                              <span className="font-medium">
+                            <h3 className="font-bold text-xl text-black mb-3">{message.subject}</h3>
+                            <div className="flex items-center space-x-4 text-sm text-gray-800 mb-4">
+                              <span className="font-semibold">
                                 To: {message.recipient ? `${message.recipient.first_name} ${message.recipient.last_name}` : 'Admin'}
                               </span>
-                              <div className="flex items-center space-x-1">
-                                <Send className="h-3 w-3" />
-                                <span>Sent: {formatTime(message.created_at)}</span>
+                              <div className="flex items-center space-x-2">
+                                <Send className="h-4 w-4 text-gray-700" />
+                                <span className="font-medium">Sent: {formatTime(message.created_at)}</span>
                               </div>
                             </div>
                           </div>
                           <Badge 
-                            variant={message.status === 'read' ? 'default' : 'secondary'}
-                            className="text-xs"
+                            className={`text-sm font-semibold px-3 py-1 ${
+                              message.status === 'read' 
+                                ? 'bg-green-600 text-white border-0' 
+                                : 'bg-gray-600 text-white border-0'
+                            }`}
                           >
                             {message.status === 'read' ? 'Read' : 'Delivered'}
                           </Badge>
                         </div>
-                        <p className="text-gray-700 whitespace-pre-wrap line-clamp-3">{message.content}</p>
+                        <p className="text-gray-800 whitespace-pre-wrap line-clamp-3 text-base leading-relaxed">{message.content}</p>
                       </CardContent>
                     </Card>
                   ))
               ) : (
-                <Card className="bg-white border border-gray-200">
-                  <CardContent className="p-8 text-center">
-                    <div className="p-3 bg-gray-100 rounded-full w-fit mx-auto mb-4">
-                      <Send className="h-8 w-8 text-gray-400" />
+                <Card className="bg-white border-2 border-gray-300">
+                  <CardContent className="p-12 text-center">
+                    <div className="p-4 bg-gray-200 rounded-full w-fit mx-auto mb-6">
+                      <Send className="h-12 w-12 text-gray-600" />
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">No sent messages yet</h3>
-                    <p className="text-gray-600">Messages you send will appear here</p>
+                    <h3 className="text-xl font-bold text-black mb-3">No sent messages yet</h3>
+                    <p className="text-gray-700 text-base">Messages you send will appear here</p>
                   </CardContent>
                 </Card>
               )}

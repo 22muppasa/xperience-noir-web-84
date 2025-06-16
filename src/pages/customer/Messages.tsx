@@ -3,18 +3,19 @@ import { useState } from 'react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MessageSquare, Send, Inbox, Edit } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import MessageComposer from '@/components/messaging/MessageComposer';
+import { useToast } from '@/hooks/use-toast';
 
 const Messages = () => {
   const { user } = useAuth();
-  const [isComposing, setIsComposing] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   // Get real messages
   const { data: messages = [], isLoading } = useQuery({
@@ -32,9 +33,27 @@ const Messages = () => {
     enabled: !!user?.id
   });
 
-  const handleSendMessage = () => {
-    // Handle sending message
-    setIsComposing(false);
+  // Mark message as read mutation
+  const markAsReadMutation = useMutation({
+    mutationFn: async (messageId: string) => {
+      const { error } = await supabase
+        .from('messages')
+        .update({ 
+          status: 'read',
+          read_at: new Date().toISOString()
+        })
+        .eq('id', messageId)
+        .eq('recipient_id', user?.id);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['messages', user?.id] });
+    }
+  });
+
+  const handleMarkAsRead = (messageId: string) => {
+    markAsReadMutation.mutate(messageId);
   };
 
   const unreadCount = messages.filter(m => m.status === 'unread' && m.recipient_id === user?.id).length;
@@ -66,10 +85,7 @@ const Messages = () => {
             <h1 className="text-2xl font-bold text-black">Messages</h1>
             <p className="text-black">Communicate with camp administrators and instructors</p>
           </div>
-          <Button onClick={() => setIsComposing(!isComposing)}>
-            <Edit className="h-4 w-4 mr-2 text-black" />
-            Compose
-          </Button>
+          <MessageComposer />
         </div>
 
         {/* Stats */}
@@ -116,32 +132,6 @@ const Messages = () => {
           </TabsList>
 
           <TabsContent value="inbox" className="space-y-4">
-            {/* Compose Message */}
-            {isComposing && (
-              <Card className="bg-white border-black">
-                <CardHeader>
-                  <CardTitle className="text-black">Compose Message</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <Input placeholder="Subject" className="bg-white text-black border-gray-300" />
-                  <Textarea 
-                    placeholder="Your message..." 
-                    className="min-h-32 bg-white text-black border-gray-300"
-                  />
-                  <div className="flex space-x-2">
-                    <Button onClick={handleSendMessage}>
-                      <Send className="h-4 w-4 mr-2 text-black" />
-                      Send Message
-                    </Button>
-                    <Button variant="outline" onClick={() => setIsComposing(false)}>
-                      Cancel
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Messages List */}
             <div className="space-y-4">
               {messages.length > 0 ? (
                 messages
@@ -158,15 +148,29 @@ const Messages = () => {
                               )}
                             </div>
                             <p className="text-sm text-black mb-2">
-                              {new Date(message.created_at).toLocaleDateString()}
+                              From: Admin • {new Date(message.created_at).toLocaleDateString()}
                             </p>
                           </div>
                         </div>
                         <p className="text-black line-clamp-3">{message.content}</p>
-                        <div className="mt-4">
-                          <Button variant="outline" size="sm" className="text-white bg-black border-black hover:bg-gray-800">
-                            View Full Message
+                        <div className="mt-4 flex space-x-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="text-white bg-black border-black hover:bg-gray-800"
+                          >
+                            Reply
                           </Button>
+                          {message.status === 'unread' && (
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              onClick={() => handleMarkAsRead(message.id)}
+                              className="border-black text-black hover:bg-gray-50"
+                            >
+                              Mark as Read
+                            </Button>
+                          )}
                         </div>
                       </CardContent>
                     </Card>
@@ -195,7 +199,7 @@ const Messages = () => {
                           <div className="flex-1">
                             <h3 className="font-semibold text-lg text-black mb-2">{message.subject}</h3>
                             <p className="text-sm text-black mb-2">
-                              Sent: {new Date(message.created_at).toLocaleDateString()}
+                              To: Admin • Sent: {new Date(message.created_at).toLocaleDateString()}
                             </p>
                           </div>
                         </div>

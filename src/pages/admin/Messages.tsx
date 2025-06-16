@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,8 +23,10 @@ import { MessageSquare, Send, Users, Mail, Clock, Reply, Trash2 } from 'lucide-r
 
 const AdminMessages = () => {
   const [isComposing, setIsComposing] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState({ recipient: '', subject: '', content: '' });
   const { toast } = useToast();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
 
   // Fetch real messages from Supabase
@@ -70,13 +73,15 @@ const AdminMessages = () => {
   // Send message mutation
   const sendMessageMutation = useMutation({
     mutationFn: async (messageData: { recipient_id: string; subject: string; content: string }) => {
+      if (!user?.id) throw new Error('User not authenticated');
+      
       const { error } = await supabase
         .from('messages')
         .insert([{
           recipient_id: messageData.recipient_id,
           subject: messageData.subject,
           content: messageData.content,
-          sender_id: null // Admin messages
+          sender_id: user.id // Use actual admin user ID
         }]);
 
       if (error) throw error;
@@ -88,6 +93,7 @@ const AdminMessages = () => {
       });
       setNewMessage({ recipient: '', subject: '', content: '' });
       setIsComposing(false);
+      setReplyingTo(null);
       queryClient.invalidateQueries({ queryKey: ['admin-messages'] });
     },
     onError: (error) => {
@@ -96,6 +102,24 @@ const AdminMessages = () => {
         description: "Failed to send message. Please try again.",
         variant: "destructive",
       });
+    }
+  });
+
+  // Mark message as read mutation
+  const markAsReadMutation = useMutation({
+    mutationFn: async (messageId: string) => {
+      const { error } = await supabase
+        .from('messages')
+        .update({ 
+          status: 'read',
+          read_at: new Date().toISOString()
+        })
+        .eq('id', messageId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-messages'] });
     }
   });
 
@@ -135,9 +159,24 @@ const AdminMessages = () => {
     });
   };
 
+  const handleReply = (message: any) => {
+    const senderInfo = getUserInfo(message.sender_id);
+    setReplyingTo(message.id);
+    setNewMessage({
+      recipient: message.sender_id || '',
+      subject: `Re: ${message.subject}`,
+      content: `\n\n--- Original Message ---\nFrom: ${senderInfo.name}\nDate: ${new Date(message.created_at).toLocaleString()}\nSubject: ${message.subject}\n\n${message.content}`
+    });
+    setIsComposing(true);
+  };
+
+  const handleMarkAsRead = (messageId: string) => {
+    markAsReadMutation.mutate(messageId);
+  };
+
   // Helper function to get user info
   const getUserInfo = (userId: string | null) => {
-    if (!userId) return { name: 'Admin', email: 'System' };
+    if (!userId) return { name: 'System', email: 'system' };
     const profile = profiles.find(p => p.id === userId);
     return {
       name: profile ? `${profile.first_name} ${profile.last_name}` : 'Unknown User',
@@ -175,7 +214,11 @@ const AdminMessages = () => {
             <p className="text-black">Manage customer communications</p>
           </div>
           <Button 
-            onClick={() => setIsComposing(!isComposing)}
+            onClick={() => {
+              setIsComposing(!isComposing);
+              setReplyingTo(null);
+              setNewMessage({ recipient: '', subject: '', content: '' });
+            }}
             className="bg-black text-white hover:bg-gray-800"
           >
             <Send className="mr-2 h-4 w-4" />
@@ -218,6 +261,74 @@ const AdminMessages = () => {
           </TabsList>
 
           <TabsContent value="inbox" className="space-y-4">
+            {/* Compose Message Form */}
+            {isComposing && (
+              <Card className="bg-white border-black">
+                <CardHeader>
+                  <CardTitle className="text-black">
+                    {replyingTo ? 'Reply to Message' : 'Compose New Message'}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-black">To</label>
+                    <select 
+                      value={newMessage.recipient}
+                      onChange={(e) => setNewMessage({...newMessage, recipient: e.target.value})}
+                      className="w-full p-2 border border-black rounded-lg bg-white text-black"
+                      disabled={!!replyingTo}
+                    >
+                      <option value="">Select recipient...</option>
+                      {customers.map(customer => (
+                        <option key={customer.id} value={customer.id}>
+                          {customer.first_name} {customer.last_name} ({customer.email})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-black">Subject</label>
+                    <Input 
+                      value={newMessage.subject}
+                      onChange={(e) => setNewMessage({...newMessage, subject: e.target.value})}
+                      placeholder="Enter subject..."
+                      className="bg-white text-black border-black"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1 text-black">Message</label>
+                    <Textarea 
+                      value={newMessage.content}
+                      onChange={(e) => setNewMessage({...newMessage, content: e.target.value})}
+                      rows={6}
+                      placeholder="Enter your message..."
+                      className="bg-white text-black border-black"
+                    />
+                  </div>
+                  <div className="flex space-x-2">
+                    <Button 
+                      onClick={handleSendMessage}
+                      disabled={sendMessageMutation.isPending}
+                      className="bg-black text-white hover:bg-gray-800"
+                    >
+                      {sendMessageMutation.isPending ? 'Sending...' : 'Send Message'}
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        setIsComposing(false);
+                        setReplyingTo(null);
+                        setNewMessage({ recipient: '', subject: '', content: '' });
+                      }}
+                      className="border-black text-black"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* Messages List */}
             <Card className="bg-white border-black">
               <CardHeader>
@@ -241,16 +352,17 @@ const AdminMessages = () => {
                     <TableBody>
                       {messages.map((message) => {
                         const senderInfo = getUserInfo(message.sender_id);
+                        const recipientInfo = getUserInfo(message.recipient_id);
                         
                         return (
                           <TableRow key={message.id}>
                             <TableCell>
                               <div className="text-black">
                                 <div className="font-medium">
-                                  {senderInfo.name}
+                                  {message.sender_id === user?.id ? `To: ${recipientInfo.name}` : `From: ${senderInfo.name}`}
                                 </div>
                                 <div className="text-sm">
-                                  {senderInfo.email}
+                                  {message.sender_id === user?.id ? recipientInfo.email : senderInfo.email}
                                 </div>
                               </div>
                             </TableCell>
@@ -268,9 +380,26 @@ const AdminMessages = () => {
                             </TableCell>
                             <TableCell>
                               <div className="flex space-x-2">
-                                <Button size="sm" variant="outline" className="border-black text-black">
-                                  <Reply className="h-4 w-4" />
-                                </Button>
+                                {message.sender_id !== user?.id && (
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline" 
+                                    className="border-black text-black"
+                                    onClick={() => handleReply(message)}
+                                  >
+                                    <Reply className="h-4 w-4" />
+                                  </Button>
+                                )}
+                                {message.status === 'unread' && (
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline" 
+                                    className="border-black text-black"
+                                    onClick={() => handleMarkAsRead(message.id)}
+                                  >
+                                    Mark Read
+                                  </Button>
+                                )}
                                 <Button 
                                   size="sm" 
                                   variant="outline" 

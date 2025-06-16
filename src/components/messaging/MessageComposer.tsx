@@ -19,11 +19,25 @@ interface AdminProfile {
   email: string;
 }
 
-const MessageComposer = () => {
+interface MessageComposerProps {
+  replyTo?: {
+    id: string;
+    subject: string;
+    sender_id: string;
+    content: string;
+    created_at: string;
+  } | null;
+}
+
+const MessageComposer = ({ replyTo }: MessageComposerProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [recipientId, setRecipientId] = useState('');
-  const [subject, setSubject] = useState('');
-  const [content, setContent] = useState('');
+  const [recipientId, setRecipientId] = useState(replyTo?.sender_id || '');
+  const [subject, setSubject] = useState(replyTo ? `Re: ${replyTo.subject}` : '');
+  const [content, setContent] = useState(
+    replyTo 
+      ? `\n\n--- Original Message ---\nDate: ${new Date(replyTo.created_at).toLocaleString()}\nSubject: ${replyTo.subject}\n\n${replyTo.content}`
+      : ''
+  );
   
   const { user } = useAuth();
   const { toast } = useToast();
@@ -64,6 +78,7 @@ const MessageComposer = () => {
       setSubject('');
       setContent('');
       queryClient.invalidateQueries({ queryKey: ['messages'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-messages'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard-activities'] });
     },
@@ -91,22 +106,37 @@ const MessageComposer = () => {
     sendMessageMutation.mutate();
   };
 
+  // Reset form when opening for new message (not reply)
+  React.useEffect(() => {
+    if (isOpen && !replyTo) {
+      setRecipientId('');
+      setSubject('');
+      setContent('');
+    }
+  }, [isOpen, replyTo]);
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button className="bg-white text-black border border-black hover:bg-gray-100">
           <MessageSquare className="h-4 w-4 mr-2" />
-          Send Message
+          {replyTo ? 'Reply' : 'Send Message'}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl bg-white border-black">
         <DialogHeader>
-          <DialogTitle className="text-black">Send Message to Admin</DialogTitle>
+          <DialogTitle className="text-black">
+            {replyTo ? 'Reply to Message' : 'Send Message to Admin'}
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="recipient" className="text-black">Send to *</Label>
-            <Select value={recipientId} onValueChange={setRecipientId}>
+            <Select 
+              value={recipientId} 
+              onValueChange={setRecipientId}
+              disabled={!!replyTo}
+            >
               <SelectTrigger className="bg-white border-black text-black">
                 <SelectValue placeholder="Select an admin to message" />
               </SelectTrigger>
@@ -139,7 +169,7 @@ const MessageComposer = () => {
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Type your message here..."
-              rows={6}
+              rows={replyTo ? 8 : 6}
               className="bg-white border-black text-black placeholder:text-gray-500"
               required
             />
@@ -159,7 +189,7 @@ const MessageComposer = () => {
               disabled={sendMessageMutation.isPending}
               className="flex-1 bg-white text-black border border-black hover:bg-gray-100"
             >
-              {sendMessageMutation.isPending ? 'Sending...' : 'Send Message'}
+              {sendMessageMutation.isPending ? 'Sending...' : (replyTo ? 'Send Reply' : 'Send Message')}
             </Button>
           </div>
         </form>

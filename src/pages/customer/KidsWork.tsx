@@ -1,3 +1,4 @@
+
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,59 +13,9 @@ const KidsWork = () => {
   const { user } = useAuth();
   const { toast } = useToast();
 
-  // Fetch kids work data for customer using new child-based associations
-  const { data: kidsWork = [], isLoading, refetch } = useQuery({
-    queryKey: ['customer-kids-work', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return [];
-
-      const { data, error } = await supabase
-        .from('kids_work')
-        .select(`
-          *,
-          children(
-            id,
-            first_name,
-            last_name
-          ),
-          enrollments(
-            id,
-            child_name,
-            programs(title)
-          )
-        `)
-        .or(`parent_customer_id.eq.${user.id},child_id.in.(select child_id from parent_child_relationships where parent_id = ${user.id} and can_view_work = true)`)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!user?.id
-  });
-
-  // Fetch notifications for this user
-  const { data: notifications = [] } = useQuery({
-    queryKey: ['customer-notifications', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return [];
-
-      const { data, error } = await supabase
-        .from('notifications')
-        .select('*')
-        .eq('user_id', user.id)
-        .eq('type', 'kids_work')
-        .order('created_at', { ascending: false })
-        .limit(5);
-
-      if (error) throw error;
-      return data || [];
-    },
-    enabled: !!user?.id
-  });
-
-  // Fetch user's children for grouping
-  const { data: myChildren = [] } = useQuery({
-    queryKey: ['my-children-for-work', user?.id],
+  // First, fetch user's children relationships
+  const { data: childRelationships = [], isLoading: isLoadingChildren } = useQuery({
+    queryKey: ['my-children-relationships', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
       
@@ -81,10 +32,85 @@ const KidsWork = () => {
         .eq('parent_id', user.id)
         .eq('can_view_work', true);
       
-      if (error) throw error;
-      return data.map(rel => rel.children);
+      if (error) {
+        console.error('Error fetching child relationships:', error);
+        throw error;
+      }
+      return data || [];
     },
     enabled: !!user?.id
+  });
+
+  // Then fetch kids work based on child IDs and parent customer ID
+  const { data: kidsWork = [], isLoading: isLoadingWork, error: workError } = useQuery({
+    queryKey: ['customer-kids-work', user?.id, childRelationships],
+    queryFn: async () => {
+      if (!user?.id) return [];
+
+      const childIds = childRelationships.map(rel => rel.child_id);
+      
+      // Query for kids work where either:
+      // 1. The parent_customer_id matches the current user, OR
+      // 2. The child_id is in the list of children this parent can view
+      const { data, error } = await supabase
+        .from('kids_work')
+        .select(`
+          *,
+          children(
+            id,
+            first_name,
+            last_name
+          ),
+          enrollments(
+            id,
+            child_name,
+            programs(title)
+          )
+        `)
+        .or(`parent_customer_id.eq.${user.id}${childIds.length > 0 ? `,child_id.in.(${childIds.join(',')})` : ''}`)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching kids work:', error);
+        throw error;
+      }
+      return data || [];
+    },
+    enabled: !!user?.id && !isLoadingChildren
+  });
+
+  // Fetch notifications for this user
+  const { data: notifications = [] } = useQuery({
+    queryKey: ['customer-notifications', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('type', 'kids_work')
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      if (error) {
+        console.error('Error fetching notifications:', error);
+        throw error;
+      }
+      return data || [];
+    },
+    enabled: !!user?.id
+  });
+
+  // Fetch user's children for grouping
+  const { data: myChildren = [] } = useQuery({
+    queryKey: ['my-children-for-work', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      
+      return childRelationships.map(rel => rel.children);
+    },
+    enabled: !!user?.id && !isLoadingChildren
   });
 
   const handleDownload = async (fileUrl: string, title: string) => {
@@ -100,6 +126,7 @@ const KidsWork = () => {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (error) {
+      console.error('Download error:', error);
       toast({
         title: "Download failed",
         description: "Failed to download file",
@@ -166,13 +193,32 @@ const KidsWork = () => {
     return grouped;
   };
 
-  if (isLoading) {
+  if (isLoadingChildren || isLoadingWork) {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black mx-auto"></div>
             <p className="mt-2 text-black">Loading kids work...</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (workError) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center">
+            <h3 className="text-lg font-medium text-black mb-2">Error Loading Kids Work</h3>
+            <p className="text-black mb-4">There was an error loading your children's work. Please try again.</p>
+            <Button 
+              onClick={() => window.location.reload()} 
+              className="bg-black text-white hover:bg-gray-800"
+            >
+              Retry
+            </Button>
           </div>
         </div>
       </DashboardLayout>

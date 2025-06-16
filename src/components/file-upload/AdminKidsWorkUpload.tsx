@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -15,9 +15,10 @@ const AdminKidsWorkUpload = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [googleDriveLink, setGoogleDriveLink] = useState('');
-  const [isUploading, setIsUploading] = useState(false);
   const [linkPreview, setLinkPreview] = useState<string | null>(null);
+  
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   // Fetch enrollments with child and program data
   const { data: enrollments = [], isLoading } = useQuery({
@@ -54,6 +55,58 @@ const AdminKidsWorkUpload = () => {
         children: enrollment.children
       }));
     },
+  });
+
+  // Upload mutation with proper query invalidation
+  const uploadMutation = useMutation({
+    mutationFn: async ({ enrollmentId, childId, customerId, fileId, driveLink }: {
+      enrollmentId: string;
+      childId: string | null;
+      customerId: string;
+      fileId: string | null;
+      driveLink: string;
+    }) => {
+      const { error } = await supabase
+        .from('kids_work')
+        .insert({
+          title,
+          description: description || null,
+          google_drive_link: driveLink,
+          google_drive_file_id: fileId,
+          link_status: 'active',
+          enrollment_id: enrollmentId,
+          child_id: childId,
+          parent_customer_id: customerId,
+        });
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast({
+        title: "Upload Successful",
+        description: "Google Drive link has been added successfully.",
+      });
+
+      // Invalidate all relevant queries
+      queryClient.invalidateQueries({ queryKey: ['admin-kids-work'] });
+      queryClient.invalidateQueries({ queryKey: ['customer-kids-work'] });
+      queryClient.invalidateQueries({ queryKey: ['customer-notifications'] });
+
+      // Reset form
+      setSelectedChild('');
+      setTitle('');
+      setDescription('');
+      setGoogleDriveLink('');
+      setLinkPreview(null);
+    },
+    onError: (error) => {
+      console.error('Upload error:', error);
+      toast({
+        title: "Upload Failed",
+        description: "There was an error saving the Google Drive link. Please try again.",
+        variant: "destructive",
+      });
+    }
   });
 
   const extractGoogleDriveFileId = (url: string): string | null => {
@@ -113,47 +166,25 @@ const AdminKidsWorkUpload = () => {
       return;
     }
 
-    setIsUploading(true);
-    try {
-      const selectedEnrollment = enrollments.find(e => e.id === selectedChild);
-      const fileId = extractGoogleDriveFileId(googleDriveLink);
-      
-      const { error: dbError } = await supabase
-        .from('kids_work')
-        .insert({
-          title,
-          description: description || null,
-          google_drive_link: googleDriveLink,
-          google_drive_file_id: fileId,
-          link_status: 'active',
-          enrollment_id: selectedChild,
-          child_id: selectedEnrollment?.child_id || null,
-          parent_customer_id: selectedEnrollment?.customer_id || null,
-        });
-
-      if (dbError) throw dbError;
-
+    const selectedEnrollment = enrollments.find(e => e.id === selectedChild);
+    if (!selectedEnrollment) {
       toast({
-        title: "Upload Successful",
-        description: "Google Drive link has been added successfully.",
-      });
-
-      // Reset form
-      setSelectedChild('');
-      setTitle('');
-      setDescription('');
-      setGoogleDriveLink('');
-      setLinkPreview(null);
-    } catch (error) {
-      console.error('Upload error:', error);
-      toast({
-        title: "Upload Failed",
-        description: "There was an error saving the Google Drive link. Please try again.",
+        title: "Error",
+        description: "Selected enrollment not found.",
         variant: "destructive",
       });
-    } finally {
-      setIsUploading(false);
+      return;
     }
+
+    const fileId = extractGoogleDriveFileId(googleDriveLink);
+    
+    uploadMutation.mutate({
+      enrollmentId: selectedChild,
+      childId: selectedEnrollment.child_id,
+      customerId: selectedEnrollment.customer_id,
+      fileId,
+      driveLink: googleDriveLink
+    });
   };
 
   if (isLoading) {
@@ -258,11 +289,11 @@ const AdminKidsWorkUpload = () => {
 
         <Button 
           onClick={handleUpload} 
-          disabled={isUploading || !selectedChild || !title || !validateGoogleDriveLink(googleDriveLink)}
+          disabled={uploadMutation.isPending || !selectedChild || !title || !validateGoogleDriveLink(googleDriveLink)}
           className="w-full"
         >
           <Link className="h-4 w-4 mr-2" />
-          {isUploading ? 'Saving...' : 'Save Google Drive Link'}
+          {uploadMutation.isPending ? 'Saving...' : 'Save Google Drive Link'}
         </Button>
       </CardContent>
     </Card>

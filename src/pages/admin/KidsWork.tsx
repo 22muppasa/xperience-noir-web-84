@@ -43,6 +43,8 @@ interface KidsWork {
   link_status: string;
   created_at: string;
   enrollment_id: string;
+  child_id: string;
+  parent_customer_id: string;
   enrollments: {
     child_name: string;
     customer_id: string;
@@ -51,6 +53,11 @@ interface KidsWork {
       last_name?: string;
     } | null;
   };
+  children?: {
+    id: string;
+    first_name: string;
+    last_name: string;
+  } | null;
 }
 
 const AdminKidsWork = () => {
@@ -63,25 +70,33 @@ const AdminKidsWork = () => {
   const queryClient = useQueryClient();
 
   // Fetch all kids work with enrollment and profile data
-  const { data: kidsWork = [], isLoading } = useQuery({
+  const { data: kidsWork = [], isLoading, error: workError } = useQuery({
     queryKey: ['admin-kids-work'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('kids_work')
         .select(`
           *,
-          enrollments!inner (
+          enrollments (
             child_name,
             customer_id,
             profiles:customer_id (
               first_name,
               last_name
             )
+          ),
+          children (
+            id,
+            first_name,
+            last_name
           )
         `)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching admin kids work:', error);
+        throw error;
+      }
       return data as KidsWork[];
     }
   });
@@ -102,6 +117,7 @@ const AdminKidsWork = () => {
         description: "Kids work deleted successfully."
       });
       queryClient.invalidateQueries({ queryKey: ['admin-kids-work'] });
+      queryClient.invalidateQueries({ queryKey: ['customer-kids-work'] });
       setIsDeleteDialogOpen(false);
       setWorkToDelete(null);
     },
@@ -134,6 +150,13 @@ const AdminKidsWork = () => {
     if (work.file_type?.startsWith('image/')) return 'image';
     if (work.file_type?.startsWith('video/')) return 'video';
     return 'file';
+  };
+
+  const getChildName = (work: KidsWork) => {
+    if (work.children) {
+      return `${work.children.first_name} ${work.children.last_name}`;
+    }
+    return work.enrollments?.child_name || 'Unknown Child';
   };
 
   const handleView = (work: KidsWork) => {
@@ -222,6 +245,25 @@ const AdminKidsWork = () => {
     );
   }
 
+  if (workError) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center min-h-96">
+          <div className="text-center">
+            <h3 className="text-lg font-medium text-black mb-2">Error Loading Kids Work</h3>
+            <p className="text-black mb-4">There was an error loading the kids work. Please try again.</p>
+            <Button 
+              onClick={() => queryClient.invalidateQueries({ queryKey: ['admin-kids-work'] })} 
+              className="bg-black text-white hover:bg-gray-800"
+            >
+              Retry
+            </Button>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
   return (
     <DashboardLayout>
       <div className="space-y-8">
@@ -287,7 +329,7 @@ const AdminKidsWork = () => {
                             <div className="min-w-0 flex-1">
                               <h3 className="font-medium text-black truncate">{work.title}</h3>
                               <p className="text-sm text-black">
-                                {work.enrollments.child_name}
+                                {getChildName(work)}
                               </p>
                             </div>
                           </div>
@@ -302,7 +344,7 @@ const AdminKidsWork = () => {
                           <div className="flex items-center space-x-2 text-sm text-black">
                             <User className="h-4 w-4" />
                             <span>
-                              Parent: {work.enrollments.profiles?.first_name || 'Unknown'} {work.enrollments.profiles?.last_name || 'Parent'}
+                              Parent: {work.enrollments?.profiles?.first_name || 'Unknown'} {work.enrollments?.profiles?.last_name || 'Parent'}
                             </span>
                           </div>
                           
@@ -369,7 +411,7 @@ const AdminKidsWork = () => {
             <DialogHeader>
               <DialogTitle className="text-black">{selectedWork?.title}</DialogTitle>
               <DialogDescription className="text-black">
-                Work by {selectedWork?.enrollments.child_name} • 
+                Work by {selectedWork ? getChildName(selectedWork) : ''} • 
                 Shared {selectedWork ? format(new Date(selectedWork.created_at), 'MMM d, yyyy') : ''}
               </DialogDescription>
             </DialogHeader>

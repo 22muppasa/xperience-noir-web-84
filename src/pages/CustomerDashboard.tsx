@@ -12,9 +12,11 @@ import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 
 const CustomerDashboard = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState<'overview' | 'programs' | 'messages'>('overview');
 
   // Get upcoming events
@@ -96,7 +98,7 @@ const CustomerDashboard = () => {
       title: "Update Profile",
       description: "Manage your account settings and preferences",
       icon: User,
-      onClick: () => console.log("Navigate to profile")
+      onClick: () => navigate('/customer/profile')
     }
   ];
 

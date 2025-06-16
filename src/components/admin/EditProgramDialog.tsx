@@ -24,7 +24,7 @@ interface Program {
   end_date: string | null;
   price: number | null;
   max_participants: number | null;
-  status: string;
+  status: 'draft' | 'published';
 }
 
 interface EditProgramDialogProps {
@@ -40,7 +40,7 @@ const EditProgramDialog = ({ program }: EditProgramDialogProps) => {
     end_date: program.end_date || '',
     price: program.price?.toString() || '',
     max_participants: program.max_participants?.toString() || '',
-    status: program.status
+    status: program.status as 'draft' | 'published'
   });
   
   const { toast } = useToast();
@@ -164,7 +164,7 @@ const EditProgramDialog = ({ program }: EditProgramDialogProps) => {
           
           <div>
             <label className="block text-sm font-medium mb-1 text-black">Status</label>
-            <Select value={formData.status} onValueChange={(value) => setFormData({...formData, status: value})}>
+            <Select value={formData.status} onValueChange={(value: 'draft' | 'published') => setFormData({...formData, status: value})}>
               <SelectTrigger className="bg-white text-black border-black">
                 <SelectValue />
               </SelectTrigger>

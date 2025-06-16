@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import { UserPlus, Baby } from 'lucide-react';
 
 interface ProgramEnrollmentProps {
@@ -32,7 +32,7 @@ interface ParentChildRelationship {
 
 const ProgramEnrollment = ({ programId, programTitle, isEnrolled }: ProgramEnrollmentProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedChildId, setSelectedChildId] = useState('');
+  const [selectedChildIds, setSelectedChildIds] = useState<string[]>([]);
   const [notes, setNotes] = useState('');
   
   const { user } = useAuth();
@@ -73,31 +73,36 @@ const ProgramEnrollment = ({ programId, programTitle, isEnrolled }: ProgramEnrol
   const enrollMutation = useMutation({
     mutationFn: async () => {
       if (!user?.id) throw new Error('User not authenticated');
-      if (!selectedChildId) throw new Error('Please select a child');
+      if (selectedChildIds.length === 0) throw new Error('Please select at least one child');
       
-      const selectedChild = linkedChildren.find(rel => rel.child_id === selectedChildId);
-      if (!selectedChild) throw new Error('Selected child not found');
-      
-      const { error } = await supabase
-        .from('enrollments')
-        .insert({
-          program_id: programId,
-          child_id: selectedChildId,
-          child_name: `${selectedChild.children.first_name} ${selectedChild.children.last_name}`,
-          notes: notes.trim() || null,
-          status: 'pending'
-        });
+      const enrollmentPromises = selectedChildIds.map(async (childId) => {
+        const selectedChild = linkedChildren.find(rel => rel.child_id === childId);
+        if (!selectedChild) throw new Error('Selected child not found');
+        
+        const { error } = await supabase
+          .from('enrollments')
+          .insert({
+            program_id: programId,
+            child_id: childId,
+            child_name: `${selectedChild.children.first_name} ${selectedChild.children.last_name}`,
+            notes: notes.trim() || null,
+            status: 'pending'
+          });
 
-      if (error) throw error;
+        if (error) throw error;
+        return selectedChild;
+      });
+
+      return await Promise.all(enrollmentPromises);
     },
-    onSuccess: () => {
-      const selectedChild = linkedChildren.find(rel => rel.child_id === selectedChildId);
+    onSuccess: (enrolledChildren) => {
+      const childNames = enrolledChildren.map(rel => `${rel.children.first_name} ${rel.children.last_name}`).join(', ');
       toast({
         title: "Enrollment Successful!",
-        description: `Successfully enrolled ${selectedChild?.children.first_name} ${selectedChild?.children.last_name} in ${programTitle}`,
+        description: `Successfully enrolled ${childNames} in ${programTitle}`,
       });
       setIsOpen(false);
-      setSelectedChildId('');
+      setSelectedChildIds([]);
       setNotes('');
       queryClient.invalidateQueries({ queryKey: ['programs'] });
       queryClient.invalidateQueries({ queryKey: ['enrollments'] });
@@ -112,13 +117,21 @@ const ProgramEnrollment = ({ programId, programTitle, isEnrolled }: ProgramEnrol
     }
   });
 
+  const handleChildSelection = (childId: string, checked: boolean) => {
+    if (checked) {
+      setSelectedChildIds(prev => [...prev, childId]);
+    } else {
+      setSelectedChildIds(prev => prev.filter(id => id !== childId));
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!selectedChildId) {
+    if (selectedChildIds.length === 0) {
       toast({
         title: "Missing Information",
-        description: "Please select a child to enroll",
+        description: "Please select at least one child to enroll",
         variant: "destructive",
       });
       return;
@@ -167,24 +180,31 @@ const ProgramEnrollment = ({ programId, programTitle, isEnrolled }: ProgramEnrol
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="childSelect">Select Child *</Label>
-              <Select value={selectedChildId} onValueChange={setSelectedChildId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Choose a child to enroll..." />
-                </SelectTrigger>
-                <SelectContent>
-                  {linkedChildren.map((relationship) => (
-                    <SelectItem key={relationship.child_id} value={relationship.child_id}>
+              <Label>Select Children to Enroll *</Label>
+              <div className="space-y-3 mt-2">
+                {linkedChildren.map((relationship) => (
+                  <div key={relationship.child_id} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={relationship.child_id}
+                      checked={selectedChildIds.includes(relationship.child_id)}
+                      onCheckedChange={(checked) => 
+                        handleChildSelection(relationship.child_id, checked as boolean)
+                      }
+                    />
+                    <label 
+                      htmlFor={relationship.child_id}
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                    >
                       {relationship.children.first_name} {relationship.children.last_name}
                       {relationship.children.date_of_birth && (
                         <span className="text-sm text-gray-500 ml-2">
                           (Born: {new Date(relationship.children.date_of_birth).toLocaleDateString()})
                         </span>
                       )}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                    </label>
+                  </div>
+                ))}
+              </div>
             </div>
             
             <div>
@@ -209,10 +229,10 @@ const ProgramEnrollment = ({ programId, programTitle, isEnrolled }: ProgramEnrol
               </Button>
               <Button
                 type="submit"
-                disabled={enrollMutation.isPending || !selectedChildId}
+                disabled={enrollMutation.isPending || selectedChildIds.length === 0}
                 className="flex-1"
               >
-                {enrollMutation.isPending ? 'Enrolling...' : 'Enroll'}
+                {enrollMutation.isPending ? 'Enrolling...' : `Enroll ${selectedChildIds.length} Child${selectedChildIds.length !== 1 ? 'ren' : ''}`}
               </Button>
             </div>
           </form>

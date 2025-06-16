@@ -264,7 +264,7 @@ const Profile = () => {
                 </Button>
               </div>
             </CardContent>
-          </CardContent>
+          </Card>
         )}
       </div>
     </DashboardLayout>

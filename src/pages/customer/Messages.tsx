@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -223,7 +222,10 @@ const Messages = () => {
 
         <Tabs defaultValue="inbox" className="w-full">
           <TabsList className="bg-gray-200 border border-black">
-            <TabsTrigger value="inbox" className="data-[state=active]:bg-white data-[state=active]:border data-[state=active]:border-black font-medium text-black">
+            <TabsTrigger 
+              value="inbox" 
+              className="data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-gray-700 hover:text-black font-semibold border-0 data-[state=active]:border data-[state=active]:border-black"
+            >
               <div className="flex items-center space-x-2">
                 <span>Inbox</span>
                 {unreadCount > 0 && (
@@ -233,7 +235,10 @@ const Messages = () => {
                 )}
               </div>
             </TabsTrigger>
-            <TabsTrigger value="sent" className="data-[state=active]:bg-white data-[state=active]:border data-[state=active]:border-black font-medium text-black">
+            <TabsTrigger 
+              value="sent" 
+              className="data-[state=active]:bg-white data-[state=active]:text-black data-[state=inactive]:text-gray-700 hover:text-black font-semibold border-0 data-[state=active]:border data-[state=active]:border-black"
+            >
               Sent
             </TabsTrigger>
           </TabsList>

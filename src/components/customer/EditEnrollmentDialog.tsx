@@ -26,9 +26,11 @@ interface EditEnrollmentDialogProps {
   enrollment: Enrollment;
 }
 
+type EnrollmentStatus = 'active' | 'pending' | 'cancelled' | 'completed';
+
 const EditEnrollmentDialog = ({ enrollment }: EditEnrollmentDialogProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [status, setStatus] = useState(enrollment.status);
+  const [status, setStatus] = useState<EnrollmentStatus>(enrollment.status as EnrollmentStatus);
   const [notes, setNotes] = useState(enrollment.notes || '');
   
   const { toast } = useToast();
@@ -94,7 +96,7 @@ const EditEnrollmentDialog = ({ enrollment }: EditEnrollmentDialogProps) => {
           
           <div>
             <Label htmlFor="status">Status</Label>
-            <Select value={status} onValueChange={setStatus}>
+            <Select value={status} onValueChange={(value: EnrollmentStatus) => setStatus(value)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>

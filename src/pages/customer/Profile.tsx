@@ -76,8 +76,8 @@ const Profile = () => {
             lastName: data.last_name || '',
             email: data.email || user.email || '',
             phone: data.phone || '',
-            address: '', // We'll need to add this field to profiles table later
-            emergencyContact: '' // We'll need to add this field to profiles table later
+            address: data.address || '',
+            emergencyContact: data.emergency_contact || ''
           });
         }
       } catch (error) {
@@ -104,7 +104,8 @@ const Profile = () => {
           first_name: profileData.firstName,
           last_name: profileData.lastName,
           phone: profileData.phone,
-          // Note: address and emergencyContact would need to be added to the profiles table
+          address: profileData.address,
+          emergency_contact: profileData.emergencyContact,
         })
         .eq('id', user.id);
 
@@ -234,9 +235,8 @@ const Profile = () => {
                 disabled={!isEditing}
                 rows={2}
                 className="bg-white text-black border-gray-300"
-                placeholder="Address field will be available after database update"
+                placeholder="Enter your address"
               />
-              <p className="text-xs text-gray-500 mt-1">Note: Address storage will be added to the database soon</p>
             </div>
 
             <div>
@@ -247,9 +247,8 @@ const Profile = () => {
                 onChange={(e) => setProfileData({...profileData, emergencyContact: e.target.value})}
                 disabled={!isEditing}
                 className="bg-white text-black border-gray-300"
-                placeholder="Emergency contact will be available after database update"
+                placeholder="Enter emergency contact information"
               />
-              <p className="text-xs text-gray-500 mt-1">Note: Emergency contact storage will be added to the database soon</p>
             </div>
           </CardContent>
         </Card>

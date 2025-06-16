@@ -106,7 +106,7 @@ const ProgramEnrollment = ({ programId, programTitle, isEnrolled }: ProgramEnrol
             child_id: childId,
             child_name: `${selectedChild.children.first_name} ${selectedChild.children.last_name}`,
             notes: notes.trim() || null,
-            status: 'pending'
+            status: 'active' // Changed from 'pending' to 'active' for auto-approval
           });
 
         if (error) throw error;
@@ -119,7 +119,7 @@ const ProgramEnrollment = ({ programId, programTitle, isEnrolled }: ProgramEnrol
       const childNames = enrolledChildren.map(rel => `${rel.children.first_name} ${rel.children.last_name}`).join(', ');
       toast({
         title: "Enrollment Successful!",
-        description: `Successfully enrolled ${childNames} in ${programTitle}`,
+        description: `Successfully enrolled ${childNames} in ${programTitle}. Your enrollment is now active!`,
       });
       setIsOpen(false);
       setSelectedChildIds([]);

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -26,6 +25,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { BookOpen, Plus, Users, Calendar, Edit, Trash2, DollarSign } from 'lucide-react';
+import EditProgramDialog from '@/components/admin/EditProgramDialog';
 
 interface Program {
   id: string;
@@ -351,9 +351,7 @@ const AdminPrograms = () => {
                             </TableCell>
                             <TableCell>
                               <div className="flex space-x-2">
-                                <Button size="sm" variant="outline" className="border-black text-black">
-                                  <Edit className="h-4 w-4" />
-                                </Button>
+                                <EditProgramDialog program={program} />
                                 <Button 
                                   size="sm" 
                                   variant="outline" 

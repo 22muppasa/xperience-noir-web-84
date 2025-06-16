@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -8,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BookOpen } from 'lucide-react';
 import ProgramsGrid from '@/components/programs/ProgramsGrid';
+import EditEnrollmentDialog from '@/components/customer/EditEnrollmentDialog';
 
 interface Enrollment {
   id: string;
@@ -18,6 +18,7 @@ interface Enrollment {
   programs: {
     title: string;
   };
+  notes?: string;
 }
 
 const Programs = () => {
@@ -37,7 +38,8 @@ const Programs = () => {
           child_name,
           enrolled_at,
           status,
-          programs!inner(title)
+          programs!inner(title),
+          notes
         `)
         .eq('customer_id', user.id)
         .order('enrolled_at', { ascending: false });
@@ -84,19 +86,29 @@ const Programs = () => {
                         <p className="text-sm text-black">
                           Enrolled: {new Date(enrollment.enrolled_at).toLocaleDateString()}
                         </p>
+                        {enrollment.notes && (
+                          <p className="text-sm text-gray-600 mt-1">Notes: {enrollment.notes}</p>
+                        )}
                       </div>
-                      <Badge 
-                        variant="outline" 
-                        className={`${
-                          enrollment.status === 'active' 
-                            ? 'bg-green-50 text-green-700 border-green-700'
-                            : enrollment.status === 'pending'
-                            ? 'bg-yellow-50 text-yellow-700 border-yellow-700'
-                            : 'bg-gray-50 text-gray-700 border-gray-700'
-                        }`}
-                      >
-                        {enrollment.status}
-                      </Badge>
+                      <div className="flex items-center space-x-2">
+                        <Badge 
+                          variant="outline" 
+                          className={`${
+                            enrollment.status === 'active' 
+                              ? 'bg-green-50 text-green-700 border-green-700'
+                              : enrollment.status === 'pending'
+                              ? 'bg-yellow-50 text-yellow-700 border-yellow-700'
+                              : enrollment.status === 'cancelled'
+                              ? 'bg-red-50 text-red-700 border-red-700'
+                              : 'bg-gray-50 text-gray-700 border-gray-700'
+                          }`}
+                        >
+                          {enrollment.status}
+                        </Badge>
+                        {enrollment.status !== 'cancelled' && (
+                          <EditEnrollmentDialog enrollment={enrollment} />
+                        )}
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

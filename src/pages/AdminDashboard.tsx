@@ -2,6 +2,8 @@
 import React from 'react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
+import SystemStats from '@/components/admin/SystemStats';
+import ActivityLog from '@/components/admin/ActivityLog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';

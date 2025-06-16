@@ -1,16 +1,16 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Search, UserPlus, Mail, Calendar, Shield, User } from 'lucide-react';
+import { UserPlus, Mail, Calendar, Shield, User, Check } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,6 +21,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import BulkUserActions from './BulkUserActions';
+import UserFilters from './UserFilters';
 
 interface Profile {
   id: string;
@@ -34,8 +36,11 @@ interface Profile {
 }
 
 const UserManagement = () => {
+  const [selectedUsers, setSelectedUsers] = useState<Profile[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'customer'>('all');
+  const [dateFilter, setDateFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [isCreateUserOpen, setIsCreateUserOpen] = useState(false);
   const [roleChangeDialog, setRoleChangeDialog] = useState<{
     isOpen: boolean;
@@ -146,17 +151,27 @@ const UserManagement = () => {
     }
   });
 
-  const handleRoleChange = (user: Profile, newRole: 'admin' | 'customer') => {
-    setRoleChangeDialog({ isOpen: true, user, newRole });
+  const handleUserSelection = (user: Profile, checked: boolean) => {
+    if (checked) {
+      setSelectedUsers(prev => [...prev, user]);
+    } else {
+      setSelectedUsers(prev => prev.filter(u => u.id !== user.id));
+    }
   };
 
-  const confirmRoleChange = () => {
-    if (roleChangeDialog.user && roleChangeDialog.newRole) {
-      updateUserRoleMutation.mutate({
-        userId: roleChangeDialog.user.id,
-        role: roleChangeDialog.newRole
-      });
+  const handleSelectAll = (checked: boolean) => {
+    if (checked && filteredUsers) {
+      setSelectedUsers(filteredUsers);
+    } else {
+      setSelectedUsers([]);
     }
+  };
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setRoleFilter('all');
+    setDateFilter('');
+    setStatusFilter('all');
   };
 
   const filteredUsers = users?.filter(user => {
@@ -166,8 +181,11 @@ const UserManagement = () => {
       user.email?.toLowerCase().includes(searchTerm.toLowerCase());
 
     const matchesRole = roleFilter === 'all' || user.role === roleFilter;
+    
+    const matchesDate = dateFilter === '' || 
+      new Date(user.created_at) >= new Date(dateFilter);
 
-    return matchesSearch && matchesRole;
+    return matchesSearch && matchesRole && matchesDate;
   });
 
   if (isLoading) {
@@ -288,63 +306,73 @@ const UserManagement = () => {
         </Dialog>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black h-4 w-4" />
-          <Input
-            placeholder="Search users..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 bg-white border-black text-black placeholder:text-gray-500"
-          />
-        </div>
-        
-        <Select value={roleFilter} onValueChange={(value: 'all' | 'admin' | 'customer') => setRoleFilter(value)}>
-          <SelectTrigger className="w-40 bg-white border-black text-black">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent className="bg-white border-black">
-            <SelectItem value="all" className="text-black">All Roles</SelectItem>
-            <SelectItem value="customer" className="text-black">Customers</SelectItem>
-            <SelectItem value="admin" className="text-black">Admins</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+      {/* Enhanced Filters */}
+      <UserFilters
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        roleFilter={roleFilter}
+        setRoleFilter={setRoleFilter}
+        dateFilter={dateFilter}
+        setDateFilter={setDateFilter}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+        onClearFilters={clearFilters}
+      />
 
-      {/* Users List */}
-      <div className="space-y-4">
-        {filteredUsers?.map((user) => (
-          <Card key={user.id} className="bg-white border-black">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center border border-black">
-                    {user.role === 'admin' ? (
-                      <Shield className="h-5 w-5 text-black" />
-                    ) : (
-                      <User className="h-5 w-5 text-black" />
-                    )}
+      {/* Bulk Actions */}
+      <BulkUserActions
+        selectedUsers={selectedUsers}
+        onClearSelection={() => setSelectedUsers([])}
+      />
+
+      {/* Users List with Selection */}
+      <Card className="bg-white border-black">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-black">Users ({filteredUsers?.length || 0})</CardTitle>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                checked={selectedUsers.length === filteredUsers?.length && filteredUsers.length > 0}
+                onCheckedChange={handleSelectAll}
+              />
+              <span className="text-sm text-black">Select All</span>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {filteredUsers?.map((user) => (
+              <div key={user.id} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
+                <Checkbox
+                  checked={selectedUsers.some(u => u.id === user.id)}
+                  onCheckedChange={(checked) => handleUserSelection(user, checked as boolean)}
+                />
+                
+                <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center border border-black">
+                  {user.role === 'admin' ? (
+                    <Shield className="h-5 w-5 text-black" />
+                  ) : (
+                    <User className="h-5 w-5 text-black" />
+                  )}
+                </div>
+                
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2">
+                    <h3 className="font-semibold text-black">
+                      {user.first_name} {user.last_name}
+                    </h3>
+                    <Badge variant={user.role === 'admin' ? 'default' : 'secondary'} className="bg-white text-black border border-black">
+                      {user.role}
+                    </Badge>
                   </div>
-                  
-                  <div>
-                    <div className="flex items-center space-x-2">
-                      <h3 className="font-semibold text-black">
-                        {user.first_name} {user.last_name}
-                      </h3>
-                      <Badge variant={user.role === 'admin' ? 'default' : 'secondary'} className="bg-white text-black border border-black">
-                        {user.role}
-                      </Badge>
+                  <div className="flex items-center space-x-4 text-sm text-black">
+                    <div className="flex items-center space-x-1">
+                      <Mail className="h-3 w-3" />
+                      <span>{user.email}</span>
                     </div>
-                    <div className="flex items-center space-x-4 text-sm text-black">
-                      <div className="flex items-center space-x-1">
-                        <Mail className="h-3 w-3" />
-                        <span>{user.email}</span>
-                      </div>
-                      <div className="flex items-center space-x-1">
-                        <Calendar className="h-3 w-3" />
-                        <span>{new Date(user.created_at).toLocaleDateString()}</span>
-                      </div>
+                    <div className="flex items-center space-x-1">
+                      <Calendar className="h-3 w-3" />
+                      <span>{new Date(user.created_at).toLocaleDateString()}</span>
                     </div>
                   </div>
                 </div>
@@ -364,10 +392,10 @@ const UserManagement = () => {
                   </Select>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       {filteredUsers?.length === 0 && (
         <Card className="bg-white border-black">

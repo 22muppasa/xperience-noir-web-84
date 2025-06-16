@@ -35,7 +35,7 @@ interface Program {
   end_date: string | null;
   price: number | null;
   max_participants: number | null;
-  status: string;
+  status: 'draft' | 'published';
   created_at: string;
 }
 

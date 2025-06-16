@@ -138,7 +138,7 @@ const MessageComposer = ({ replyTo }: MessageComposerProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button className="bg-blue-700 hover:bg-blue-800 text-white border-0 shadow-lg px-6 py-3 font-semibold text-base">
+        <Button className="bg-black hover:bg-gray-800 text-white border-0 shadow-lg px-6 py-3 font-semibold text-base">
           {replyTo ? (
             <>
               <MessageSquare className="h-5 w-5 mr-2" />
@@ -152,14 +152,14 @@ const MessageComposer = ({ replyTo }: MessageComposerProps) => {
           )}
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl bg-white border-2 border-gray-400 shadow-2xl">
-        <DialogHeader className="border-b-2 border-gray-300 pb-4">
+      <DialogContent className="max-w-2xl bg-white border-2 border-black shadow-2xl">
+        <DialogHeader className="border-b-2 border-black pb-4">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-2xl font-bold text-black">
               {dialogTitle}
             </DialogTitle>
             {replyTo && (
-              <div className="text-sm text-gray-800 font-medium">
+              <div className="text-sm text-gray-700 font-medium">
                 Replying to: {replyTo.subject}
               </div>
             )}
@@ -176,10 +176,10 @@ const MessageComposer = ({ replyTo }: MessageComposerProps) => {
               onValueChange={setRecipientId}
               disabled={!!replyTo}
             >
-              <SelectTrigger className="bg-white border-2 border-gray-400 text-black font-medium focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-12">
+              <SelectTrigger className="bg-white border-2 border-black text-black font-medium focus:ring-2 focus:ring-gray-500 focus:border-black h-12">
                 <SelectValue placeholder="Select an admin to message" />
               </SelectTrigger>
-              <SelectContent className="bg-white border-2 border-gray-400 shadow-xl">
+              <SelectContent className="bg-white border-2 border-black shadow-xl">
                 {admins.map((admin) => (
                   <SelectItem 
                     key={admin.id} 
@@ -202,7 +202,7 @@ const MessageComposer = ({ replyTo }: MessageComposerProps) => {
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
               placeholder="Enter message subject"
-              className="bg-white border-2 border-gray-400 text-black placeholder:text-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 h-12 font-medium"
+              className="bg-white border-2 border-black text-black placeholder:text-gray-600 focus:ring-2 focus:ring-gray-500 focus:border-black h-12 font-medium"
               required
             />
           </div>
@@ -217,17 +217,17 @@ const MessageComposer = ({ replyTo }: MessageComposerProps) => {
               onChange={(e) => setContent(e.target.value)}
               placeholder="Type your message here..."
               rows={replyTo ? 10 : 6}
-              className="bg-white border-2 border-gray-400 text-black placeholder:text-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none font-medium text-base"
+              className="bg-white border-2 border-black text-black placeholder:text-gray-600 focus:ring-2 focus:ring-gray-500 focus:border-black resize-none font-medium text-base"
               required
             />
           </div>
           
-          <div className="flex space-x-4 pt-6 border-t-2 border-gray-300">
+          <div className="flex space-x-4 pt-6 border-t-2 border-black">
             <Button
               type="button"
               variant="outline"
               onClick={() => setIsOpen(false)}
-              className="flex-1 border-2 border-gray-400 text-black hover:bg-gray-100 hover:border-gray-500 px-6 py-3 font-semibold text-base"
+              className="flex-1 border-2 border-black text-black hover:bg-gray-100 hover:border-gray-800 px-6 py-3 font-semibold text-base"
             >
               <X className="h-5 w-5 mr-2" />
               Cancel
@@ -235,7 +235,7 @@ const MessageComposer = ({ replyTo }: MessageComposerProps) => {
             <Button
               type="submit"
               disabled={sendMessageMutation.isPending}
-              className="flex-1 bg-blue-700 hover:bg-blue-800 text-white border-0 shadow-lg px-6 py-3 font-semibold text-base"
+              className="flex-1 bg-black hover:bg-gray-800 text-white border-0 shadow-lg px-6 py-3 font-semibold text-base"
             >
               <Send className="h-5 w-5 mr-2" />
               {sendMessageMutation.isPending ? 'Sending...' : buttonText}

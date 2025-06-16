@@ -180,11 +180,11 @@ const Messages = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="bg-white border-2 border-gray-300 shadow-lg">
+          <Card className="bg-white border-2 border-black shadow-lg">
             <CardContent className="p-6">
               <div className="flex items-center space-x-4">
-                <div className="p-3 bg-blue-100 rounded-xl">
-                  <Inbox className="h-6 w-6 text-blue-700" />
+                <div className="p-3 bg-gray-100 rounded-xl">
+                  <Inbox className="h-6 w-6 text-black" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-700">Total Messages</p>
@@ -193,11 +193,11 @@ const Messages = () => {
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-white border-2 border-gray-300 shadow-lg">
+          <Card className="bg-white border-2 border-black shadow-lg">
             <CardContent className="p-6">
               <div className="flex items-center space-x-4">
-                <div className="p-3 bg-red-100 rounded-xl">
-                  <MessageSquare className="h-6 w-6 text-red-700" />
+                <div className="p-3 bg-gray-100 rounded-xl">
+                  <MessageSquare className="h-6 w-6 text-black" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-700">Unread</p>
@@ -206,11 +206,11 @@ const Messages = () => {
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-white border-2 border-gray-300 shadow-lg">
+          <Card className="bg-white border-2 border-black shadow-lg">
             <CardContent className="p-6">
               <div className="flex items-center space-x-4">
-                <div className="p-3 bg-green-100 rounded-xl">
-                  <Send className="h-6 w-6 text-green-700" />
+                <div className="p-3 bg-gray-100 rounded-xl">
+                  <Send className="h-6 w-6 text-black" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-700">This Week</p>
@@ -222,18 +222,18 @@ const Messages = () => {
         </div>
 
         <Tabs defaultValue="inbox" className="w-full">
-          <TabsList className="bg-gray-200 border border-gray-300">
-            <TabsTrigger value="inbox" className="data-[state=active]:bg-white data-[state=active]:border data-[state=active]:border-gray-400 font-medium">
+          <TabsList className="bg-gray-200 border border-black">
+            <TabsTrigger value="inbox" className="data-[state=active]:bg-white data-[state=active]:border data-[state=active]:border-black font-medium text-black">
               <div className="flex items-center space-x-2">
                 <span>Inbox</span>
                 {unreadCount > 0 && (
-                  <Badge className="bg-red-600 text-white border-0 px-2 py-0.5 text-xs font-bold">
+                  <Badge className="bg-black text-white border-0 px-2 py-0.5 text-xs font-bold">
                     {unreadCount}
                   </Badge>
                 )}
               </div>
             </TabsTrigger>
-            <TabsTrigger value="sent" className="data-[state=active]:bg-white data-[state=active]:border data-[state=active]:border-gray-400 font-medium">
+            <TabsTrigger value="sent" className="data-[state=active]:bg-white data-[state=active]:border data-[state=active]:border-black font-medium text-black">
               Sent
             </TabsTrigger>
           </TabsList>
@@ -248,8 +248,8 @@ const Messages = () => {
                       key={message.id} 
                       className={`bg-white transition-all duration-200 hover:shadow-xl ${
                         message.status === 'unread' 
-                          ? 'border-2 border-blue-400 bg-blue-50 shadow-lg' 
-                          : 'border-2 border-gray-300 hover:border-gray-400'
+                          ? 'border-4 border-black bg-white shadow-lg' 
+                          : 'border-2 border-black hover:border-gray-800'
                       }`}
                     >
                       <CardContent className="p-6">
@@ -258,31 +258,31 @@ const Messages = () => {
                             <div className="flex items-center space-x-3 mb-3">
                               <h3 className="font-bold text-xl text-black">{message.subject}</h3>
                               {message.status === 'unread' && (
-                                <Badge className="bg-red-600 text-white border-0 px-3 py-1 text-sm font-bold">
+                                <Badge className="bg-black text-white border-0 px-3 py-1 text-sm font-bold">
                                   NEW
                                 </Badge>
                               )}
                               {message.status === 'read' && (
-                                <CheckCircle2 className="h-5 w-5 text-green-600" />
+                                <CheckCircle2 className="h-5 w-5 text-black" />
                               )}
                             </div>
-                            <div className="flex items-center space-x-4 text-sm text-gray-800 mb-4">
-                              <span className="font-semibold">From: {getSenderName(message)}</span>
+                            <div className="flex items-center space-x-4 text-sm text-gray-700 mb-4">
+                              <span className="font-semibold text-black">From: {getSenderName(message)}</span>
                               <div className="flex items-center space-x-2">
                                 <Clock className="h-4 w-4 text-gray-700" />
-                                <span className="font-medium">{formatTime(message.created_at)}</span>
+                                <span className="font-medium text-gray-700">{formatTime(message.created_at)}</span>
                               </div>
                             </div>
                           </div>
                         </div>
                         <div className="mb-6">
-                          <p className="text-gray-800 whitespace-pre-wrap line-clamp-3 text-base leading-relaxed">{message.content}</p>
+                          <p className="text-black whitespace-pre-wrap line-clamp-3 text-base leading-relaxed">{message.content}</p>
                         </div>
                         <div className="flex items-center space-x-4">
                           <Button 
                             onClick={() => handleReply(message)}
                             size="sm" 
-                            className="bg-blue-700 hover:bg-blue-800 text-white border-0 shadow-md px-4 py-2 font-semibold"
+                            className="bg-black hover:bg-gray-800 text-white border-0 shadow-md px-4 py-2 font-semibold"
                           >
                             <Reply className="h-5 w-5 mr-2" />
                             Reply
@@ -292,7 +292,7 @@ const Messages = () => {
                               variant="outline" 
                               size="sm" 
                               onClick={() => handleMarkAsRead(message.id)}
-                              className="border-2 border-gray-400 text-gray-900 hover:bg-gray-100 hover:border-gray-500 px-4 py-2 font-semibold"
+                              className="border-2 border-black text-black hover:bg-gray-100 hover:border-gray-800 px-4 py-2 font-semibold"
                               disabled={markAsReadMutation.isPending}
                             >
                               <CheckCircle2 className="h-5 w-5 mr-2" />
@@ -304,10 +304,10 @@ const Messages = () => {
                     </Card>
                   ))
               ) : (
-                <Card className="bg-white border-2 border-gray-300">
+                <Card className="bg-white border-2 border-black">
                   <CardContent className="p-12 text-center">
                     <div className="p-4 bg-gray-200 rounded-full w-fit mx-auto mb-6">
-                      <MessageSquare className="h-12 w-12 text-gray-600" />
+                      <MessageSquare className="h-12 w-12 text-black" />
                     </div>
                     <h3 className="text-xl font-bold text-black mb-3">No messages yet</h3>
                     <p className="text-gray-700 text-base">Messages from administrators will appear here</p>
@@ -323,40 +323,40 @@ const Messages = () => {
                 messages
                   .filter(m => m.sender_id === user?.id)
                   .map((message) => (
-                    <Card key={message.id} className="bg-white border-2 border-gray-300 hover:shadow-xl hover:border-gray-400 transition-all duration-200">
+                    <Card key={message.id} className="bg-white border-2 border-black hover:shadow-xl hover:border-gray-800 transition-all duration-200">
                       <CardContent className="p-6">
                         <div className="flex items-start justify-between mb-4">
                           <div className="flex-1">
                             <h3 className="font-bold text-xl text-black mb-3">{message.subject}</h3>
-                            <div className="flex items-center space-x-4 text-sm text-gray-800 mb-4">
-                              <span className="font-semibold">
+                            <div className="flex items-center space-x-4 text-sm text-gray-700 mb-4">
+                              <span className="font-semibold text-black">
                                 To: {message.recipient ? `${message.recipient.first_name} ${message.recipient.last_name}` : 'Admin'}
                               </span>
                               <div className="flex items-center space-x-2">
                                 <Send className="h-4 w-4 text-gray-700" />
-                                <span className="font-medium">Sent: {formatTime(message.created_at)}</span>
+                                <span className="font-medium text-gray-700">Sent: {formatTime(message.created_at)}</span>
                               </div>
                             </div>
                           </div>
                           <Badge 
                             className={`text-sm font-semibold px-3 py-1 ${
                               message.status === 'read' 
-                                ? 'bg-green-600 text-white border-0' 
-                                : 'bg-gray-600 text-white border-0'
+                                ? 'bg-black text-white border-0' 
+                                : 'bg-gray-700 text-white border-0'
                             }`}
                           >
                             {message.status === 'read' ? 'Read' : 'Delivered'}
                           </Badge>
                         </div>
-                        <p className="text-gray-800 whitespace-pre-wrap line-clamp-3 text-base leading-relaxed">{message.content}</p>
+                        <p className="text-black whitespace-pre-wrap line-clamp-3 text-base leading-relaxed">{message.content}</p>
                       </CardContent>
                     </Card>
                   ))
               ) : (
-                <Card className="bg-white border-2 border-gray-300">
+                <Card className="bg-white border-2 border-black">
                   <CardContent className="p-12 text-center">
                     <div className="p-4 bg-gray-200 rounded-full w-fit mx-auto mb-6">
-                      <Send className="h-12 w-12 text-gray-600" />
+                      <Send className="h-12 w-12 text-black" />
                     </div>
                     <h3 className="text-xl font-bold text-black mb-3">No sent messages yet</h3>
                     <p className="text-gray-700 text-base">Messages you send will appear here</p>

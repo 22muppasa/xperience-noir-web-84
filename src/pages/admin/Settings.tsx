@@ -1,8 +1,6 @@
 
-import React, { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
+import React, { useState, useEffect } from 'react';
+import { useAdminSettings } from '@/hooks/useAdminSettings';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import SystemMonitoring from '@/components/admin/SystemMonitoring';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -23,7 +21,9 @@ import {
 } from 'lucide-react';
 
 const AdminSettings = () => {
-  const [settings, setSettings] = useState({
+  const { getSetting, updateSetting, isLoading } = useAdminSettings();
+  
+  const [localSettings, setLocalSettings] = useState({
     siteName: 'Kids Work Platform',
     siteDescription: 'A platform for showcasing children\'s creative work',
     allowRegistration: true,
@@ -40,42 +40,52 @@ const AdminSettings = () => {
     backupFrequency: 'daily'
   });
 
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
+  // Load settings from database when available
+  useEffect(() => {
+    if (!isLoading) {
+      const userRegistration = getSetting('user_registration') || {};
+      const emailNotifications = getSetting('email_notifications') || {};
+      const systemMaintenance = getSetting('system_maintenance') || {};
+      const fileStorage = getSetting('file_storage') || {};
 
-  // In a real implementation, you would create a settings table in Supabase
-  // For now, we'll simulate saving to localStorage and show the structure
-  const handleSave = () => {
-    try {
-      localStorage.setItem('adminSettings', JSON.stringify(settings));
-      toast({
-        title: "Settings saved",
-        description: "Your changes have been saved successfully",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to save settings. Please try again.",
-        variant: "destructive",
-      });
+      setLocalSettings(prev => ({
+        ...prev,
+        allowRegistration: userRegistration.enabled ?? true,
+        requireEmailVerification: userRegistration.require_approval ?? false,
+        enableNotifications: emailNotifications.enabled ?? true,
+        maintenanceMode: systemMaintenance.enabled ?? false,
+        maxFileSize: fileStorage.max_size_mb?.toString() || '10',
+        allowedFileTypes: fileStorage.allowed_types?.join(',') || 'jpg,png,gif,pdf,doc,docx'
+      }));
     }
-  };
+  }, [isLoading, getSetting]);
 
   const handleSettingChange = (key: string, value: any) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
+    setLocalSettings(prev => ({ ...prev, [key]: value }));
   };
 
-  // Load settings from localStorage on component mount
-  React.useEffect(() => {
-    try {
-      const savedSettings = localStorage.getItem('adminSettings');
-      if (savedSettings) {
-        setSettings(JSON.parse(savedSettings));
-      }
-    } catch (error) {
-      console.error('Error loading settings:', error);
-    }
-  }, []);
+  const handleSave = () => {
+    // Update database settings
+    updateSetting('user_registration', {
+      enabled: localSettings.allowRegistration,
+      require_approval: localSettings.requireEmailVerification
+    });
+
+    updateSetting('email_notifications', {
+      enabled: localSettings.enableNotifications,
+      from_email: localSettings.smtpUsername
+    });
+
+    updateSetting('system_maintenance', {
+      enabled: localSettings.maintenanceMode,
+      message: 'System under maintenance'
+    });
+
+    updateSetting('file_storage', {
+      max_size_mb: parseInt(localSettings.maxFileSize),
+      allowed_types: localSettings.allowedFileTypes.split(',').map(t => t.trim())
+    });
+  };
 
   return (
     <DashboardLayout>
@@ -122,7 +132,7 @@ const AdminSettings = () => {
                     <Label htmlFor="siteName" className="text-black">Site Name</Label>
                     <Input
                       id="siteName"
-                      value={settings.siteName}
+                      value={localSettings.siteName}
                       onChange={(e) => handleSettingChange('siteName', e.target.value)}
                       className="bg-white text-black border-black"
                     />
@@ -131,7 +141,7 @@ const AdminSettings = () => {
                     <Label htmlFor="siteDescription" className="text-black">Site Description</Label>
                     <Input
                       id="siteDescription"
-                      value={settings.siteDescription}
+                      value={localSettings.siteDescription}
                       onChange={(e) => handleSettingChange('siteDescription', e.target.value)}
                       className="bg-white text-black border-black"
                     />
@@ -149,7 +159,7 @@ const AdminSettings = () => {
                       </p>
                     </div>
                     <Switch
-                      checked={settings.allowRegistration}
+                      checked={localSettings.allowRegistration}
                       onCheckedChange={(checked) => handleSettingChange('allowRegistration', checked)}
                     />
                   </div>
@@ -162,7 +172,7 @@ const AdminSettings = () => {
                       </p>
                     </div>
                     <Switch
-                      checked={settings.maintenanceMode}
+                      checked={localSettings.maintenanceMode}
                       onCheckedChange={(checked) => handleSettingChange('maintenanceMode', checked)}
                     />
                   </div>
@@ -175,7 +185,7 @@ const AdminSettings = () => {
                       </p>
                     </div>
                     <Switch
-                      checked={settings.enableNotifications}
+                      checked={localSettings.enableNotifications}
                       onCheckedChange={(checked) => handleSettingChange('enableNotifications', checked)}
                     />
                   </div>
@@ -198,7 +208,7 @@ const AdminSettings = () => {
                     </p>
                   </div>
                   <Switch
-                    checked={settings.requireEmailVerification}
+                    checked={localSettings.requireEmailVerification}
                     onCheckedChange={(checked) => handleSettingChange('requireEmailVerification', checked)}
                   />
                 </div>
@@ -211,27 +221,6 @@ const AdminSettings = () => {
                     Automatically log out users after inactivity
                   </p>
                   <Input placeholder="24 hours" className="bg-white text-black border-black" />
-                </div>
-
-                <div>
-                  <Label className="text-black">Password Policy</Label>
-                  <p className="text-sm text-black mb-2">
-                    Minimum password requirements
-                  </p>
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <input type="checkbox" defaultChecked className="border-black" />
-                      <span className="text-sm text-black">At least 8 characters</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <input type="checkbox" defaultChecked className="border-black" />
-                      <span className="text-sm text-black">Include uppercase letters</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <input type="checkbox" defaultChecked className="border-black" />
-                      <span className="text-sm text-black">Include numbers</span>
-                    </div>
-                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -249,7 +238,7 @@ const AdminSettings = () => {
                     <Input
                       id="smtpServer"
                       placeholder="smtp.gmail.com"
-                      value={settings.smtpServer}
+                      value={localSettings.smtpServer}
                       onChange={(e) => handleSettingChange('smtpServer', e.target.value)}
                       className="bg-white text-black border-black"
                     />
@@ -259,7 +248,7 @@ const AdminSettings = () => {
                     <Input
                       id="smtpPort"
                       placeholder="587"
-                      value={settings.smtpPort}
+                      value={localSettings.smtpPort}
                       onChange={(e) => handleSettingChange('smtpPort', e.target.value)}
                       className="bg-white text-black border-black"
                     />
@@ -273,7 +262,7 @@ const AdminSettings = () => {
                       id="smtpUsername"
                       type="email"
                       placeholder="your-email@domain.com"
-                      value={settings.smtpUsername}
+                      value={localSettings.smtpUsername}
                       onChange={(e) => handleSettingChange('smtpUsername', e.target.value)}
                       className="bg-white text-black border-black"
                     />
@@ -284,7 +273,7 @@ const AdminSettings = () => {
                       id="smtpPassword"
                       type="password"
                       placeholder="••••••••"
-                      value={settings.smtpPassword}
+                      value={localSettings.smtpPassword}
                       onChange={(e) => handleSettingChange('smtpPassword', e.target.value)}
                       className="bg-white text-black border-black"
                     />
@@ -309,7 +298,7 @@ const AdminSettings = () => {
                   <Input
                     id="maxFileSize"
                     type="number"
-                    value={settings.maxFileSize}
+                    value={localSettings.maxFileSize}
                     onChange={(e) => handleSettingChange('maxFileSize', e.target.value)}
                     className="bg-white text-black border-black"
                   />
@@ -320,7 +309,7 @@ const AdminSettings = () => {
                   <Input
                     id="allowedFileTypes"
                     placeholder="jpg,png,gif,pdf,doc,docx"
-                    value={settings.allowedFileTypes}
+                    value={localSettings.allowedFileTypes}
                     onChange={(e) => handleSettingChange('allowedFileTypes', e.target.value)}
                     className="bg-white text-black border-black"
                   />
@@ -339,7 +328,7 @@ const AdminSettings = () => {
                     </p>
                   </div>
                   <Switch
-                    checked={settings.enableBackups}
+                    checked={localSettings.enableBackups}
                     onCheckedChange={(checked) => handleSettingChange('enableBackups', checked)}
                   />
                 </div>
@@ -348,7 +337,7 @@ const AdminSettings = () => {
                   <Label className="text-black">Backup Frequency</Label>
                   <select 
                     className="w-full mt-1 p-2 border rounded-md bg-white text-black border-black"
-                    value={settings.backupFrequency}
+                    value={localSettings.backupFrequency}
                     onChange={(e) => handleSettingChange('backupFrequency', e.target.value)}
                   >
                     <option value="hourly">Hourly</option>
@@ -371,7 +360,7 @@ const AdminSettings = () => {
             variant="outline" 
             className="border-black text-black hover:bg-gray-50"
             onClick={() => {
-              setSettings({
+              setLocalSettings({
                 siteName: 'Kids Work Platform',
                 siteDescription: 'A platform for showcasing children\'s creative work',
                 allowRegistration: true,

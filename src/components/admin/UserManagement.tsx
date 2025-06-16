@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +11,16 @@ import { useToast } from '@/hooks/use-toast';
 import { Search, UserPlus, Mail, Calendar, Shield, User } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface Profile {
   id: string;
@@ -26,6 +37,11 @@ const UserManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'customer'>('all');
   const [isCreateUserOpen, setIsCreateUserOpen] = useState(false);
+  const [roleChangeDialog, setRoleChangeDialog] = useState<{
+    isOpen: boolean;
+    user: Profile | null;
+    newRole: 'admin' | 'customer' | null;
+  }>({ isOpen: false, user: null, newRole: null });
   const [newUser, setNewUser] = useState({
     email: '',
     first_name: '',
@@ -59,22 +75,26 @@ const UserManagement = () => {
       const { data, error } = await supabase
         .from('profiles')
         .update({ role })
-        .eq('id', userId);
+        .eq('id', userId)
+        .select()
+        .single();
 
       if (error) throw error;
       return data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
       toast({
-        title: "User updated",
-        description: "User role has been updated successfully",
+        title: "Role updated successfully",
+        description: `User role has been changed to ${data.role}`,
       });
+      setRoleChangeDialog({ isOpen: false, user: null, newRole: null });
     },
     onError: (error) => {
+      console.error('Role update error:', error);
       toast({
-        title: "Error",
-        description: "Failed to update user role",
+        title: "Error updating role",
+        description: "Failed to update user role. Please try again.",
         variant: "destructive",
       });
     }
@@ -82,14 +102,20 @@ const UserManagement = () => {
 
   const createUserMutation = useMutation({
     mutationFn: async (userData: typeof newUser) => {
-      // In a real implementation, you'd use Supabase Auth admin functions
-      // For now, we'll just create a profile entry
+      // For demo purposes, create a profile entry
+      // In production, you'd use Supabase Auth admin functions
       const { data, error } = await supabase
         .from('profiles')
         .insert([{
-          id: crypto.randomUUID(), // In real app, this would come from auth.users
-          ...userData
-        }]);
+          id: crypto.randomUUID(),
+          email: userData.email,
+          first_name: userData.first_name,
+          last_name: userData.last_name,
+          role: userData.role,
+          phone: userData.phone
+        }])
+        .select()
+        .single();
 
       if (error) throw error;
       return data;
@@ -106,18 +132,32 @@ const UserManagement = () => {
         date_of_birth: ''
       });
       toast({
-        title: "User created",
-        description: "New user has been created successfully",
+        title: "User created successfully",
+        description: "New user profile has been created",
       });
     },
-    onError: () => {
+    onError: (error) => {
+      console.error('Create user error:', error);
       toast({
-        title: "Error",
-        description: "Failed to create user",
+        title: "Error creating user",
+        description: "Failed to create user profile. Please try again.",
         variant: "destructive",
       });
     }
   });
+
+  const handleRoleChange = (user: Profile, newRole: 'admin' | 'customer') => {
+    setRoleChangeDialog({ isOpen: true, user, newRole });
+  };
+
+  const confirmRoleChange = () => {
+    if (roleChangeDialog.user && roleChangeDialog.newRole) {
+      updateUserRoleMutation.mutate({
+        userId: roleChangeDialog.user.id,
+        role: roleChangeDialog.newRole
+      });
+    }
+  };
 
   const filteredUsers = users?.filter(user => {
     const matchesSearch = searchTerm === '' ||
@@ -312,9 +352,7 @@ const UserManagement = () => {
                 <div className="flex items-center space-x-2">
                   <Select
                     value={user.role}
-                    onValueChange={(value: 'admin' | 'customer') => 
-                      updateUserRoleMutation.mutate({ userId: user.id, role: value })
-                    }
+                    onValueChange={(value: 'admin' | 'customer') => handleRoleChange(user, value)}
                   >
                     <SelectTrigger className="w-32 bg-white border-black text-black">
                       <SelectValue />
@@ -340,6 +378,33 @@ const UserManagement = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* Role Change Confirmation Dialog */}
+      <AlertDialog open={roleChangeDialog.isOpen} onOpenChange={(open) => 
+        setRoleChangeDialog(prev => ({ ...prev, isOpen: open }))
+      }>
+        <AlertDialogContent className="bg-white border-black">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-black">Confirm Role Change</AlertDialogTitle>
+            <AlertDialogDescription className="text-black">
+              Are you sure you want to change {roleChangeDialog.user?.first_name} {roleChangeDialog.user?.last_name}'s 
+              role from {roleChangeDialog.user?.role} to {roleChangeDialog.newRole}?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="border-black text-black hover:bg-gray-50">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmRoleChange}
+              disabled={updateUserRoleMutation.isPending}
+              className="bg-black text-white hover:bg-gray-800"
+            >
+              {updateUserRoleMutation.isPending ? 'Updating...' : 'Confirm Change'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

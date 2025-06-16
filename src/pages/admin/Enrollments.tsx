@@ -59,8 +59,8 @@ const AdminEnrollments = () => {
           notes,
           child_id,
           customer_id,
-          programs!inner(title),
-          profiles(
+          programs(title),
+          profiles!enrollments_customer_id_fkey(
             first_name,
             last_name,
             email

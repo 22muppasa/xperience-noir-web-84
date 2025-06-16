@@ -12,11 +12,32 @@ import { useAuth } from '@/contexts/AuthContext';
 import MessageComposer from '@/components/messaging/MessageComposer';
 import { useToast } from '@/hooks/use-toast';
 
+interface MessageWithProfiles {
+  id: string;
+  sender_id: string;
+  recipient_id: string;
+  subject: string;
+  content: string;
+  status: string;
+  created_at: string;
+  read_at: string | null;
+  sender: {
+    first_name: string;
+    last_name: string;
+    email: string;
+  } | null;
+  recipient: {
+    first_name: string;
+    last_name: string;
+    email: string;
+  } | null;
+}
+
 const Messages = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [selectedReply, setSelectedReply] = useState<any>(null);
+  const [selectedReply, setSelectedReply] = useState<MessageWithProfiles | null>(null);
 
   // Get real messages with sender profiles
   const { data: messages = [], isLoading } = useQuery({
@@ -27,15 +48,22 @@ const Messages = () => {
       const { data, error } = await supabase
         .from('messages')
         .select(`
-          *,
-          sender:profiles!messages_sender_id_fkey(first_name, last_name, email),
-          recipient:profiles!messages_recipient_id_fkey(first_name, last_name, email)
+          id,
+          sender_id,
+          recipient_id,
+          subject,
+          content,
+          status,
+          created_at,
+          read_at,
+          sender:sender_id(first_name, last_name, email),
+          recipient:recipient_id(first_name, last_name, email)
         `)
         .or(`sender_id.eq.${user.id},recipient_id.eq.${user.id}`)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data || [];
+      return (data || []) as MessageWithProfiles[];
     },
     enabled: !!user?.id
   });
@@ -67,11 +95,11 @@ const Messages = () => {
     markAsReadMutation.mutate(messageId);
   };
 
-  const handleReply = (message: any) => {
+  const handleReply = (message: MessageWithProfiles) => {
     setSelectedReply(message);
   };
 
-  const getSenderName = (message: any) => {
+  const getSenderName = (message: MessageWithProfiles) => {
     if (message.sender_id === user?.id) {
       return "You";
     }
@@ -191,7 +219,7 @@ const Messages = () => {
                       key={message.id} 
                       className={`bg-white border transition-all duration-200 hover:shadow-md ${
                         message.status === 'unread' 
-                          ? 'border-blue-200 bg-blue-50/30' 
+                          ? 'border-blue-300 bg-blue-50/50 shadow-sm' 
                           : 'border-gray-200'
                       }`}
                     >
@@ -201,7 +229,7 @@ const Messages = () => {
                             <div className="flex items-center space-x-3 mb-2">
                               <h3 className="font-semibold text-lg text-gray-900">{message.subject}</h3>
                               {message.status === 'unread' && (
-                                <Badge variant="destructive" className="text-xs bg-red-500 text-white">
+                                <Badge variant="destructive" className="text-xs bg-red-500 text-white px-2 py-1">
                                   New
                                 </Badge>
                               )}
@@ -225,7 +253,7 @@ const Messages = () => {
                           <Button 
                             onClick={() => handleReply(message)}
                             size="sm" 
-                            className="bg-blue-600 hover:bg-blue-700 text-white border-0"
+                            className="bg-blue-600 hover:bg-blue-700 text-white border-0 shadow-sm"
                           >
                             <Reply className="h-4 w-4 mr-2" />
                             Reply
@@ -235,7 +263,7 @@ const Messages = () => {
                               variant="outline" 
                               size="sm" 
                               onClick={() => handleMarkAsRead(message.id)}
-                              className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                              className="border-gray-300 text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                               disabled={markAsReadMutation.isPending}
                             >
                               <CheckCircle2 className="h-4 w-4 mr-2" />
@@ -272,7 +300,9 @@ const Messages = () => {
                           <div className="flex-1">
                             <h3 className="font-semibold text-lg text-gray-900 mb-2">{message.subject}</h3>
                             <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
-                              <span className="font-medium">To: {message.recipient?.first_name} {message.recipient?.last_name}</span>
+                              <span className="font-medium">
+                                To: {message.recipient ? `${message.recipient.first_name} ${message.recipient.last_name}` : 'Admin'}
+                              </span>
                               <div className="flex items-center space-x-1">
                                 <Send className="h-3 w-3" />
                                 <span>Sent: {formatTime(message.created_at)}</span>

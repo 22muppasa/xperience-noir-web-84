@@ -21,6 +21,34 @@ import {
 } from '@/components/ui/table';
 import { MessageSquare, Send, Users, Mail, Clock, Reply, Trash2, CheckCircle2, Eye, Plus } from 'lucide-react';
 
+interface MessageWithProfiles {
+  id: string;
+  sender_id: string;
+  recipient_id: string;
+  subject: string;
+  content: string;
+  status: string;
+  created_at: string;
+  read_at: string | null;
+  sender: {
+    first_name: string;
+    last_name: string;
+    email: string;
+  } | null;
+  recipient: {
+    first_name: string;
+    last_name: string;
+    email: string;
+  } | null;
+}
+
+interface CustomerProfile {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+}
+
 const AdminMessages = () => {
   const [isComposing, setIsComposing] = useState(false);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
@@ -36,14 +64,21 @@ const AdminMessages = () => {
       const { data, error } = await supabase
         .from('messages')
         .select(`
-          *,
-          sender:profiles!messages_sender_id_fkey(first_name, last_name, email),
-          recipient:profiles!messages_recipient_id_fkey(first_name, last_name, email)
+          id,
+          sender_id,
+          recipient_id,
+          subject,
+          content,
+          status,
+          created_at,
+          read_at,
+          sender:sender_id(first_name, last_name, email),
+          recipient:recipient_id(first_name, last_name, email)
         `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+      return (data || []) as MessageWithProfiles[];
     }
   });
 
@@ -57,7 +92,7 @@ const AdminMessages = () => {
         .eq('role', 'customer');
 
       if (error) throw error;
-      return data || [];
+      return (data || []) as CustomerProfile[];
     }
   });
 
@@ -155,7 +190,7 @@ const AdminMessages = () => {
     });
   };
 
-  const handleReply = (message: any) => {
+  const handleReply = (message: MessageWithProfiles) => {
     const senderInfo = getUserInfo(message.sender_id);
     setReplyingTo(message.id);
     setNewMessage({
@@ -173,19 +208,31 @@ const AdminMessages = () => {
   // Helper function to get user info
   const getUserInfo = (userId: string | null) => {
     if (!userId) return { name: 'System', email: 'system' };
+    
+    // Find user in messages
     const message = messages.find(m => m.sender_id === userId || m.recipient_id === userId);
-    if (message?.sender?.id === userId) {
+    if (message?.sender && message.sender_id === userId) {
       return {
         name: `${message.sender.first_name} ${message.sender.last_name}`,
         email: message.sender.email
       };
     }
-    if (message?.recipient?.id === userId) {
+    if (message?.recipient && message.recipient_id === userId) {
       return {
         name: `${message.recipient.first_name} ${message.recipient.last_name}`,
         email: message.recipient.email
       };
     }
+    
+    // Fallback to customers list
+    const customer = customers.find(c => c.id === userId);
+    if (customer) {
+      return {
+        name: `${customer.first_name} ${customer.last_name}`,
+        email: customer.email
+      };
+    }
+    
     return { name: 'Unknown User', email: 'Unknown' };
   };
 
@@ -449,7 +496,7 @@ const AdminMessages = () => {
                                 <Button 
                                   size="sm" 
                                   variant="outline" 
-                                  className="border-blue-300 text-blue-700 hover:bg-blue-50"
+                                  className="border-blue-300 text-blue-700 hover:bg-blue-50 hover:text-blue-800"
                                   onClick={() => handleReply(message)}
                                 >
                                   <Reply className="h-3 w-3 mr-1" />
@@ -460,7 +507,7 @@ const AdminMessages = () => {
                                 <Button 
                                   size="sm" 
                                   variant="outline" 
-                                  className="border-green-300 text-green-700 hover:bg-green-50"
+                                  className="border-green-300 text-green-700 hover:bg-green-50 hover:text-green-800"
                                   onClick={() => handleMarkAsRead(message.id)}
                                   disabled={markAsReadMutation.isPending}
                                 >
@@ -471,7 +518,7 @@ const AdminMessages = () => {
                               <Button 
                                 size="sm" 
                                 variant="outline" 
-                                className="border-red-300 text-red-700 hover:bg-red-50"
+                                className="border-red-300 text-red-700 hover:bg-red-50 hover:text-red-800"
                                 onClick={() => deleteMessageMutation.mutate(message.id)}
                               >
                                 <Trash2 className="h-3 w-3" />

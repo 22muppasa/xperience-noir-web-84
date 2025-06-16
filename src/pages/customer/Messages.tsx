@@ -297,7 +297,7 @@ const Messages = () => {
                               variant="outline" 
                               size="sm" 
                               onClick={() => handleMarkAsRead(message.id)}
-                              className="border-2 border-black text-black hover:bg-gray-100 hover:border-gray-800 px-4 py-2 font-semibold"
+                              className="border-2 border-black bg-white text-black hover:bg-gray-100 hover:border-gray-800 hover:text-black px-4 py-2 font-semibold"
                               disabled={markAsReadMutation.isPending}
                             >
                               <CheckCircle2 className="h-5 w-5 mr-2" />

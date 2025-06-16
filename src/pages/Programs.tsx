@@ -79,11 +79,11 @@ const Programs = () => {
               Discover our comprehensive programs designed to nurture growth, creativity, and learning in children of all ages.
             </p>
             {user ? (
-              <Button asChild size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-black">
+              <Button asChild size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-black animate-fade-in animate-delay-200">
                 <Link to="/customer/programs">View My Enrollments</Link>
               </Button>
             ) : (
-              <Button asChild size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-black">
+              <Button asChild size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-black animate-fade-in animate-delay-200">
                 <Link to="/auth">Sign In to Enroll</Link>
               </Button>
             )}
@@ -92,10 +92,10 @@ const Programs = () => {
       </section>
       
       {/* Programs Section */}
-      <section className="py-20 px-4 md:px-6">
+      <section className="py-20 px-4 md:px-6 bg-white">
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-12">
-            <h2 className="text-3xl md:text-4xl font-medium">Available Programs</h2>
+            <h2 className="text-3xl md:text-4xl font-medium text-black">Available Programs</h2>
             {user && (
               <Button variant="outline" asChild>
                 <Link to="/customer/programs" className="flex items-center gap-2">
@@ -107,10 +107,10 @@ const Programs = () => {
           </div>
           
           {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {Array.from({ length: 6 }).map((_, i) => (
-                <Card key={i} className="animate-pulse">
-                  <div className="h-48 bg-gray-200 rounded-t-lg"></div>
+                <Card key={i} className="animate-pulse bg-white border border-gray-200 rounded-xl shadow-soft">
+                  <div className="h-48 bg-gray-200 rounded-t-xl"></div>
                   <CardContent className="p-6">
                     <div className="space-y-3">
                       <div className="h-6 bg-gray-200 rounded"></div>
@@ -122,31 +122,31 @@ const Programs = () => {
               ))}
             </div>
           ) : programs.length === 0 ? (
-            <Card className="text-center py-12">
+            <Card className="text-center py-16 bg-white border border-gray-200 rounded-xl shadow-soft">
               <CardContent>
                 <BookOpen className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-lg font-semibold mb-2">No Programs Available</h3>
-                <p className="text-gray-600 mb-4">
+                <h3 className="text-lg font-semibold mb-2 text-black">No Programs Available</h3>
+                <p className="text-gray-600 mb-6">
                   We're currently preparing new programs. Check back soon for exciting opportunities!
                 </p>
-                <Button variant="outline" asChild>
+                <Button variant="outline" asChild className="text-black border-black hover:bg-black hover:text-white">
                   <Link to="/contact">Get Notified</Link>
                 </Button>
               </CardContent>
             </Card>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {programs.map((program) => {
                 const isEnrolled = enrollments.includes(program.id);
                 
                 return (
-                  <Card key={program.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                  <Card key={program.id} className="overflow-hidden bg-white border border-gray-200 rounded-xl shadow-soft hover:shadow-lg transition-all duration-300 group">
                     {program.image_url ? (
-                      <div className="h-48 relative">
+                      <div className="h-48 relative overflow-hidden">
                         <img
                           src={program.image_url}
                           alt={program.title}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                         />
                         <div className="absolute top-4 right-4">
                           <Badge className="bg-white text-black border border-black">
@@ -155,59 +155,66 @@ const Programs = () => {
                         </div>
                       </div>
                     ) : (
-                      <div className="h-48 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-                        <BookOpen className="h-16 w-16 text-white" />
+                      <div className="h-48 bg-gradient-to-r from-black to-gray-800 flex items-center justify-center relative overflow-hidden">
+                        <BookOpen className="h-16 w-16 text-white transition-transform duration-300 group-hover:scale-110" />
+                        <div className="absolute top-4 right-4">
+                          <Badge className="bg-white text-black border border-black">
+                            {program.status}
+                          </Badge>
+                        </div>
                       </div>
                     )}
                     
-                    <CardHeader>
-                      <CardTitle className="line-clamp-2">{program.title}</CardTitle>
+                    <CardHeader className="pb-4">
+                      <CardTitle className="line-clamp-2 text-black text-xl font-medium">{program.title}</CardTitle>
                     </CardHeader>
                     
-                    <CardContent className="space-y-4">
-                      <p className="text-gray-600 line-clamp-3">{program.description}</p>
+                    <CardContent className="space-y-4 pt-0">
+                      <p className="text-gray-600 line-clamp-3 leading-relaxed">{program.description}</p>
                       
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         {program.price && (
                           <div className="flex items-center space-x-2">
                             <DollarSign className="h-4 w-4 text-gray-500" />
-                            <span>${program.price}</span>
+                            <span className="text-black font-medium">${program.price}</span>
                           </div>
                         )}
                         
                         {program.duration && (
                           <div className="flex items-center space-x-2">
                             <Clock className="h-4 w-4 text-gray-500" />
-                            <span>{program.duration}</span>
+                            <span className="text-gray-600">{program.duration}</span>
                           </div>
                         )}
                         
                         {program.start_date && (
                           <div className="flex items-center space-x-2">
                             <Calendar className="h-4 w-4 text-gray-500" />
-                            <span>{new Date(program.start_date).toLocaleDateString()}</span>
+                            <span className="text-gray-600">{new Date(program.start_date).toLocaleDateString()}</span>
                           </div>
                         )}
                         
                         {program.max_participants && (
                           <div className="flex items-center space-x-2">
                             <Users className="h-4 w-4 text-gray-500" />
-                            <span>Max {program.max_participants}</span>
+                            <span className="text-gray-600">Max {program.max_participants}</span>
                           </div>
                         )}
                       </div>
                       
-                      {user ? (
-                        <ProgramEnrollment
-                          programId={program.id}
-                          programTitle={program.title}
-                          isEnrolled={isEnrolled}
-                        />
-                      ) : (
-                        <Button asChild className="w-full">
-                          <Link to="/auth">Sign In to Enroll</Link>
-                        </Button>
-                      )}
+                      <div className="pt-2">
+                        {user ? (
+                          <ProgramEnrollment
+                            programId={program.id}
+                            programTitle={program.title}
+                            isEnrolled={isEnrolled}
+                          />
+                        ) : (
+                          <Button asChild className="w-full bg-black text-white hover:bg-gray-800 transition-colors">
+                            <Link to="/auth">Sign In to Enroll</Link>
+                          </Button>
+                        )}
+                      </div>
                     </CardContent>
                   </Card>
                 );
@@ -220,32 +227,32 @@ const Programs = () => {
       {/* FAQ Section */}
       <section className="py-20 px-4 md:px-6 bg-gray-50">
         <div className="container mx-auto max-w-4xl">
-          <h2 className="text-3xl md:text-4xl font-medium text-center mb-12">Frequently Asked Questions</h2>
+          <h2 className="text-3xl md:text-4xl font-medium text-center mb-12 text-black">Frequently Asked Questions</h2>
           
           <div className="space-y-6">
-            <div className="bg-white border rounded-lg p-6">
-              <h3 className="text-xl font-medium mb-2">How do I enroll my child in a program?</h3>
+            <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-soft">
+              <h3 className="text-xl font-medium mb-2 text-black">How do I enroll my child in a program?</h3>
               <p className="text-gray-600">
                 First, create an account and link your children to your profile. Then browse available programs and click "Enroll Now" to select which children you'd like to enroll.
               </p>
             </div>
             
-            <div className="bg-white border rounded-lg p-6">
-              <h3 className="text-xl font-medium mb-2">Can I enroll multiple children in the same program?</h3>
+            <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-soft">
+              <h3 className="text-xl font-medium mb-2 text-black">Can I enroll multiple children in the same program?</h3>
               <p className="text-gray-600">
                 Yes! Our enrollment system allows you to select multiple children for the same program, making it easy for families with multiple kids.
               </p>
             </div>
             
-            <div className="bg-white border rounded-lg p-6">
-              <h3 className="text-xl font-medium mb-2">What happens after I submit an enrollment?</h3>
+            <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-soft">
+              <h3 className="text-xl font-medium mb-2 text-black">What happens after I submit an enrollment?</h3>
               <p className="text-gray-600">
                 Your enrollment will be reviewed by our team. You'll receive a confirmation email and can track the status in your customer dashboard.
               </p>
             </div>
             
-            <div className="bg-white border rounded-lg p-6">
-              <h3 className="text-xl font-medium mb-2">Are there any prerequisites for the programs?</h3>
+            <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-soft">
+              <h3 className="text-xl font-medium mb-2 text-black">Are there any prerequisites for the programs?</h3>
               <p className="text-gray-600">
                 Each program has its own requirements which are listed in the program description. Most programs are designed to be accessible to children of various skill levels.
               </p>

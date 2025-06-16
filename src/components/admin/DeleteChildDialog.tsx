@@ -32,9 +32,39 @@ const DeleteChildDialog = ({ child, isOpen, onOpenChange }: DeleteChildDialogPro
 
   const deleteChildMutation = useMutation({
     mutationFn: async (childId: string) => {
-      const { data, error } = await supabase.rpc('safe_delete_child', {
-        child_id_param: childId
-      });
+      // First delete related records manually since we can't use the RPC function yet
+      
+      // Delete parent-child relationships
+      const { error: relationshipError } = await supabase
+        .from('parent_child_relationships')
+        .delete()
+        .eq('child_id', childId);
+      
+      if (relationshipError) throw relationshipError;
+
+      // Set child_id to null in enrollments (soft delete)
+      const { error: enrollmentError } = await supabase
+        .from('enrollments')
+        .update({ child_id: null })
+        .eq('child_id', childId);
+      
+      if (enrollmentError) throw enrollmentError;
+
+      // Set child_id to null in kids_work (soft delete)
+      const { error: workError } = await supabase
+        .from('kids_work')
+        .update({ child_id: null })
+        .eq('child_id', childId);
+      
+      if (workError) throw workError;
+
+      // Finally delete the child
+      const { data, error } = await supabase
+        .from('children')
+        .delete()
+        .eq('id', childId)
+        .select()
+        .single();
       
       if (error) throw error;
       return data;

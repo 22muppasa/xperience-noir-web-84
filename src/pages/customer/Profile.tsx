@@ -1,31 +1,138 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Progress } from '@/components/ui/progress';
 import { useAuth } from '@/contexts/AuthContext';
 import { User, Save } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/components/ui/use-toast';
+
+interface ProfileData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  address: string;
+  emergencyContact: string;
+}
 
 const Profile = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  // Mock profile data
-  const [profileData, setProfileData] = useState({
-    firstName: 'Jane',
-    lastName: 'Johnson',
+  const [profileData, setProfileData] = useState<ProfileData>({
+    firstName: '',
+    lastName: '',
     email: user?.email || '',
-    phone: '(555) 123-4567',
-    address: '123 Main St, Anytown, ST 12345',
-    emergencyContact: 'John Johnson - (555) 987-6543'
+    phone: '',
+    address: '',
+    emergencyContact: ''
   });
 
-  const handleSave = () => {
-    // Handle saving profile changes
-    setIsEditing(false);
+  // Calculate profile completion percentage
+  const calculateCompletion = (data: ProfileData): number => {
+    const fields = [
+      data.firstName,
+      data.lastName,
+      data.email,
+      data.phone,
+      data.address,
+      data.emergencyContact
+    ];
+    
+    const filledFields = fields.filter(field => field && field.trim() !== '').length;
+    return Math.round((filledFields / fields.length) * 100);
+  };
+
+  const completionPercentage = calculateCompletion(profileData);
+
+  // Fetch profile data on component mount
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!user?.id) return;
+
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (error) {
+          console.error('Error fetching profile:', error);
+          return;
+        }
+
+        if (data) {
+          setProfileData({
+            firstName: data.first_name || '',
+            lastName: data.last_name || '',
+            email: data.email || user.email || '',
+            phone: data.phone || '',
+            address: '', // We'll need to add this field to profiles table later
+            emergencyContact: '' // We'll need to add this field to profiles table later
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        toast({
+          title: "Error",
+          description: "Failed to load profile data.",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchProfile();
+  }, [user?.id, user?.email, toast]);
+
+  const handleSave = async () => {
+    if (!user?.id) return;
+
+    setLoading(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          first_name: profileData.firstName,
+          last_name: profileData.lastName,
+          phone: profileData.phone,
+          // Note: address and emergencyContact would need to be added to the profiles table
+        })
+        .eq('id', user.id);
+
+      if (error) {
+        console.error('Error updating profile:', error);
+        toast({
+          title: "Error",
+          description: "Failed to save profile changes.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({
+        title: "Success",
+        description: "Profile updated successfully!",
+      });
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save profile changes.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -39,6 +146,7 @@ const Profile = () => {
           <Button 
             onClick={() => setIsEditing(!isEditing)}
             variant={isEditing ? "outline" : "default"}
+            disabled={loading}
           >
             {isEditing ? 'Cancel' : 'Edit Profile'}
           </Button>
@@ -53,10 +161,8 @@ const Profile = () => {
                 <p className="text-black text-sm">Complete your profile for better service</p>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-black">85%</div>
-                <div className="w-24 bg-gray-200 rounded-full h-2">
-                  <div className="bg-black h-2 rounded-full" style={{ width: '85%' }}></div>
-                </div>
+                <div className="text-2xl font-bold text-black">{completionPercentage}%</div>
+                <Progress value={completionPercentage} className="w-24 h-2 mt-2" />
               </div>
             </div>
           </CardContent>
@@ -125,7 +231,9 @@ const Profile = () => {
                 disabled={!isEditing}
                 rows={2}
                 className="bg-white text-black border-gray-300"
+                placeholder="Address field will be available after database update"
               />
+              <p className="text-xs text-gray-500 mt-1">Note: Address storage will be added to the database soon</p>
             </div>
 
             <div>
@@ -136,7 +244,9 @@ const Profile = () => {
                 onChange={(e) => setProfileData({...profileData, emergencyContact: e.target.value})}
                 disabled={!isEditing}
                 className="bg-white text-black border-gray-300"
+                placeholder="Emergency contact will be available after database update"
               />
+              <p className="text-xs text-gray-500 mt-1">Note: Emergency contact storage will be added to the database soon</p>
             </div>
           </CardContent>
         </Card>
@@ -145,16 +255,16 @@ const Profile = () => {
           <Card className="bg-white border-black">
             <CardContent className="p-6">
               <div className="flex space-x-4">
-                <Button onClick={handleSave} className="flex-1">
+                <Button onClick={handleSave} className="flex-1" disabled={loading}>
                   <Save className="h-4 w-4 mr-2" />
-                  Save Changes
+                  {loading ? 'Saving...' : 'Save Changes'}
                 </Button>
-                <Button variant="outline" onClick={() => setIsEditing(false)} className="flex-1">
+                <Button variant="outline" onClick={() => setIsEditing(false)} className="flex-1" disabled={loading}>
                   Cancel
                 </Button>
               </div>
             </CardContent>
-          </Card>
+          </CardContent>
         )}
       </div>
     </DashboardLayout>

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -26,7 +25,7 @@ interface Enrollment {
   notes?: string;
   child_id?: string;
   customer_id?: string;
-  programs: {
+  programs?: {
     title: string;
   } | null;
   profiles?: {
@@ -60,11 +59,6 @@ const AdminEnrollments = () => {
           child_id,
           customer_id,
           programs(title),
-          profiles!enrollments_customer_id_fkey(
-            first_name,
-            last_name,
-            email
-          ),
           children(
             first_name,
             last_name,
@@ -74,7 +68,30 @@ const AdminEnrollments = () => {
         .order('enrolled_at', { ascending: false });
 
       if (error) throw error;
-      return data as Enrollment[];
+
+      // Fetch profiles separately for each enrollment
+      const enrollmentsWithProfiles = await Promise.all(
+        (data || []).map(async (enrollment) => {
+          if (enrollment.customer_id) {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('first_name, last_name, email')
+              .eq('id', enrollment.customer_id)
+              .single();
+            
+            return {
+              ...enrollment,
+              profiles: profile
+            };
+          }
+          return {
+            ...enrollment,
+            profiles: null
+          };
+        })
+      );
+
+      return enrollmentsWithProfiles as Enrollment[];
     }
   });
 

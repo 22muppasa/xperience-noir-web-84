@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -49,15 +48,16 @@ const Programs = () => {
     }
   });
 
-  const { data: enrollments = [] } = useQuery({
-    queryKey: ['user-enrollments', user?.id],
+  const { data: activeEnrollments = [] } = useQuery({
+    queryKey: ['user-active-enrollments', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
       
       const { data, error } = await supabase
         .from('enrollments')
         .select('program_id')
-        .eq('customer_id', user.id);
+        .eq('customer_id', user.id)
+        .neq('status', 'cancelled'); // Only get non-cancelled enrollments
       
       if (error) throw error;
       return data.map(e => e.program_id);
@@ -138,7 +138,7 @@ const Programs = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {programs.map((program) => {
-                const isEnrolled = enrollments.includes(program.id);
+                const isEnrolled = activeEnrollments.includes(program.id);
                 const remainingSpots = program.max_participants ? 
                   program.max_participants - program.current_enrollments : null;
                 

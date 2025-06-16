@@ -76,11 +76,17 @@ const EditEnrollmentDialog = ({ enrollment }: EditEnrollmentDialogProps) => {
     onSuccess: () => {
       toast({
         title: "Enrollment Cancelled",
-        description: "You have successfully unenrolled from this program.",
+        description: "You have successfully unenrolled from this program. You can re-enroll if the program is still open.",
       });
       setIsOpen(false);
       setShowUnenrollConfirm(false);
+      // Invalidate multiple queries to update all enrollment displays
       queryClient.invalidateQueries({ queryKey: ['my-enrollments'] });
+      queryClient.invalidateQueries({ queryKey: ['active-enrollments'] });
+      queryClient.invalidateQueries({ queryKey: ['user-active-enrollments'] });
+      queryClient.invalidateQueries({ queryKey: ['programs'] });
+      queryClient.invalidateQueries({ queryKey: ['public-programs'] });
+      queryClient.invalidateQueries({ queryKey: ['program-capacity'] });
     },
     onError: (error: any) => {
       toast({
@@ -195,7 +201,7 @@ const EditEnrollmentDialog = ({ enrollment }: EditEnrollmentDialogProps) => {
                 <h3 className="font-semibold text-red-800 mb-2">Confirm Unenrollment</h3>
                 <p className="text-red-700 text-sm">
                   Are you sure you want to unenroll {enrollment.child_name} from {enrollment.programs.title}? 
-                  This action cannot be undone and you will need to re-enroll if you change your mind.
+                  You can re-enroll later if the program is still available and has space.
                 </p>
               </div>
               

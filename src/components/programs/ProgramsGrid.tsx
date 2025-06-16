@@ -44,15 +44,16 @@ const ProgramsGrid = () => {
     }
   });
 
-  const { data: enrollments = [] } = useQuery({
-    queryKey: ['enrollments', user?.id],
+  const { data: activeEnrollments = [] } = useQuery({
+    queryKey: ['active-enrollments', user?.id],
     queryFn: async () => {
       if (!user?.id) return [];
       
       const { data, error } = await supabase
         .from('enrollments')
         .select('program_id')
-        .eq('customer_id', user.id);
+        .eq('customer_id', user.id)
+        .neq('status', 'cancelled'); // Only get non-cancelled enrollments
       
       if (error) throw error;
       return data.map(e => e.program_id);
@@ -94,7 +95,7 @@ const ProgramsGrid = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {programs.map((program) => {
-        const isEnrolled = enrollments.includes(program.id);
+        const isEnrolled = activeEnrollments.includes(program.id);
         
         return (
           <Card key={program.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300 bg-white border-black">

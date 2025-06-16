@@ -55,6 +55,9 @@ const Programs = () => {
     enabled: !!user?.id
   });
 
+  // Filter out cancelled enrollments for display
+  const activeEnrollments = myEnrollments.filter(enrollment => enrollment.status !== 'cancelled');
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -75,9 +78,9 @@ const Programs = () => {
                 </div>
               </CardContent>
             </Card>
-          ) : myEnrollments.length > 0 ? (
+          ) : activeEnrollments.length > 0 ? (
             <div className="grid gap-4">
-              {myEnrollments.map((enrollment) => (
+              {activeEnrollments.map((enrollment) => (
                 <Card key={enrollment.id} className="bg-white border-black">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
@@ -99,16 +102,12 @@ const Programs = () => {
                               ? 'bg-green-50 text-green-700 border-green-700'
                               : enrollment.status === 'pending'
                               ? 'bg-yellow-50 text-yellow-700 border-yellow-700'
-                              : enrollment.status === 'cancelled'
-                              ? 'bg-red-50 text-red-700 border-red-700'
                               : 'bg-gray-50 text-gray-700 border-gray-700'
                           }`}
                         >
                           {enrollment.status}
                         </Badge>
-                        {enrollment.status !== 'cancelled' && (
-                          <EditEnrollmentDialog enrollment={enrollment} />
-                        )}
+                        <EditEnrollmentDialog enrollment={enrollment} />
                       </div>
                     </div>
                   </CardContent>

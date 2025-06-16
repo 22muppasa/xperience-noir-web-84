@@ -15,7 +15,8 @@ import {
   BarChart3, 
   Shield,
   Activity,
-  Calendar
+  Calendar,
+  UserCheck
 } from 'lucide-react';
 
 const AdminDashboard = () => {
@@ -29,19 +30,25 @@ const AdminDashboard = () => {
         usersResult,
         pendingWorkResult,
         messagesResult,
-        programsResult
+        programsResult,
+        enrollmentsResult,
+        pendingEnrollmentsResult
       ] = await Promise.all([
         supabase.from('profiles').select('id', { count: 'exact' }),
         supabase.from('kids_work').select('id', { count: 'exact' }),
         supabase.from('messages').select('id', { count: 'exact' }),
-        supabase.from('programs').select('id', { count: 'exact' })
+        supabase.from('programs').select('id', { count: 'exact' }),
+        supabase.from('enrollments').select('id', { count: 'exact' }),
+        supabase.from('enrollments').select('id', { count: 'exact' }).eq('status', 'pending')
       ]);
 
       return {
         totalUsers: usersResult.count || 0,
         pendingReviews: pendingWorkResult.count || 0,
         totalMessages: messagesResult.count || 0,
-        activePrograms: programsResult.count || 0
+        activePrograms: programsResult.count || 0,
+        totalEnrollments: enrollmentsResult.count || 0,
+        pendingEnrollments: pendingEnrollmentsResult.count || 0
       };
     }
   });
@@ -55,17 +62,18 @@ const AdminDashboard = () => {
       color: 'bg-black'
     },
     {
+      title: 'Review Enrollments',
+      description: 'Approve pending enrollment requests',
+      icon: UserCheck,
+      href: '/admin/enrollments',
+      color: 'bg-black',
+      badge: stats?.pendingEnrollments > 0 ? stats.pendingEnrollments : undefined
+    },
+    {
       title: 'Review Kids Work',
       description: 'Review and approve submitted work',
       icon: FileText,
       href: '/admin/kids-work',
-      color: 'bg-black'
-    },
-    {
-      title: 'Messages',
-      description: 'Manage user communications',
-      icon: MessageSquare,
-      href: '/admin/messages',
       color: 'bg-black'
     },
     {
@@ -86,11 +94,11 @@ const AdminDashboard = () => {
       trend: 'up'
     },
     {
-      title: 'Kids Work Submitted',
-      value: isLoading ? '...' : stats?.pendingReviews.toString() || '0',
-      change: stats?.pendingReviews > 0 ? 'Needs review' : 'All caught up',
-      icon: FileText,
-      trend: stats?.pendingReviews > 0 ? 'up' : 'stable'
+      title: 'Pending Enrollments',
+      value: isLoading ? '...' : stats?.pendingEnrollments.toString() || '0',
+      change: stats?.pendingEnrollments > 0 ? 'Needs approval' : 'All approved',
+      icon: UserCheck,
+      trend: stats?.pendingEnrollments > 0 ? 'up' : 'stable'
     },
     {
       title: 'System Uptime',
@@ -164,9 +172,14 @@ const AdminDashboard = () => {
                 <Button
                   key={index}
                   variant="outline"
-                  className="h-auto p-4 flex flex-col items-start space-y-2 border-black bg-white hover:bg-gray-50 text-black"
+                  className="h-auto p-4 flex flex-col items-start space-y-2 border-black bg-white hover:bg-gray-50 text-black relative"
                   onClick={() => window.location.href = action.href}
                 >
+                  {action.badge && (
+                    <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center">
+                      {action.badge}
+                    </div>
+                  )}
                   <div className={`p-2 rounded-lg ${action.color} text-white`}>
                     <action.icon className="h-5 w-5" />
                   </div>

@@ -11,7 +11,8 @@ import {
   Image,
   Send,
   Baby,
-  UserCog
+  UserCog,
+  UserCheck
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -28,6 +29,7 @@ const DashboardSidebar = () => {
     { icon: Users, label: 'Customers', path: '/admin/customers' },
     { icon: Baby, label: 'Children', path: '/admin/children' },
     { icon: Calendar, label: 'Programs', path: '/admin/programs' },
+    { icon: UserCheck, label: 'Enrollments', path: '/admin/enrollments' },
     { icon: Image, label: 'Kids Work', path: '/admin/kids-work' },
     { icon: MessageSquare, label: 'Messages', path: '/admin/messages' },
     { icon: Send, label: 'Social Posts', path: '/admin/social-posts' },

@@ -26,7 +26,9 @@ import {
   Upload,
   Eye,
   Calendar,
-  User
+  User,
+  ExternalLink,
+  Link
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -36,6 +38,9 @@ interface KidsWork {
   description: string;
   file_url: string;
   file_type: string;
+  google_drive_link: string;
+  google_drive_file_id: string;
+  link_status: string;
   created_at: string;
   enrollment_id: string;
   enrollments: {
@@ -110,16 +115,25 @@ const AdminKidsWork = () => {
     }
   });
 
-  const getFileIcon = (fileType: string) => {
-    if (fileType.startsWith('image/')) return <Image className="h-5 w-5 text-black" />;
-    if (fileType.startsWith('video/')) return <Video className="h-5 w-5 text-black" />;
+  const getFileIcon = (work: KidsWork) => {
+    if (work.google_drive_link) return <Link className="h-5 w-5 text-black" />;
+    if (work.file_type?.startsWith('image/')) return <Image className="h-5 w-5 text-black" />;
+    if (work.file_type?.startsWith('video/')) return <Video className="h-5 w-5 text-black" />;
     return <FileText className="h-5 w-5 text-black" />;
   };
 
-  const getFileTypeColor = (fileType: string) => {
-    if (fileType.startsWith('image/')) return 'bg-white text-black border-black';
-    if (fileType.startsWith('video/')) return 'bg-white text-black border-black';
+  const getFileTypeColor = (work: KidsWork) => {
+    if (work.google_drive_link) return 'bg-white text-black border-black';
+    if (work.file_type?.startsWith('image/')) return 'bg-white text-black border-black';
+    if (work.file_type?.startsWith('video/')) return 'bg-white text-black border-black';
     return 'bg-white text-black border-black';
+  };
+
+  const getFileTypeLabel = (work: KidsWork) => {
+    if (work.google_drive_link) return 'Google Drive';
+    if (work.file_type?.startsWith('image/')) return 'image';
+    if (work.file_type?.startsWith('video/')) return 'video';
+    return 'file';
   };
 
   const handleView = (work: KidsWork) => {
@@ -132,12 +146,26 @@ const AdminKidsWork = () => {
     setIsDeleteDialogOpen(true);
   };
 
-  const handleDownload = (work: KidsWork) => {
-    window.open(work.file_url, '_blank');
+  const handleOpenLink = (work: KidsWork) => {
+    if (work.google_drive_link) {
+      window.open(work.google_drive_link, '_blank');
+    } else if (work.file_url) {
+      window.open(work.file_url, '_blank');
+    }
   };
 
   const renderFilePreview = (work: KidsWork) => {
-    if (work.file_type.startsWith('image/')) {
+    if (work.google_drive_link && work.google_drive_file_id) {
+      return (
+        <iframe
+          src={`https://drive.google.com/file/d/${work.google_drive_file_id}/preview`}
+          className="w-full h-96 rounded-lg border border-black"
+          title={work.title}
+        />
+      );
+    }
+    
+    if (work.file_type?.startsWith('image/')) {
       return (
         <img 
           src={work.file_url} 
@@ -147,7 +175,7 @@ const AdminKidsWork = () => {
       );
     }
     
-    if (work.file_type.startsWith('video/')) {
+    if (work.file_type?.startsWith('video/')) {
       return (
         <video 
           src={work.file_url} 
@@ -163,11 +191,11 @@ const AdminKidsWork = () => {
           <FileText className="h-16 w-16 text-black mx-auto mb-4" />
           <p className="text-black">Preview not available for this file type</p>
           <Button 
-            onClick={() => handleDownload(work)}
+            onClick={() => handleOpenLink(work)}
             className="mt-4 bg-black text-white hover:bg-gray-800"
           >
-            <Download className="h-4 w-4 mr-2" />
-            Download File
+            <ExternalLink className="h-4 w-4 mr-2" />
+            Open File
           </Button>
         </div>
       </div>
@@ -199,14 +227,14 @@ const AdminKidsWork = () => {
       <div className="space-y-8">
         <div>
           <h1 className="text-3xl font-bold text-black">Kids Work Management</h1>
-          <p className="text-black mt-2">Upload and manage children's creative work and projects</p>
+          <p className="text-black mt-2">Share children's creative work and projects via Google Drive</p>
         </div>
 
         <Tabs defaultValue="upload" className="space-y-6">
           <TabsList className="bg-white border-black">
             <TabsTrigger value="upload" data-value="upload" className="flex items-center space-x-2 text-black">
               <Upload className="h-4 w-4" />
-              <span>Upload Work</span>
+              <span>Share Work</span>
             </TabsTrigger>
             <TabsTrigger value="manage" className="flex items-center space-x-2 text-black">
               <Eye className="h-4 w-4" />
@@ -217,9 +245,9 @@ const AdminKidsWork = () => {
           <TabsContent value="upload">
             <Card className="bg-white border-black">
               <CardHeader>
-                <CardTitle className="text-black">Upload New Kids Work</CardTitle>
+                <CardTitle className="text-black">Share New Kids Work</CardTitle>
                 <CardDescription className="text-black">
-                  Upload photos, videos, or documents of children's creative work and projects
+                  Share Google Drive links to children's creative work and projects
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -241,10 +269,10 @@ const AdminKidsWork = () => {
                 <Card className="p-8 bg-white border-black">
                   <div className="text-center">
                     <Upload className="h-16 w-16 text-black mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-black mb-2">No kids work uploaded yet</h3>
-                    <p className="text-black mb-4">Start by uploading some children's creative work and projects.</p>
+                    <h3 className="text-lg font-medium text-black mb-2">No kids work shared yet</h3>
+                    <p className="text-black mb-4">Start by sharing some children's creative work and projects.</p>
                     <Button onClick={navigateToUpload} className="bg-black text-white hover:bg-gray-800">
-                      Upload First Work
+                      Share First Work
                     </Button>
                   </div>
                 </Card>
@@ -255,7 +283,7 @@ const AdminKidsWork = () => {
                       <CardHeader className="pb-3">
                         <div className="flex items-start justify-between">
                           <div className="flex items-center space-x-2">
-                            {getFileIcon(work.file_type)}
+                            {getFileIcon(work)}
                             <div className="min-w-0 flex-1">
                               <h3 className="font-medium text-black truncate">{work.title}</h3>
                               <p className="text-sm text-black">
@@ -263,8 +291,8 @@ const AdminKidsWork = () => {
                               </p>
                             </div>
                           </div>
-                          <Badge className={getFileTypeColor(work.file_type)}>
-                            {work.file_type.split('/')[0]}
+                          <Badge className={getFileTypeColor(work)}>
+                            {getFileTypeLabel(work)}
                           </Badge>
                         </div>
                       </CardHeader>
@@ -282,6 +310,15 @@ const AdminKidsWork = () => {
                             <Calendar className="h-4 w-4" />
                             <span>{format(new Date(work.created_at), 'MMM d, yyyy')}</span>
                           </div>
+
+                          {work.google_drive_link && work.link_status && (
+                            <div className="flex items-center space-x-2 text-sm">
+                              <span className={`w-2 h-2 rounded-full ${work.link_status === 'active' ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                              <span className="text-black">
+                                Link {work.link_status}
+                              </span>
+                            </div>
+                          )}
                         </div>
 
                         {work.description && (
@@ -302,10 +339,10 @@ const AdminKidsWork = () => {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleDownload(work)}
+                            onClick={() => handleOpenLink(work)}
                             className="border-black text-black hover:bg-gray-50"
                           >
-                            <Download className="h-4 w-4" />
+                            <ExternalLink className="h-4 w-4" />
                           </Button>
                           
                           <Button
@@ -333,7 +370,7 @@ const AdminKidsWork = () => {
               <DialogTitle className="text-black">{selectedWork?.title}</DialogTitle>
               <DialogDescription className="text-black">
                 Work by {selectedWork?.enrollments.child_name} • 
-                Uploaded {selectedWork ? format(new Date(selectedWork.created_at), 'MMM d, yyyy') : ''}
+                Shared {selectedWork ? format(new Date(selectedWork.created_at), 'MMM d, yyyy') : ''}
               </DialogDescription>
             </DialogHeader>
             
@@ -356,9 +393,9 @@ const AdminKidsWork = () => {
                 Close
               </Button>
               {selectedWork && (
-                <Button onClick={() => handleDownload(selectedWork)} className="bg-black text-white hover:bg-gray-800">
-                  <Download className="h-4 w-4 mr-2" />
-                  Download
+                <Button onClick={() => handleOpenLink(selectedWork)} className="bg-black text-white hover:bg-gray-800">
+                  <ExternalLink className="h-4 w-4 mr-2" />
+                  Open
                 </Button>
               )}
             </DialogFooter>

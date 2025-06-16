@@ -7,15 +7,16 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Upload, X } from 'lucide-react';
+import { Link, AlertCircle, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const AdminKidsWorkUpload = () => {
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [selectedChild, setSelectedChild] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [googleDriveLink, setGoogleDriveLink] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  const [linkPreview, setLinkPreview] = useState<string | null>(null);
   const { toast } = useToast();
 
   // Fetch enrollments with child and program data
@@ -44,7 +45,6 @@ const AdminKidsWorkUpload = () => {
         throw error;
       }
 
-      // Transform the data to ensure proper typing
       return data.map(enrollment => ({
         id: enrollment.id,
         child_name: enrollment.child_name,
@@ -56,20 +56,58 @@ const AdminKidsWorkUpload = () => {
     },
   });
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    setSelectedFiles(prev => [...prev, ...files]);
+  const extractGoogleDriveFileId = (url: string): string | null => {
+    // Handle various Google Drive URL formats
+    const patterns = [
+      /\/file\/d\/([a-zA-Z0-9-_]+)/,
+      /id=([a-zA-Z0-9-_]+)/,
+      /\/d\/([a-zA-Z0-9-_]+)/
+    ];
+    
+    for (const pattern of patterns) {
+      const match = url.match(pattern);
+      if (match) return match[1];
+    }
+    return null;
   };
 
-  const removeFile = (index: number) => {
-    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  const validateGoogleDriveLink = (url: string): boolean => {
+    return url.includes('drive.google.com') && extractGoogleDriveFileId(url) !== null;
+  };
+
+  const generatePreviewLink = (url: string): string | null => {
+    const fileId = extractGoogleDriveFileId(url);
+    if (!fileId) return null;
+    
+    // Generate preview URL that works in iframe
+    return `https://drive.google.com/file/d/${fileId}/preview`;
+  };
+
+  const handleLinkChange = (value: string) => {
+    setGoogleDriveLink(value);
+    
+    if (value && validateGoogleDriveLink(value)) {
+      const preview = generatePreviewLink(value);
+      setLinkPreview(preview);
+    } else {
+      setLinkPreview(null);
+    }
   };
 
   const handleUpload = async () => {
-    if (!selectedChild || !title || selectedFiles.length === 0) {
+    if (!selectedChild || !title || !googleDriveLink) {
       toast({
         title: "Missing Information",
-        description: "Please select a child, add a title, and choose files to upload.",
+        description: "Please select a child, add a title, and provide a Google Drive link.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!validateGoogleDriveLink(googleDriveLink)) {
+      toast({
+        title: "Invalid Link",
+        description: "Please provide a valid Google Drive sharing link.",
         variant: "destructive",
       });
       return;
@@ -77,59 +115,40 @@ const AdminKidsWorkUpload = () => {
 
     setIsUploading(true);
     try {
-      const uploadPromises = selectedFiles.map(async (file) => {
-        // Upload file to storage
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
-        const filePath = `kids-work/${fileName}`;
+      const selectedEnrollment = enrollments.find(e => e.id === selectedChild);
+      const fileId = extractGoogleDriveFileId(googleDriveLink);
+      
+      const { error: dbError } = await supabase
+        .from('kids_work')
+        .insert({
+          title,
+          description: description || null,
+          google_drive_link: googleDriveLink,
+          google_drive_file_id: fileId,
+          link_status: 'active',
+          enrollment_id: selectedChild,
+          child_id: selectedEnrollment?.child_id || null,
+          parent_customer_id: selectedEnrollment?.customer_id || null,
+        });
 
-        const { error: uploadError } = await supabase.storage
-          .from('kids-work')
-          .upload(filePath, file);
-
-        if (uploadError) throw uploadError;
-
-        // Get the public URL
-        const { data: { publicUrl } } = supabase.storage
-          .from('kids-work')
-          .getPublicUrl(filePath);
-
-        // Find the enrollment to get the child_id
-        const selectedEnrollment = enrollments.find(e => e.id === selectedChild);
-        
-        // Create kids_work record
-        const { error: dbError } = await supabase
-          .from('kids_work')
-          .insert({
-            title,
-            description: description || null,
-            file_url: publicUrl,
-            file_type: file.type,
-            enrollment_id: selectedChild,
-            child_id: selectedEnrollment?.child_id || null,
-            parent_customer_id: selectedEnrollment?.customer_id || null,
-          });
-
-        if (dbError) throw dbError;
-      });
-
-      await Promise.all(uploadPromises);
+      if (dbError) throw dbError;
 
       toast({
         title: "Upload Successful",
-        description: `${selectedFiles.length} file(s) uploaded successfully.`,
+        description: "Google Drive link has been added successfully.",
       });
 
       // Reset form
-      setSelectedFiles([]);
       setSelectedChild('');
       setTitle('');
       setDescription('');
+      setGoogleDriveLink('');
+      setLinkPreview(null);
     } catch (error) {
       console.error('Upload error:', error);
       toast({
         title: "Upload Failed",
-        description: "There was an error uploading the files. Please try again.",
+        description: "There was an error saving the Google Drive link. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -144,9 +163,9 @@ const AdminKidsWorkUpload = () => {
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>Upload Kids' Work</CardTitle>
+        <CardTitle>Share Kids' Work via Google Drive</CardTitle>
         <CardDescription>
-          Upload artwork, projects, or other work from children in the programs.
+          Share Google Drive links to children's work, projects, or artwork.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -190,52 +209,60 @@ const AdminKidsWorkUpload = () => {
         </div>
 
         <div className="space-y-4">
-          <Label>Upload Files</Label>
-          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-            <input
-              type="file"
-              multiple
-              accept="image/*,video/*,.pdf"
-              onChange={handleFileSelect}
-              className="hidden"
-              id="file-upload"
+          <Label>Google Drive Link</Label>
+          <div className="space-y-2">
+            <Input
+              value={googleDriveLink}
+              onChange={(e) => handleLinkChange(e.target.value)}
+              placeholder="Paste Google Drive sharing link here..."
             />
-            <label htmlFor="file-upload" className="cursor-pointer">
-              <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-              <p className="text-sm text-gray-600">
-                Click to upload files or drag and drop
-              </p>
-              <p className="text-xs text-gray-500 mt-1">
-                Images, videos, and PDFs up to 10MB each
-              </p>
-            </label>
+            <div className="flex items-center space-x-2 text-sm">
+              {googleDriveLink && (
+                <>
+                  {validateGoogleDriveLink(googleDriveLink) ? (
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                  ) : (
+                    <AlertCircle className="h-4 w-4 text-red-500" />
+                  )}
+                  <span className={validateGoogleDriveLink(googleDriveLink) ? "text-green-600" : "text-red-600"}>
+                    {validateGoogleDriveLink(googleDriveLink) ? "Valid Google Drive link" : "Invalid link format"}
+                  </span>
+                </>
+              )}
+            </div>
           </div>
 
-          {selectedFiles.length > 0 && (
-            <div className="space-y-2">
-              <p className="text-sm font-medium">Selected Files:</p>
-              {selectedFiles.map((file, index) => (
-                <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
-                  <span className="text-sm truncate">{file.name}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeFile(index)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
+          {linkPreview && (
+            <div className="border rounded-lg p-4 bg-gray-50">
+              <p className="text-sm font-medium mb-2">Preview:</p>
+              <iframe
+                src={linkPreview}
+                width="100%"
+                height="200"
+                className="border rounded"
+                title="Google Drive Preview"
+              />
             </div>
           )}
         </div>
 
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <h4 className="font-medium text-blue-900 mb-2">How to get a Google Drive sharing link:</h4>
+          <ol className="text-sm text-blue-800 space-y-1">
+            <li>1. Upload your file to Google Drive</li>
+            <li>2. Right-click the file and select "Share"</li>
+            <li>3. Change permissions to "Anyone with the link can view"</li>
+            <li>4. Copy the link and paste it above</li>
+          </ol>
+        </div>
+
         <Button 
           onClick={handleUpload} 
-          disabled={isUploading || !selectedChild || !title || selectedFiles.length === 0}
+          disabled={isUploading || !selectedChild || !title || !validateGoogleDriveLink(googleDriveLink)}
           className="w-full"
         >
-          {isUploading ? 'Uploading...' : 'Upload Files'}
+          <Link className="h-4 w-4 mr-2" />
+          {isUploading ? 'Saving...' : 'Save Google Drive Link'}
         </Button>
       </CardContent>
     </Card>

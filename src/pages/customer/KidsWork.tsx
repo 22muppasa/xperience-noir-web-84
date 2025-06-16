@@ -1,9 +1,8 @@
-
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Image, Download, Eye, MessageSquare, Bell, Baby } from 'lucide-react';
+import { Image, Download, Eye, MessageSquare, Bell, Baby, ExternalLink } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -109,8 +108,31 @@ const KidsWork = () => {
     }
   };
 
-  const getFileIcon = (fileType: string) => {
-    if (fileType?.startsWith('image/')) {
+  const handleViewInGoogleDrive = (googleDriveLink: string) => {
+    window.open(googleDriveLink, '_blank');
+  };
+
+  const getGoogleDrivePreviewUrl = (work: any) => {
+    if (work.google_drive_file_id) {
+      return `https://drive.google.com/file/d/${work.google_drive_file_id}/preview`;
+    }
+    return null;
+  };
+
+  const getGoogleDriveThumbnailUrl = (work: any) => {
+    if (work.google_drive_file_id) {
+      return `https://drive.google.com/thumbnail?id=${work.google_drive_file_id}&sz=w400`;
+    }
+    return null;
+  };
+
+  const getFileIcon = (work: any) => {
+    // For Google Drive links, show a generic icon
+    if (work.google_drive_link) {
+      return <ExternalLink className="h-5 w-5 text-black" />;
+    }
+    // Legacy file type handling
+    if (work.file_type?.startsWith('image/')) {
       return <Image className="h-5 w-5 text-black" />;
     }
     return <Image className="h-5 w-5 text-black" />;
@@ -165,7 +187,7 @@ const KidsWork = () => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-black">Kids Work Gallery</h1>
-            <p className="text-black mt-1">View and download your children's creative work</p>
+            <p className="text-black mt-1">View and access your children's creative work</p>
           </div>
         </div>
 
@@ -242,9 +264,9 @@ const KidsWork = () => {
           <Card className="border-black bg-white">
             <CardContent className="p-12 text-center">
               <Image className="mx-auto h-16 w-16 text-black mb-4" />
-              <h3 className="text-xl font-medium text-black mb-2">No work uploaded yet</h3>
+              <h3 className="text-xl font-medium text-black mb-2">No work shared yet</h3>
               <p className="text-black mb-6 max-w-md mx-auto">
-                Your children's creative work will appear here when uploaded by our instructors. 
+                Your children's creative work will appear here when shared by our instructors. 
                 Check back soon to see their amazing creations!
               </p>
             </CardContent>
@@ -269,13 +291,29 @@ const KidsWork = () => {
                       <CardHeader className="pb-4">
                         <div className="flex items-start justify-between">
                           <CardTitle className="text-lg line-clamp-2 text-black">{work.title}</CardTitle>
-                          {getFileIcon(work.file_type)}
+                          {getFileIcon(work)}
                         </div>
                       </CardHeader>
                       <CardContent className="space-y-4">
                         {/* Preview */}
                         <div className="aspect-video bg-white rounded-lg flex items-center justify-center border border-black">
-                          {work.file_type?.startsWith('image/') ? (
+                          {work.google_drive_link ? (
+                            <div className="w-full h-full">
+                              {getGoogleDrivePreviewUrl(work) ? (
+                                <iframe
+                                  src={getGoogleDrivePreviewUrl(work)}
+                                  className="w-full h-full rounded-lg"
+                                  title={work.title}
+                                />
+                              ) : (
+                                <div className="text-center p-4 flex flex-col items-center justify-center h-full">
+                                  <ExternalLink className="h-12 w-12 text-black mb-2" />
+                                  <p className="text-sm text-black">Google Drive Content</p>
+                                  <p className="text-xs text-gray-600 mt-1">Click to view</p>
+                                </div>
+                              )}
+                            </div>
+                          ) : work.file_type?.startsWith('image/') ? (
                             <img 
                               src={work.file_url} 
                               alt={work.title}
@@ -283,7 +321,7 @@ const KidsWork = () => {
                             />
                           ) : (
                             <div className="text-center p-4">
-                              {getFileIcon(work.file_type)}
+                              {getFileIcon(work)}
                               <p className="text-sm text-black mt-2">
                                 {work.file_type === 'application/pdf' ? 'PDF Document' : 'Media File'}
                               </p>
@@ -304,33 +342,48 @@ const KidsWork = () => {
                           {work.description && (
                             <p className="text-sm text-black bg-white border border-black p-3 rounded">{work.description}</p>
                           )}
-                          {work.file_size && (
-                            <p className="text-xs text-black">
-                              File size: {Math.round(work.file_size / 1024)}KB
-                            </p>
-                          )}
                         </div>
 
                         {/* Actions */}
                         <div className="flex items-center space-x-2 pt-2">
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => window.open(work.file_url, '_blank')}
-                            className="flex-1 border-black text-black hover:bg-gray-50 bg-white"
-                          >
-                            <Eye className="h-4 w-4 mr-1" />
-                            View
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => handleDownload(work.file_url, work.title)}
-                            className="flex-1 border-black text-black hover:bg-gray-50 bg-white"
-                          >
-                            <Download className="h-4 w-4 mr-1" />
-                            Download
-                          </Button>
+                          {work.google_drive_link ? (
+                            <>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => handleViewInGoogleDrive(work.google_drive_link)}
+                                className="flex-1 border-black text-black hover:bg-gray-50 bg-white"
+                              >
+                                <ExternalLink className="h-4 w-4 mr-1" />
+                                Open in Drive
+                              </Button>
+                            </>
+                          ) : (
+                            <>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => window.open(work.file_url, '_blank')}
+                                className="flex-1 border-black text-black hover:bg-gray-50 bg-white"
+                              >
+                                <Eye className="h-4 w-4 mr-1" />
+                                View
+                              </Button>
+                              <Button 
+                                variant="outline" 
+                                size="sm"
+                                onClick={() => {
+                                  const a = document.createElement('a');
+                                  a.href = work.file_url;
+                                  a.download = work.title;
+                                  a.click();
+                                }}
+                                className="border-black text-black hover:bg-gray-50 bg-white"
+                              >
+                                <Download className="h-4 w-4" />
+                              </Button>
+                            </>
+                          )}
                         </div>
                       </CardContent>
                     </Card>

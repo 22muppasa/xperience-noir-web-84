@@ -365,7 +365,10 @@ export type Database = {
           file_size: number | null
           file_type: string | null
           file_url: string | null
+          google_drive_file_id: string | null
+          google_drive_link: string | null
           id: string
+          link_status: string | null
           parent_customer_id: string | null
           storage_path: string | null
           title: string
@@ -379,7 +382,10 @@ export type Database = {
           file_size?: number | null
           file_type?: string | null
           file_url?: string | null
+          google_drive_file_id?: string | null
+          google_drive_link?: string | null
           id?: string
+          link_status?: string | null
           parent_customer_id?: string | null
           storage_path?: string | null
           title: string
@@ -393,7 +399,10 @@ export type Database = {
           file_size?: number | null
           file_type?: string | null
           file_url?: string | null
+          google_drive_file_id?: string | null
+          google_drive_link?: string | null
           id?: string
+          link_status?: string | null
           parent_customer_id?: string | null
           storage_path?: string | null
           title?: string
@@ -852,6 +861,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_enrollment_capacity: {
+        Args: { program_id_param: string }
+        Returns: {
+          current_count: number
+          max_participants: number
+          is_full: boolean
+        }[]
+      }
       get_admin_profiles: {
         Args: Record<PropertyKey, never>
         Returns: {
@@ -864,6 +881,23 @@ export type Database = {
       get_current_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      get_programs_with_capacity: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          title: string
+          description: string
+          price: number
+          duration: string
+          start_date: string
+          end_date: string
+          max_participants: number
+          image_url: string
+          status: Database["public"]["Enums"]["program_status"]
+          current_enrollments: number
+          is_full: boolean
+        }[]
       }
       is_admin: {
         Args: { user_id: string }

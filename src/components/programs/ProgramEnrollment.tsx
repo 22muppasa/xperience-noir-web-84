@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { UserPlus, Baby } from 'lucide-react';
+import { UserPlus, Baby, AlertTriangle } from 'lucide-react';
 
 interface ProgramEnrollmentProps {
   programId: string;
@@ -38,6 +38,20 @@ const ProgramEnrollment = ({ programId, programTitle, isEnrolled }: ProgramEnrol
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Fetch program capacity info
+  const { data: capacityInfo } = useQuery({
+    queryKey: ['program-capacity', programId],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('check_enrollment_capacity', {
+        program_id_param: programId
+      });
+      
+      if (error) throw error;
+      return data[0] || { current_count: 0, max_participants: null, is_full: false };
+    },
+    enabled: !!programId
+  });
 
   // Fetch user's linked children
   const { data: linkedChildren = [], isLoading: childrenLoading } = useQuery({
@@ -75,6 +89,12 @@ const ProgramEnrollment = ({ programId, programTitle, isEnrolled }: ProgramEnrol
       if (!user?.id) throw new Error('User not authenticated');
       if (selectedChildIds.length === 0) throw new Error('Please select at least one child');
       
+      // Check capacity before enrolling
+      if (capacityInfo?.max_participants && 
+          (capacityInfo.current_count + selectedChildIds.length) > capacityInfo.max_participants) {
+        throw new Error(`Cannot enroll ${selectedChildIds.length} children. Only ${capacityInfo.max_participants - capacityInfo.current_count} spots remaining.`);
+      }
+      
       const enrollmentPromises = selectedChildIds.map(async (childId) => {
         const selectedChild = linkedChildren.find(rel => rel.child_id === childId);
         if (!selectedChild) throw new Error('Selected child not found');
@@ -107,6 +127,7 @@ const ProgramEnrollment = ({ programId, programTitle, isEnrolled }: ProgramEnrol
       queryClient.invalidateQueries({ queryKey: ['programs'] });
       queryClient.invalidateQueries({ queryKey: ['enrollments'] });
       queryClient.invalidateQueries({ queryKey: ['my-enrollments'] });
+      queryClient.invalidateQueries({ queryKey: ['program-capacity'] });
     },
     onError: (error: any) => {
       toast({
@@ -119,6 +140,16 @@ const ProgramEnrollment = ({ programId, programTitle, isEnrolled }: ProgramEnrol
 
   const handleChildSelection = (childId: string, checked: boolean) => {
     if (checked) {
+      // Check if adding this child would exceed capacity
+      if (capacityInfo?.max_participants && 
+          (capacityInfo.current_count + selectedChildIds.length + 1) > capacityInfo.max_participants) {
+        toast({
+          title: "Program Full",
+          description: "Adding this child would exceed the program capacity.",
+          variant: "destructive",
+        });
+        return;
+      }
       setSelectedChildIds(prev => [...prev, childId]);
     } else {
       setSelectedChildIds(prev => prev.filter(id => id !== childId));
@@ -140,10 +171,24 @@ const ProgramEnrollment = ({ programId, programTitle, isEnrolled }: ProgramEnrol
     enrollMutation.mutate();
   };
 
+  // Check if program is full
+  const isProgramFull = capacityInfo?.is_full || false;
+  const remainingSpots = capacityInfo?.max_participants ? 
+    capacityInfo.max_participants - capacityInfo.current_count : null;
+
   if (isEnrolled) {
     return (
       <Button disabled className="w-full">
         Already Enrolled
+      </Button>
+    );
+  }
+
+  if (isProgramFull) {
+    return (
+      <Button disabled className="w-full bg-red-100 text-red-700 border-red-300">
+        <AlertTriangle className="h-4 w-4 mr-2" />
+        Program Full
       </Button>
     );
   }
@@ -154,11 +199,30 @@ const ProgramEnrollment = ({ programId, programTitle, isEnrolled }: ProgramEnrol
         <Button className="w-full">
           <UserPlus className="h-4 w-4 mr-2" />
           Enroll Now
+          {remainingSpots && remainingSpots <= 5 && (
+            <span className="ml-2 text-xs bg-orange-100 text-orange-700 px-2 py-1 rounded">
+              {remainingSpots} left
+            </span>
+          )}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Enroll in {programTitle}</DialogTitle>
+          {capacityInfo && (
+            <div className="text-sm text-gray-600">
+              {capacityInfo.max_participants && (
+                <p>
+                  Capacity: {capacityInfo.current_count} / {capacityInfo.max_participants} enrolled
+                  {remainingSpots && remainingSpots <= 5 && (
+                    <span className="ml-2 text-orange-600 font-medium">
+                      Only {remainingSpots} spots remaining!
+                    </span>
+                  )}
+                </p>
+              )}
+            </div>
+          )}
         </DialogHeader>
         
         {childrenLoading ? (
@@ -182,28 +246,40 @@ const ProgramEnrollment = ({ programId, programTitle, isEnrolled }: ProgramEnrol
             <div>
               <Label>Select Children to Enroll *</Label>
               <div className="space-y-3 mt-2">
-                {linkedChildren.map((relationship) => (
-                  <div key={relationship.child_id} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={relationship.child_id}
-                      checked={selectedChildIds.includes(relationship.child_id)}
-                      onCheckedChange={(checked) => 
-                        handleChildSelection(relationship.child_id, checked as boolean)
-                      }
-                    />
-                    <label 
-                      htmlFor={relationship.child_id}
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
-                    >
-                      {relationship.children.first_name} {relationship.children.last_name}
-                      {relationship.children.date_of_birth && (
-                        <span className="text-sm text-gray-500 ml-2">
-                          (Born: {new Date(relationship.children.date_of_birth).toLocaleDateString()})
-                        </span>
-                      )}
-                    </label>
-                  </div>
-                ))}
+                {linkedChildren.map((relationship) => {
+                  const wouldExceedCapacity = capacityInfo?.max_participants && 
+                    (capacityInfo.current_count + selectedChildIds.length + 1) > capacityInfo.max_participants &&
+                    !selectedChildIds.includes(relationship.child_id);
+                    
+                  return (
+                    <div key={relationship.child_id} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={relationship.child_id}
+                        checked={selectedChildIds.includes(relationship.child_id)}
+                        onCheckedChange={(checked) => 
+                          handleChildSelection(relationship.child_id, checked as boolean)
+                        }
+                        disabled={wouldExceedCapacity}
+                      />
+                      <label 
+                        htmlFor={relationship.child_id}
+                        className={`text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer ${
+                          wouldExceedCapacity ? 'text-gray-400' : ''
+                        }`}
+                      >
+                        {relationship.children.first_name} {relationship.children.last_name}
+                        {relationship.children.date_of_birth && (
+                          <span className="text-sm text-gray-500 ml-2">
+                            (Born: {new Date(relationship.children.date_of_birth).toLocaleDateString()})
+                          </span>
+                        )}
+                        {wouldExceedCapacity && (
+                          <span className="text-xs text-red-500 ml-2">(Would exceed capacity)</span>
+                        )}
+                      </label>
+                    </div>
+                  );
+                })}
               </div>
             </div>
             

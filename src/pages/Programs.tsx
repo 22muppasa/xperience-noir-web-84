@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, Users, DollarSign, BookOpen, ArrowRight } from 'lucide-react';
+import { Calendar, Clock, Users, DollarSign, BookOpen, ArrowRight, AlertTriangle } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import ProgramEnrollment from '@/components/programs/ProgramEnrollment';
 
@@ -22,6 +22,8 @@ interface Program {
   max_participants: number;
   image_url?: string;
   status: string;
+  current_enrollments: number;
+  is_full: boolean;
 }
 
 const Programs = () => {
@@ -30,21 +32,20 @@ const Programs = () => {
   const { data: programs = [], isLoading } = useQuery({
     queryKey: ['public-programs'],
     queryFn: async () => {
-      console.log('Fetching published programs...');
+      console.log('Fetching published programs with capacity...');
       
-      const { data, error } = await supabase
-        .from('programs')
-        .select('*')
-        .eq('status', 'published')
-        .order('start_date', { ascending: true });
+      const { data, error } = await supabase.rpc('get_programs_with_capacity');
       
       if (error) {
         console.error('Error fetching programs:', error);
         throw error;
       }
       
-      console.log('Fetched programs:', data);
-      return data as Program[];
+      // Filter only published programs
+      const publishedPrograms = data.filter(program => program.status === 'published');
+      
+      console.log('Fetched programs with capacity:', publishedPrograms);
+      return publishedPrograms as Program[];
     }
   });
 
@@ -138,6 +139,8 @@ const Programs = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {programs.map((program) => {
                 const isEnrolled = enrollments.includes(program.id);
+                const remainingSpots = program.max_participants ? 
+                  program.max_participants - program.current_enrollments : null;
                 
                 return (
                   <Card key={program.id} className="overflow-hidden bg-white border border-gray-200 rounded-xl shadow-soft hover:shadow-lg transition-all duration-300 group">
@@ -148,19 +151,41 @@ const Programs = () => {
                           alt={program.title}
                           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                         />
-                        <div className="absolute top-4 right-4">
+                        <div className="absolute top-4 right-4 flex flex-col gap-2">
                           <Badge className="bg-white text-black border border-black">
                             {program.status}
                           </Badge>
+                          {program.is_full && (
+                            <Badge className="bg-red-100 text-red-700 border border-red-300">
+                              <AlertTriangle className="h-3 w-3 mr-1" />
+                              Full
+                            </Badge>
+                          )}
+                          {remainingSpots && remainingSpots <= 5 && !program.is_full && (
+                            <Badge className="bg-orange-100 text-orange-700 border border-orange-300">
+                              {remainingSpots} left
+                            </Badge>
+                          )}
                         </div>
                       </div>
                     ) : (
                       <div className="h-48 bg-gradient-to-r from-black to-gray-800 flex items-center justify-center relative overflow-hidden">
                         <BookOpen className="h-16 w-16 text-white transition-transform duration-300 group-hover:scale-110" />
-                        <div className="absolute top-4 right-4">
+                        <div className="absolute top-4 right-4 flex flex-col gap-2">
                           <Badge className="bg-white text-black border border-black">
                             {program.status}
                           </Badge>
+                          {program.is_full && (
+                            <Badge className="bg-red-100 text-red-700 border border-red-300">
+                              <AlertTriangle className="h-3 w-3 mr-1" />
+                              Full
+                            </Badge>
+                          )}
+                          {remainingSpots && remainingSpots <= 5 && !program.is_full && (
+                            <Badge className="bg-orange-100 text-orange-700 border border-orange-300">
+                              {remainingSpots} left
+                            </Badge>
+                          )}
                         </div>
                       </div>
                     )}
@@ -197,10 +222,21 @@ const Programs = () => {
                         {program.max_participants && (
                           <div className="flex items-center space-x-2">
                             <Users className="h-4 w-4 text-gray-500" />
-                            <span className="text-gray-600">Max {program.max_participants}</span>
+                            <span className="text-gray-600">
+                              {program.current_enrollments} / {program.max_participants}
+                            </span>
                           </div>
                         )}
                       </div>
+
+                      {program.is_full && (
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                          <div className="flex items-center text-red-700">
+                            <AlertTriangle className="h-4 w-4 mr-2" />
+                            <span className="text-sm font-medium">This program is currently full</span>
+                          </div>
+                        </div>
+                      )}
                       
                       <div className="pt-2">
                         {user ? (

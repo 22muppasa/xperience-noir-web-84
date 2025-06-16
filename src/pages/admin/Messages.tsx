@@ -19,7 +19,7 @@ import {
   TableHeader, 
   TableRow 
 } from '@/components/ui/table';
-import { MessageSquare, Send, Users, Mail, Clock, Reply, Trash2 } from 'lucide-react';
+import { MessageSquare, Send, Users, Mail, Clock, Reply, Trash2, CheckCircle2, Eye, Plus } from 'lucide-react';
 
 const AdminMessages = () => {
   const [isComposing, setIsComposing] = useState(false);
@@ -29,27 +29,18 @@ const AdminMessages = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // Fetch real messages from Supabase
+  // Fetch real messages from Supabase with sender/recipient profiles
   const { data: messages = [], isLoading } = useQuery({
     queryKey: ['admin-messages'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('messages')
-        .select('*')
+        .select(`
+          *,
+          sender:profiles!messages_sender_id_fkey(first_name, last_name, email),
+          recipient:profiles!messages_recipient_id_fkey(first_name, last_name, email)
+        `)
         .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data || [];
-    }
-  });
-
-  // Fetch user profiles for sender/recipient info
-  const { data: profiles = [] } = useQuery({
-    queryKey: ['user-profiles'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, first_name, last_name, email');
 
       if (error) throw error;
       return data || [];
@@ -81,7 +72,8 @@ const AdminMessages = () => {
           recipient_id: messageData.recipient_id,
           subject: messageData.subject,
           content: messageData.content,
-          sender_id: user.id // Use actual admin user ID
+          sender_id: user.id,
+          status: 'unread'
         }]);
 
       if (error) throw error;
@@ -120,6 +112,10 @@ const AdminMessages = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-messages'] });
+      toast({
+        title: "Message marked as read",
+        description: "The message has been marked as read.",
+      });
     }
   });
 
@@ -177,11 +173,37 @@ const AdminMessages = () => {
   // Helper function to get user info
   const getUserInfo = (userId: string | null) => {
     if (!userId) return { name: 'System', email: 'system' };
-    const profile = profiles.find(p => p.id === userId);
-    return {
-      name: profile ? `${profile.first_name} ${profile.last_name}` : 'Unknown User',
-      email: profile?.email || 'Unknown'
-    };
+    const message = messages.find(m => m.sender_id === userId || m.recipient_id === userId);
+    if (message?.sender?.id === userId) {
+      return {
+        name: `${message.sender.first_name} ${message.sender.last_name}`,
+        email: message.sender.email
+      };
+    }
+    if (message?.recipient?.id === userId) {
+      return {
+        name: `${message.recipient.first_name} ${message.recipient.last_name}`,
+        email: message.recipient.email
+      };
+    }
+    return { name: 'Unknown User', email: 'Unknown' };
+  };
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    
+    if (days === 0) {
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } else if (days === 1) {
+      return 'Yesterday';
+    } else if (days < 7) {
+      return `${days} days ago`;
+    } else {
+      return date.toLocaleDateString();
+    }
   };
 
   const unreadCount = messages.filter(m => m.status === 'unread').length;
@@ -210,8 +232,8 @@ const AdminMessages = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-black">Message Center</h1>
-            <p className="text-black">Manage customer communications</p>
+            <h1 className="text-2xl font-bold text-gray-900">Message Center</h1>
+            <p className="text-gray-600">Manage customer communications</p>
           </div>
           <Button 
             onClick={() => {
@@ -219,273 +241,260 @@ const AdminMessages = () => {
               setReplyingTo(null);
               setNewMessage({ recipient: '', subject: '', content: '' });
             }}
-            className="bg-black text-white hover:bg-gray-800"
+            className="bg-blue-600 hover:bg-blue-700 text-white border-0 shadow-sm"
           >
-            <Send className="mr-2 h-4 w-4" />
+            <Plus className="mr-2 h-4 w-4" />
             Compose Message
           </Button>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="bg-white border-black">
+          <Card className="bg-white border border-gray-200 shadow-sm">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-black">{messages.length}</div>
-              <div className="text-sm text-black">Total Messages</div>
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <Mail className="h-5 w-5 text-blue-600" />
+                </div>
+                <div className="text-left">
+                  <div className="text-2xl font-bold text-gray-900">{messages.length}</div>
+                  <div className="text-sm text-gray-600">Total Messages</div>
+                </div>
+              </div>
             </CardContent>
           </Card>
-          <Card className="bg-white border-black">
+          <Card className="bg-white border border-gray-200 shadow-sm">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-black">{unreadCount}</div>
-              <div className="text-sm text-black">Unread Messages</div>
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-red-100 rounded-lg">
+                  <MessageSquare className="h-5 w-5 text-red-600" />
+                </div>
+                <div className="text-left">
+                  <div className="text-2xl font-bold text-gray-900">{unreadCount}</div>
+                  <div className="text-sm text-gray-600">Unread Messages</div>
+                </div>
+              </div>
             </CardContent>
           </Card>
-          <Card className="bg-white border-black">
+          <Card className="bg-white border border-gray-200 shadow-sm">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-black">{thisWeekCount}</div>
-              <div className="text-sm text-black">This Week</div>
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <Clock className="h-5 w-5 text-green-600" />
+                </div>
+                <div className="text-left">
+                  <div className="text-2xl font-bold text-gray-900">{thisWeekCount}</div>
+                  <div className="text-sm text-gray-600">This Week</div>
+                </div>
+              </div>
             </CardContent>
           </Card>
-          <Card className="bg-white border-black">
+          <Card className="bg-white border border-gray-200 shadow-sm">
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-black">{customers.length}</div>
-              <div className="text-sm text-black">Total Customers</div>
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-purple-100 rounded-lg">
+                  <Users className="h-5 w-5 text-purple-600" />
+                </div>
+                <div className="text-left">
+                  <div className="text-2xl font-bold text-gray-900">{customers.length}</div>
+                  <div className="text-sm text-gray-600">Total Customers</div>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
 
-        <Tabs defaultValue="inbox" className="w-full">
-          <TabsList>
-            <TabsTrigger value="inbox">All Messages</TabsTrigger>
-            <TabsTrigger value="compose">Compose</TabsTrigger>
-          </TabsList>
+        {/* Compose Message Form */}
+        {isComposing && (
+          <Card className="bg-white border border-gray-200 shadow-sm">
+            <CardHeader className="border-b border-gray-200">
+              <CardTitle className="text-lg font-semibold text-gray-900">
+                {replyingTo ? 'Reply to Message' : 'Compose New Message'}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 pt-6">
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-700">To *</label>
+                <select 
+                  value={newMessage.recipient}
+                  onChange={(e) => setNewMessage({...newMessage, recipient: e.target.value})}
+                  className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  disabled={!!replyingTo}
+                >
+                  <option value="">Select recipient...</option>
+                  {customers.map(customer => (
+                    <option key={customer.id} value={customer.id}>
+                      {customer.first_name} {customer.last_name} ({customer.email})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-700">Subject *</label>
+                <Input 
+                  value={newMessage.subject}
+                  onChange={(e) => setNewMessage({...newMessage, subject: e.target.value})}
+                  placeholder="Enter subject..."
+                  className="bg-white text-gray-900 border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2 text-gray-700">Message *</label>
+                <Textarea 
+                  value={newMessage.content}
+                  onChange={(e) => setNewMessage({...newMessage, content: e.target.value})}
+                  rows={8}
+                  placeholder="Enter your message..."
+                  className="bg-white text-gray-900 border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                />
+              </div>
+              <div className="flex space-x-3 pt-4 border-t border-gray-200">
+                <Button 
+                  onClick={handleSendMessage}
+                  disabled={sendMessageMutation.isPending}
+                  className="bg-blue-600 hover:bg-blue-700 text-white border-0 shadow-sm"
+                >
+                  <Send className="h-4 w-4 mr-2" />
+                  {sendMessageMutation.isPending ? 'Sending...' : 'Send Message'}
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setIsComposing(false);
+                    setReplyingTo(null);
+                    setNewMessage({ recipient: '', subject: '', content: '' });
+                  }}
+                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-          <TabsContent value="inbox" className="space-y-4">
-            {/* Compose Message Form */}
-            {isComposing && (
-              <Card className="bg-white border-black">
-                <CardHeader>
-                  <CardTitle className="text-black">
-                    {replyingTo ? 'Reply to Message' : 'Compose New Message'}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-1 text-black">To</label>
-                    <select 
-                      value={newMessage.recipient}
-                      onChange={(e) => setNewMessage({...newMessage, recipient: e.target.value})}
-                      className="w-full p-2 border border-black rounded-lg bg-white text-black"
-                      disabled={!!replyingTo}
-                    >
-                      <option value="">Select recipient...</option>
-                      {customers.map(customer => (
-                        <option key={customer.id} value={customer.id}>
-                          {customer.first_name} {customer.last_name} ({customer.email})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1 text-black">Subject</label>
-                    <Input 
-                      value={newMessage.subject}
-                      onChange={(e) => setNewMessage({...newMessage, subject: e.target.value})}
-                      placeholder="Enter subject..."
-                      className="bg-white text-black border-black"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1 text-black">Message</label>
-                    <Textarea 
-                      value={newMessage.content}
-                      onChange={(e) => setNewMessage({...newMessage, content: e.target.value})}
-                      rows={6}
-                      placeholder="Enter your message..."
-                      className="bg-white text-black border-black"
-                    />
-                  </div>
-                  <div className="flex space-x-2">
-                    <Button 
-                      onClick={handleSendMessage}
-                      disabled={sendMessageMutation.isPending}
-                      className="bg-black text-white hover:bg-gray-800"
-                    >
-                      {sendMessageMutation.isPending ? 'Sending...' : 'Send Message'}
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => {
-                        setIsComposing(false);
-                        setReplyingTo(null);
-                        setNewMessage({ recipient: '', subject: '', content: '' });
-                      }}
-                      className="border-black text-black"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Messages List */}
-            <Card className="bg-white border-black">
-              <CardHeader>
-                <CardTitle className="flex items-center text-black">
-                  <MessageSquare className="mr-2 h-5 w-5" />
-                  All Messages
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {messages.length > 0 ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="text-black">From/To</TableHead>
-                        <TableHead className="text-black">Subject</TableHead>
-                        <TableHead className="text-black">Date</TableHead>
-                        <TableHead className="text-black">Status</TableHead>
-                        <TableHead className="text-black">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {messages.map((message) => {
-                        const senderInfo = getUserInfo(message.sender_id);
-                        const recipientInfo = getUserInfo(message.recipient_id);
-                        
-                        return (
-                          <TableRow key={message.id}>
-                            <TableCell>
-                              <div className="text-black">
-                                <div className="font-medium">
-                                  {message.sender_id === user?.id ? `To: ${recipientInfo.name}` : `From: ${senderInfo.name}`}
-                                </div>
-                                <div className="text-sm">
-                                  {message.sender_id === user?.id ? recipientInfo.email : senderInfo.email}
-                                </div>
+        {/* Messages List */}
+        <Card className="bg-white border border-gray-200 shadow-sm">
+          <CardHeader className="border-b border-gray-200">
+            <CardTitle className="flex items-center text-gray-900">
+              <MessageSquare className="mr-2 h-5 w-5" />
+              All Messages
+              {unreadCount > 0 && (
+                <Badge variant="destructive" className="ml-3 text-xs">
+                  {unreadCount} unread
+                </Badge>
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-0">
+            {messages.length > 0 ? (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-b border-gray-200">
+                      <TableHead className="text-gray-700 font-medium">From/To</TableHead>
+                      <TableHead className="text-gray-700 font-medium">Subject</TableHead>
+                      <TableHead className="text-gray-700 font-medium">Date</TableHead>
+                      <TableHead className="text-gray-700 font-medium">Status</TableHead>
+                      <TableHead className="text-gray-700 font-medium">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {messages.map((message) => {
+                      const senderInfo = getUserInfo(message.sender_id);
+                      const recipientInfo = getUserInfo(message.recipient_id);
+                      const isFromUser = message.sender_id === user?.id;
+                      
+                      return (
+                        <TableRow 
+                          key={message.id} 
+                          className={`border-b border-gray-100 hover:bg-gray-50 ${
+                            message.status === 'unread' && !isFromUser ? 'bg-blue-50/30' : ''
+                          }`}
+                        >
+                          <TableCell>
+                            <div className="text-gray-900">
+                              <div className="font-medium">
+                                {isFromUser ? `To: ${recipientInfo.name}` : `From: ${senderInfo.name}`}
                               </div>
-                            </TableCell>
-                            <TableCell className="text-black">{message.subject}</TableCell>
-                            <TableCell className="text-black">
-                              {new Date(message.created_at).toLocaleDateString()}
-                            </TableCell>
-                            <TableCell>
-                              <Badge 
-                                variant={message.status === 'unread' ? 'destructive' : 'default'}
-                                className="text-white"
-                              >
-                                {message.status}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex space-x-2">
-                                {message.sender_id !== user?.id && (
-                                  <Button 
-                                    size="sm" 
-                                    variant="outline" 
-                                    className="border-black text-black"
-                                    onClick={() => handleReply(message)}
-                                  >
-                                    <Reply className="h-4 w-4" />
-                                  </Button>
-                                )}
-                                {message.status === 'unread' && (
-                                  <Button 
-                                    size="sm" 
-                                    variant="outline" 
-                                    className="border-black text-black"
-                                    onClick={() => handleMarkAsRead(message.id)}
-                                  >
-                                    Mark Read
-                                  </Button>
-                                )}
+                              <div className="text-sm text-gray-600">
+                                {isFromUser ? recipientInfo.email : senderInfo.email}
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="text-gray-900 font-medium">{message.subject}</div>
+                            <div className="text-sm text-gray-600 line-clamp-1">
+                              {message.content.substring(0, 60)}...
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-gray-600">
+                            {formatTime(message.created_at)}
+                          </TableCell>
+                          <TableCell>
+                            <Badge 
+                              variant={message.status === 'unread' ? 'destructive' : 'default'}
+                              className={`text-xs ${
+                                message.status === 'unread' 
+                                  ? 'bg-red-100 text-red-800' 
+                                  : 'bg-green-100 text-green-800'
+                              }`}
+                            >
+                              {message.status === 'unread' ? 'Unread' : 'Read'}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex space-x-2">
+                              {!isFromUser && (
                                 <Button 
                                   size="sm" 
                                   variant="outline" 
-                                  className="border-black text-red-600 hover:bg-red-50"
-                                  onClick={() => deleteMessageMutation.mutate(message.id)}
+                                  className="border-blue-300 text-blue-700 hover:bg-blue-50"
+                                  onClick={() => handleReply(message)}
                                 >
-                                  <Trash2 className="h-4 w-4" />
+                                  <Reply className="h-3 w-3 mr-1" />
+                                  Reply
                                 </Button>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                ) : (
-                  <div className="text-center py-8">
-                    <MessageSquare className="h-12 w-12 text-black mx-auto mb-4" />
-                    <p className="text-black">No messages yet</p>
-                    <p className="text-sm text-black">Customer messages will appear here</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="compose" className="space-y-4">
-            <Card className="bg-white border-black">
-              <CardHeader>
-                <CardTitle className="text-black">Compose New Message</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1 text-black">To</label>
-                  <select 
-                    value={newMessage.recipient}
-                    onChange={(e) => setNewMessage({...newMessage, recipient: e.target.value})}
-                    className="w-full p-2 border border-black rounded-lg bg-white text-black"
-                  >
-                    <option value="">Select recipient...</option>
-                    {customers.map(customer => (
-                      <option key={customer.id} value={customer.id}>
-                        {customer.first_name} {customer.last_name} ({customer.email})
-                      </option>
-                    ))}
-                  </select>
+                              )}
+                              {message.status === 'unread' && !isFromUser && (
+                                <Button 
+                                  size="sm" 
+                                  variant="outline" 
+                                  className="border-green-300 text-green-700 hover:bg-green-50"
+                                  onClick={() => handleMarkAsRead(message.id)}
+                                  disabled={markAsReadMutation.isPending}
+                                >
+                                  <CheckCircle2 className="h-3 w-3 mr-1" />
+                                  Read
+                                </Button>
+                              )}
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="border-red-300 text-red-700 hover:bg-red-50"
+                                onClick={() => deleteMessageMutation.mutate(message.id)}
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <div className="p-3 bg-gray-100 rounded-full w-fit mx-auto mb-4">
+                  <MessageSquare className="h-8 w-8 text-gray-400" />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1 text-black">Subject</label>
-                  <Input 
-                    value={newMessage.subject}
-                    onChange={(e) => setNewMessage({...newMessage, subject: e.target.value})}
-                    placeholder="Enter subject..."
-                    className="bg-white text-black border-black"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1 text-black">Message</label>
-                  <Textarea 
-                    value={newMessage.content}
-                    onChange={(e) => setNewMessage({...newMessage, content: e.target.value})}
-                    rows={6}
-                    placeholder="Enter your message..."
-                    className="bg-white text-black border-black"
-                  />
-                </div>
-                <div className="flex space-x-2">
-                  <Button 
-                    onClick={handleSendMessage}
-                    disabled={sendMessageMutation.isPending}
-                    className="bg-black text-white hover:bg-gray-800"
-                  >
-                    {sendMessageMutation.isPending ? 'Sending...' : 'Send Message'}
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setIsComposing(false)}
-                    className="border-black text-black"
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No messages yet</h3>
+                <p className="text-gray-600">Customer messages will appear here</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </DashboardLayout>
   );

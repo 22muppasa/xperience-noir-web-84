@@ -28,17 +28,17 @@ interface Enrollment {
   customer_id?: string;
   programs: {
     title: string;
-  };
+  } | null;
   profiles?: {
     first_name: string;
     last_name: string;
     email: string;
-  };
+  } | null;
   children?: {
     first_name: string;
     last_name: string;
     date_of_birth: string | null;
-  };
+  } | null;
 }
 
 const AdminEnrollments = () => {
@@ -60,7 +60,7 @@ const AdminEnrollments = () => {
           child_id,
           customer_id,
           programs!inner(title),
-          profiles!enrollments_customer_id_fkey(
+          profiles(
             first_name,
             last_name,
             email
@@ -251,7 +251,7 @@ const AdminEnrollments = () => {
                               )}
                             </div>
                           </TableCell>
-                          <TableCell className="text-black">{enrollment.programs.title}</TableCell>
+                          <TableCell className="text-black">{enrollment.programs?.title || 'N/A'}</TableCell>
                           <TableCell>
                             <div className="text-black">
                               <div className="font-medium">
@@ -329,7 +329,7 @@ const AdminEnrollments = () => {
                       {activeEnrollments.map((enrollment) => (
                         <TableRow key={enrollment.id}>
                           <TableCell className="text-black font-medium">{enrollment.child_name}</TableCell>
-                          <TableCell className="text-black">{enrollment.programs.title}</TableCell>
+                          <TableCell className="text-black">{enrollment.programs?.title || 'N/A'}</TableCell>
                           <TableCell className="text-black">
                             {enrollment.profiles?.first_name} {enrollment.profiles?.last_name}
                           </TableCell>
@@ -374,7 +374,7 @@ const AdminEnrollments = () => {
                     {enrollments.map((enrollment) => (
                       <TableRow key={enrollment.id}>
                         <TableCell className="text-black font-medium">{enrollment.child_name}</TableCell>
-                        <TableCell className="text-black">{enrollment.programs.title}</TableCell>
+                        <TableCell className="text-black">{enrollment.programs?.title || 'N/A'}</TableCell>
                         <TableCell className="text-black">
                           {enrollment.profiles?.first_name} {enrollment.profiles?.last_name}
                         </TableCell>

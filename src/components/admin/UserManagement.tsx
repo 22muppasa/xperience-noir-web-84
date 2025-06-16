@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -150,6 +151,25 @@ const UserManagement = () => {
       });
     }
   });
+
+  const handleRoleChange = (user: Profile, newRole: 'admin' | 'customer') => {
+    if (user.role !== newRole) {
+      setRoleChangeDialog({
+        isOpen: true,
+        user,
+        newRole
+      });
+    }
+  };
+
+  const confirmRoleChange = () => {
+    if (roleChangeDialog.user && roleChangeDialog.newRole) {
+      updateUserRoleMutation.mutate({
+        userId: roleChangeDialog.user.id,
+        role: roleChangeDialog.newRole
+      });
+    }
+  };
 
   const handleUserSelection = (user: Profile, checked: boolean) => {
     if (checked) {

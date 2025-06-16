@@ -57,28 +57,48 @@ const AdminMessages = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
-  // Fetch real messages from Supabase with sender/recipient profiles
+  // Fetch messages with a simpler query approach
   const { data: messages = [], isLoading } = useQuery({
     queryKey: ['admin-messages'],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // First get the basic messages
+      const { data: messagesData, error: messagesError } = await supabase
         .from('messages')
-        .select(`
-          id,
-          sender_id,
-          recipient_id,
-          subject,
-          content,
-          status,
-          created_at,
-          read_at,
-          sender:sender_id(first_name, last_name, email),
-          recipient:recipient_id(first_name, last_name, email)
-        `)
+        .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      return (data || []) as MessageWithProfiles[];
+      if (messagesError) throw messagesError;
+      if (!messagesData) return [];
+
+      // Get all unique user IDs from messages
+      const userIds = new Set<string>();
+      messagesData.forEach(msg => {
+        if (msg.sender_id) userIds.add(msg.sender_id);
+        if (msg.recipient_id) userIds.add(msg.recipient_id);
+      });
+
+      // Fetch profiles for all users
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name, email')
+        .in('id', Array.from(userIds));
+
+      if (profilesError) throw profilesError;
+
+      // Create a map of profiles for quick lookup
+      const profilesMap = new Map();
+      (profilesData || []).forEach(profile => {
+        profilesMap.set(profile.id, profile);
+      });
+
+      // Combine messages with profile data
+      const messagesWithProfiles: MessageWithProfiles[] = messagesData.map(msg => ({
+        ...msg,
+        sender: msg.sender_id ? profilesMap.get(msg.sender_id) || null : null,
+        recipient: msg.recipient_id ? profilesMap.get(msg.recipient_id) || null : null,
+      }));
+
+      return messagesWithProfiles;
     }
   });
 

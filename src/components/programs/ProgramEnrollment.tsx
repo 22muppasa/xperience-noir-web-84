@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -99,17 +98,51 @@ const ProgramEnrollment = ({ programId, programTitle, isEnrolled }: ProgramEnrol
         const selectedChild = linkedChildren.find(rel => rel.child_id === childId);
         if (!selectedChild) throw new Error('Selected child not found');
         
-        const { error } = await supabase
+        const childName = `${selectedChild.children.first_name} ${selectedChild.children.last_name}`;
+        
+        // First, check if there's an existing cancelled enrollment for this combination
+        const { data: existingEnrollments, error: checkError } = await supabase
           .from('enrollments')
-          .insert({
-            program_id: programId,
-            child_id: childId,
-            child_name: `${selectedChild.children.first_name} ${selectedChild.children.last_name}`,
-            notes: notes.trim() || null,
-            status: 'pending' // Changed from 'active' to 'pending' for admin approval
-          });
+          .select('id, status')
+          .eq('program_id', programId)
+          .eq('child_id', childId)
+          .eq('customer_id', user.id)
+          .eq('child_name', childName);
+        
+        if (checkError) throw checkError;
+        
+        // Find any cancelled enrollment
+        const cancelledEnrollment = existingEnrollments?.find(e => e.status === 'cancelled');
+        
+        if (cancelledEnrollment) {
+          // Reactivate the cancelled enrollment
+          const { error: updateError } = await supabase
+            .from('enrollments')
+            .update({
+              status: 'pending',
+              notes: notes.trim() || null,
+              enrolled_at: new Date().toISOString()
+            })
+            .eq('id', cancelledEnrollment.id);
+          
+          if (updateError) throw updateError;
+          console.log(`Reactivated cancelled enrollment for ${childName}`);
+        } else {
+          // Create new enrollment
+          const { error: insertError } = await supabase
+            .from('enrollments')
+            .insert({
+              program_id: programId,
+              child_id: childId,
+              child_name: childName,
+              notes: notes.trim() || null,
+              status: 'pending'
+            });
 
-        if (error) throw error;
+          if (insertError) throw insertError;
+          console.log(`Created new enrollment for ${childName}`);
+        }
+        
         return selectedChild;
       });
 
@@ -127,9 +160,11 @@ const ProgramEnrollment = ({ programId, programTitle, isEnrolled }: ProgramEnrol
       queryClient.invalidateQueries({ queryKey: ['programs'] });
       queryClient.invalidateQueries({ queryKey: ['enrollments'] });
       queryClient.invalidateQueries({ queryKey: ['my-enrollments'] });
+      queryClient.invalidateQueries({ queryKey: ['active-enrollments'] });
       queryClient.invalidateQueries({ queryKey: ['program-capacity'] });
     },
     onError: (error: any) => {
+      console.error('Enrollment error:', error);
       toast({
         title: "Enrollment Failed",
         description: error.message || "Failed to enroll in program",

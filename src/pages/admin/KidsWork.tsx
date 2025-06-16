@@ -48,10 +48,6 @@ interface KidsWork {
   enrollments: {
     child_name: string;
     customer_id: string;
-    profiles?: {
-      first_name?: string;
-      last_name?: string;
-    } | null;
   };
   children?: {
     id: string;
@@ -69,21 +65,19 @@ const AdminKidsWork = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Fetch all kids work with enrollment and profile data
+  // Fetch all kids work with enrollment and children data
   const { data: kidsWork = [], isLoading, error: workError } = useQuery({
     queryKey: ['admin-kids-work'],
     queryFn: async () => {
+      console.log('Fetching admin kids work...');
+      
       const { data, error } = await supabase
         .from('kids_work')
         .select(`
           *,
           enrollments (
             child_name,
-            customer_id,
-            profiles:customer_id (
-              first_name,
-              last_name
-            )
+            customer_id
           ),
           children (
             id,
@@ -97,8 +91,40 @@ const AdminKidsWork = () => {
         console.error('Error fetching admin kids work:', error);
         throw error;
       }
+      
+      console.log('Admin kids work fetched successfully:', data);
       return data as KidsWork[];
     }
+  });
+
+  // Fetch parent profiles separately if needed for display
+  const { data: parentProfiles = {} } = useQuery({
+    queryKey: ['parent-profiles', kidsWork],
+    queryFn: async () => {
+      if (!kidsWork.length) return {};
+      
+      const customerIds = [...new Set(kidsWork.map(work => work.enrollments?.customer_id).filter(Boolean))];
+      
+      if (customerIds.length === 0) return {};
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name')
+        .in('id', customerIds);
+      
+      if (error) {
+        console.error('Error fetching parent profiles:', error);
+        return {};
+      }
+      
+      const profileMap: { [key: string]: { first_name?: string; last_name?: string } } = {};
+      data?.forEach(profile => {
+        profileMap[profile.id] = profile;
+      });
+      
+      return profileMap;
+    },
+    enabled: kidsWork.length > 0
   });
 
   // Delete kids work mutation
@@ -157,6 +183,14 @@ const AdminKidsWork = () => {
       return `${work.children.first_name} ${work.children.last_name}`;
     }
     return work.enrollments?.child_name || 'Unknown Child';
+  };
+
+  const getParentName = (work: KidsWork) => {
+    const profile = parentProfiles[work.enrollments?.customer_id];
+    if (profile) {
+      return `${profile.first_name || 'Unknown'} ${profile.last_name || 'Parent'}`;
+    }
+    return 'Unknown Parent';
   };
 
   const handleView = (work: KidsWork) => {
@@ -344,7 +378,7 @@ const AdminKidsWork = () => {
                           <div className="flex items-center space-x-2 text-sm text-black">
                             <User className="h-4 w-4" />
                             <span>
-                              Parent: {work.enrollments?.profiles?.first_name || 'Unknown'} {work.enrollments?.profiles?.last_name || 'Parent'}
+                              Parent: {getParentName(work)}
                             </span>
                           </div>
                           

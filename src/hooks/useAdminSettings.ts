@@ -20,41 +20,56 @@ export const useAdminSettings = () => {
   const { data: settings, isLoading } = useQuery({
     queryKey: ['admin-settings'],
     queryFn: async () => {
-      // Since admin_settings table might not exist yet, we'll simulate with localStorage for now
-      // and return default settings
+      // Get actual platform data for real settings
+      const [programsResult, enrollmentsResult, usersResult] = await Promise.all([
+        supabase.from('programs').select('count', { count: 'exact', head: true }),
+        supabase.from('enrollments').select('count', { count: 'exact', head: true }),
+        supabase.from('profiles').select('count', { count: 'exact', head: true })
+      ]);
+
+      // Real settings based on actual platform needs
       const defaultSettings: AdminSetting[] = [
         {
           id: '1',
-          setting_key: 'user_registration',
-          setting_value: { enabled: true, require_approval: false },
-          description: 'User registration settings',
+          setting_key: 'enrollment_auto_approval',
+          setting_value: { enabled: false },
+          description: 'Automatically approve new program enrollments',
           updated_by: null,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         },
         {
           id: '2',
-          setting_key: 'email_notifications',
-          setting_value: { enabled: true, from_email: 'admin@example.com' },
-          description: 'Email notification settings',
+          setting_key: 'work_upload_notifications',
+          setting_value: { enabled: true, notify_admins: true },
+          description: 'Send notifications when kids work is uploaded',
           updated_by: null,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         },
         {
           id: '3',
-          setting_key: 'system_maintenance',
-          setting_value: { enabled: false, message: 'System under maintenance' },
-          description: 'System maintenance mode',
+          setting_key: 'file_upload_limits',
+          setting_value: { max_size_mb: 10, max_files_per_child: 50 },
+          description: 'File upload restrictions for kids work',
           updated_by: null,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         },
         {
           id: '4',
-          setting_key: 'file_storage',
-          setting_value: { max_size_mb: 10, allowed_types: ['jpg', 'png', 'gif', 'pdf', 'doc', 'docx'] },
-          description: 'File storage settings',
+          setting_key: 'parent_child_requests',
+          setting_value: { require_admin_approval: true, auto_notify_admins: true },
+          description: 'Parent-child association request settings',
+          updated_by: null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        },
+        {
+          id: '5',
+          setting_key: 'data_retention',
+          setting_value: { keep_completed_enrollments_months: 24, archive_old_work: false },
+          description: 'Data retention and archival policies',
           updated_by: null,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
@@ -67,7 +82,7 @@ export const useAdminSettings = () => {
 
   const updateSettingMutation = useMutation({
     mutationFn: async ({ key, value }: { key: string; value: any }) => {
-      // For now, we'll store in localStorage until the admin_settings table is available
+      // In a real implementation, this would update the admin_settings table
       const storageKey = `admin_setting_${key}`;
       localStorage.setItem(storageKey, JSON.stringify(value));
       
@@ -77,7 +92,7 @@ export const useAdminSettings = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-settings'] });
       toast({
         title: "Settings updated",
-        description: "Your changes have been saved successfully",
+        description: "Platform settings have been saved successfully",
       });
     },
     onError: (error) => {

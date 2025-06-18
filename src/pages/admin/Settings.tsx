@@ -10,52 +10,51 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Settings as SettingsIcon, 
   Monitor, 
-  Bell, 
   Shield, 
   Database,
-  Mail,
-  Globe
+  Users,
+  FileUp,
+  Clock
 } from 'lucide-react';
 
 const AdminSettings = () => {
   const { getSetting, updateSetting, isLoading } = useAdminSettings();
   
   const [localSettings, setLocalSettings] = useState({
-    siteName: 'Kids Work Platform',
-    siteDescription: 'A platform for showcasing children\'s creative work',
-    allowRegistration: true,
-    requireEmailVerification: true,
-    enableNotifications: true,
-    maintenanceMode: false,
-    maxFileSize: '10',
-    allowedFileTypes: 'jpg,png,gif,pdf,doc,docx',
-    smtpServer: '',
-    smtpPort: '587',
-    smtpUsername: '',
-    smtpPassword: '',
-    enableBackups: true,
-    backupFrequency: 'daily'
+    enrollmentAutoApproval: false,
+    workUploadNotifications: true,
+    notifyAdminsOnUpload: true,
+    maxFileSizeMb: 10,
+    maxFilesPerChild: 50,
+    requireParentApproval: true,
+    autoNotifyOnRequests: true,
+    dataRetentionMonths: 24,
+    archiveOldWork: false
   });
 
-  // Load settings from database when available
   useEffect(() => {
     if (!isLoading) {
-      const userRegistration = getSetting('user_registration') || {};
-      const emailNotifications = getSetting('email_notifications') || {};
-      const systemMaintenance = getSetting('system_maintenance') || {};
-      const fileStorage = getSetting('file_storage') || {};
+      const enrollmentSettings = getSetting('enrollment_auto_approval') || {};
+      const workNotifications = getSetting('work_upload_notifications') || {};
+      const fileSettings = getSetting('file_upload_limits') || {};
+      const parentSettings = getSetting('parent_child_requests') || {};
+      const retentionSettings = getSetting('data_retention') || {};
 
       setLocalSettings(prev => ({
         ...prev,
-        allowRegistration: userRegistration.enabled ?? true,
-        requireEmailVerification: userRegistration.require_approval ?? false,
-        enableNotifications: emailNotifications.enabled ?? true,
-        maintenanceMode: systemMaintenance.enabled ?? false,
-        maxFileSize: fileStorage.max_size_mb?.toString() || '10',
-        allowedFileTypes: fileStorage.allowed_types?.join(',') || 'jpg,png,gif,pdf,doc,docx'
+        enrollmentAutoApproval: enrollmentSettings.enabled ?? false,
+        workUploadNotifications: workNotifications.enabled ?? true,
+        notifyAdminsOnUpload: workNotifications.notify_admins ?? true,
+        maxFileSizeMb: fileSettings.max_size_mb ?? 10,
+        maxFilesPerChild: fileSettings.max_files_per_child ?? 50,
+        requireParentApproval: parentSettings.require_admin_approval ?? true,
+        autoNotifyOnRequests: parentSettings.auto_notify_admins ?? true,
+        dataRetentionMonths: retentionSettings.keep_completed_enrollments_months ?? 24,
+        archiveOldWork: retentionSettings.archive_old_work ?? false
       }));
     }
   }, [isLoading, getSetting]);
@@ -65,25 +64,28 @@ const AdminSettings = () => {
   };
 
   const handleSave = () => {
-    // Update database settings
-    updateSetting('user_registration', {
-      enabled: localSettings.allowRegistration,
-      require_approval: localSettings.requireEmailVerification
+    updateSetting('enrollment_auto_approval', {
+      enabled: localSettings.enrollmentAutoApproval
     });
 
-    updateSetting('email_notifications', {
-      enabled: localSettings.enableNotifications,
-      from_email: localSettings.smtpUsername
+    updateSetting('work_upload_notifications', {
+      enabled: localSettings.workUploadNotifications,
+      notify_admins: localSettings.notifyAdminsOnUpload
     });
 
-    updateSetting('system_maintenance', {
-      enabled: localSettings.maintenanceMode,
-      message: 'System under maintenance'
+    updateSetting('file_upload_limits', {
+      max_size_mb: localSettings.maxFileSizeMb,
+      max_files_per_child: localSettings.maxFilesPerChild
     });
 
-    updateSetting('file_storage', {
-      max_size_mb: parseInt(localSettings.maxFileSize),
-      allowed_types: localSettings.allowedFileTypes.split(',').map(t => t.trim())
+    updateSetting('parent_child_requests', {
+      require_admin_approval: localSettings.requireParentApproval,
+      auto_notify_admins: localSettings.autoNotifyOnRequests
+    });
+
+    updateSetting('data_retention', {
+      keep_completed_enrollments_months: localSettings.dataRetentionMonths,
+      archive_old_work: localSettings.archiveOldWork
     });
   };
 
@@ -91,29 +93,29 @@ const AdminSettings = () => {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h2 className="text-2xl font-bold text-black">System Settings</h2>
+          <h2 className="text-2xl font-bold text-black">Platform Settings</h2>
           <p className="text-black">
-            Manage your platform configuration and monitor system health
+            Configure platform behavior and policies
           </p>
         </div>
 
-        <Tabs defaultValue="general" className="space-y-6">
+        <Tabs defaultValue="enrollment" className="space-y-6">
           <TabsList className="grid w-full grid-cols-5 bg-white border-black">
-            <TabsTrigger value="general" className="text-black">
-              <SettingsIcon className="h-4 w-4 mr-2" />
-              General
+            <TabsTrigger value="enrollment" className="text-black">
+              <Users className="h-4 w-4 mr-2" />
+              Enrollment
+            </TabsTrigger>
+            <TabsTrigger value="uploads" className="text-black">
+              <FileUp className="h-4 w-4 mr-2" />
+              File Uploads
             </TabsTrigger>
             <TabsTrigger value="security" className="text-black">
               <Shield className="h-4 w-4 mr-2" />
               Security
             </TabsTrigger>
-            <TabsTrigger value="email" className="text-black">
-              <Mail className="h-4 w-4 mr-2" />
-              Email
-            </TabsTrigger>
-            <TabsTrigger value="storage" className="text-black">
+            <TabsTrigger value="data" className="text-black">
               <Database className="h-4 w-4 mr-2" />
-              Storage
+              Data Management
             </TabsTrigger>
             <TabsTrigger value="monitoring" className="text-black">
               <Monitor className="h-4 w-4 mr-2" />
@@ -121,28 +123,84 @@ const AdminSettings = () => {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="general" className="space-y-6">
+          <TabsContent value="enrollment" className="space-y-6">
             <Card className="bg-white border-black">
               <CardHeader>
-                <CardTitle className="text-black">General Settings</CardTitle>
+                <CardTitle className="text-black">Enrollment Management</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-black">Auto-approve Enrollments</Label>
+                    <p className="text-sm text-black">
+                      Automatically approve new program enrollments without admin review
+                    </p>
+                  </div>
+                  <Switch
+                    checked={localSettings.enrollmentAutoApproval}
+                    onCheckedChange={(checked) => handleSettingChange('enrollmentAutoApproval', checked)}
+                  />
+                </div>
+
+                <Separator className="bg-black" />
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-black">Require Parent-Child Approval</Label>
+                    <p className="text-sm text-black">
+                      Require admin approval for parent-child association requests
+                    </p>
+                  </div>
+                  <Switch
+                    checked={localSettings.requireParentApproval}
+                    onCheckedChange={(checked) => handleSettingChange('requireParentApproval', checked)}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-black">Auto-notify on Requests</Label>
+                    <p className="text-sm text-black">
+                      Send notifications to admins for new association requests
+                    </p>
+                  </div>
+                  <Switch
+                    checked={localSettings.autoNotifyOnRequests}
+                    onCheckedChange={(checked) => handleSettingChange('autoNotifyOnRequests', checked)}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="uploads" className="space-y-6">
+            <Card className="bg-white border-black">
+              <CardHeader>
+                <CardTitle className="text-black">File Upload Settings</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="siteName" className="text-black">Site Name</Label>
+                    <Label htmlFor="maxFileSize" className="text-black">Maximum File Size (MB)</Label>
                     <Input
-                      id="siteName"
-                      value={localSettings.siteName}
-                      onChange={(e) => handleSettingChange('siteName', e.target.value)}
+                      id="maxFileSize"
+                      type="number"
+                      min="1"
+                      max="100"
+                      value={localSettings.maxFileSizeMb}
+                      onChange={(e) => handleSettingChange('maxFileSizeMb', parseInt(e.target.value))}
                       className="bg-white text-black border-black"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="siteDescription" className="text-black">Site Description</Label>
+                    <Label htmlFor="maxFiles" className="text-black">Max Files per Child</Label>
                     <Input
-                      id="siteDescription"
-                      value={localSettings.siteDescription}
-                      onChange={(e) => handleSettingChange('siteDescription', e.target.value)}
+                      id="maxFiles"
+                      type="number"
+                      min="1"
+                      max="200"
+                      value={localSettings.maxFilesPerChild}
+                      onChange={(e) => handleSettingChange('maxFilesPerChild', parseInt(e.target.value))}
                       className="bg-white text-black border-black"
                     />
                   </div>
@@ -150,45 +208,30 @@ const AdminSettings = () => {
 
                 <Separator className="bg-black" />
 
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="text-black">Allow New Registrations</Label>
-                      <p className="text-sm text-black">
-                        Allow new users to register for accounts
-                      </p>
-                    </div>
-                    <Switch
-                      checked={localSettings.allowRegistration}
-                      onCheckedChange={(checked) => handleSettingChange('allowRegistration', checked)}
-                    />
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-black">Upload Notifications</Label>
+                    <p className="text-sm text-black">
+                      Send notifications when kids work is uploaded
+                    </p>
                   </div>
+                  <Switch
+                    checked={localSettings.workUploadNotifications}
+                    onCheckedChange={(checked) => handleSettingChange('workUploadNotifications', checked)}
+                  />
+                </div>
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="text-black">Maintenance Mode</Label>
-                      <p className="text-sm text-black">
-                        Temporarily disable the platform for maintenance
-                      </p>
-                    </div>
-                    <Switch
-                      checked={localSettings.maintenanceMode}
-                      onCheckedChange={(checked) => handleSettingChange('maintenanceMode', checked)}
-                    />
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-black">Notify Admins on Upload</Label>
+                    <p className="text-sm text-black">
+                      Also notify admins when new work is uploaded
+                    </p>
                   </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label className="text-black">Enable Notifications</Label>
-                      <p className="text-sm text-black">
-                        Send email notifications for important events
-                      </p>
-                    </div>
-                    <Switch
-                      checked={localSettings.enableNotifications}
-                      onCheckedChange={(checked) => handleSettingChange('enableNotifications', checked)}
-                    />
-                  </div>
+                  <Switch
+                    checked={localSettings.notifyAdminsOnUpload}
+                    onCheckedChange={(checked) => handleSettingChange('notifyAdminsOnUpload', checked)}
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -197,124 +240,70 @@ const AdminSettings = () => {
           <TabsContent value="security" className="space-y-6">
             <Card className="bg-white border-black">
               <CardHeader>
-                <CardTitle className="text-black">Security Settings</CardTitle>
+                <CardTitle className="text-black">Security & Access Control</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label className="text-black">Require Email Verification</Label>
-                    <p className="text-sm text-black">
-                      Users must verify their email before accessing the platform
-                    </p>
-                  </div>
-                  <Switch
-                    checked={localSettings.requireEmailVerification}
-                    onCheckedChange={(checked) => handleSettingChange('requireEmailVerification', checked)}
-                  />
-                </div>
-
-                <Separator className="bg-black" />
-
                 <div>
                   <Label className="text-black">Session Timeout</Label>
                   <p className="text-sm text-black mb-2">
                     Automatically log out users after inactivity
                   </p>
-                  <Input placeholder="24 hours" className="bg-white text-black border-black" />
+                  <Select defaultValue="24h">
+                    <SelectTrigger className="bg-white text-black border-black">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1h">1 hour</SelectItem>
+                      <SelectItem value="8h">8 hours</SelectItem>
+                      <SelectItem value="24h">24 hours</SelectItem>
+                      <SelectItem value="7d">7 days</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <Separator className="bg-black" />
+
+                <div>
+                  <Label className="text-black">Password Requirements</Label>
+                  <p className="text-sm text-black mb-2">
+                    Minimum password strength requirements
+                  </p>
+                  <Select defaultValue="medium">
+                    <SelectTrigger className="bg-white text-black border-black">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Basic (8+ characters)</SelectItem>
+                      <SelectItem value="medium">Medium (8+ chars, numbers)</SelectItem>
+                      <SelectItem value="high">Strong (8+ chars, numbers, symbols)</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="email" className="space-y-6">
+          <TabsContent value="data" className="space-y-6">
             <Card className="bg-white border-black">
               <CardHeader>
-                <CardTitle className="text-black">Email Configuration</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="smtpServer" className="text-black">SMTP Server</Label>
-                    <Input
-                      id="smtpServer"
-                      placeholder="smtp.gmail.com"
-                      value={localSettings.smtpServer}
-                      onChange={(e) => handleSettingChange('smtpServer', e.target.value)}
-                      className="bg-white text-black border-black"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="smtpPort" className="text-black">SMTP Port</Label>
-                    <Input
-                      id="smtpPort"
-                      placeholder="587"
-                      value={localSettings.smtpPort}
-                      onChange={(e) => handleSettingChange('smtpPort', e.target.value)}
-                      className="bg-white text-black border-black"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="smtpUsername" className="text-black">SMTP Username</Label>
-                    <Input
-                      id="smtpUsername"
-                      type="email"
-                      placeholder="your-email@domain.com"
-                      value={localSettings.smtpUsername}
-                      onChange={(e) => handleSettingChange('smtpUsername', e.target.value)}
-                      className="bg-white text-black border-black"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="smtpPassword" className="text-black">SMTP Password</Label>
-                    <Input
-                      id="smtpPassword"
-                      type="password"
-                      placeholder="••••••••"
-                      value={localSettings.smtpPassword}
-                      onChange={(e) => handleSettingChange('smtpPassword', e.target.value)}
-                      className="bg-white text-black border-black"
-                    />
-                  </div>
-                </div>
-
-                <Button variant="outline" className="border-black text-black hover:bg-gray-50">
-                  Test Email Configuration
-                </Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="storage" className="space-y-6">
-            <Card className="bg-white border-black">
-              <CardHeader>
-                <CardTitle className="text-black">Storage Settings</CardTitle>
+                <CardTitle className="text-black">Data Retention</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="maxFileSize" className="text-black">Maximum File Size (MB)</Label>
+                  <Label htmlFor="retentionPeriod" className="text-black">
+                    Keep Completed Enrollments (months)
+                  </Label>
                   <Input
-                    id="maxFileSize"
+                    id="retentionPeriod"
                     type="number"
-                    value={localSettings.maxFileSize}
-                    onChange={(e) => handleSettingChange('maxFileSize', e.target.value)}
-                    className="bg-white text-black border-black"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="allowedFileTypes" className="text-black">Allowed File Types</Label>
-                  <Input
-                    id="allowedFileTypes"
-                    placeholder="jpg,png,gif,pdf,doc,docx"
-                    value={localSettings.allowedFileTypes}
-                    onChange={(e) => handleSettingChange('allowedFileTypes', e.target.value)}
+                    min="1"
+                    max="60"
+                    value={localSettings.dataRetentionMonths}
+                    onChange={(e) => handleSettingChange('dataRetentionMonths', parseInt(e.target.value))}
                     className="bg-white text-black border-black"
                   />
                   <p className="text-sm text-black mt-1">
-                    Comma-separated list of allowed file extensions
+                    How long to keep enrollment data after program completion
                   </p>
                 </div>
 
@@ -322,29 +311,32 @@ const AdminSettings = () => {
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <Label className="text-black">Enable Automatic Backups</Label>
+                    <Label className="text-black">Auto-archive Old Work</Label>
                     <p className="text-sm text-black">
-                      Automatically backup data and files
+                      Automatically archive kids work after retention period
                     </p>
                   </div>
                   <Switch
-                    checked={localSettings.enableBackups}
-                    onCheckedChange={(checked) => handleSettingChange('enableBackups', checked)}
+                    checked={localSettings.archiveOldWork}
+                    onCheckedChange={(checked) => handleSettingChange('archiveOldWork', checked)}
                   />
                 </div>
 
-                <div>
-                  <Label className="text-black">Backup Frequency</Label>
-                  <select 
-                    className="w-full mt-1 p-2 border rounded-md bg-white text-black border-black"
-                    value={localSettings.backupFrequency}
-                    onChange={(e) => handleSettingChange('backupFrequency', e.target.value)}
-                  >
-                    <option value="hourly">Hourly</option>
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                  </select>
+                <Separator className="bg-black" />
+
+                <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <div className="flex items-center space-x-2">
+                    <Clock className="h-4 w-4 text-yellow-600" />
+                    <span className="text-sm font-medium text-yellow-600">
+                      Data Export Available
+                    </span>
+                  </div>
+                  <p className="text-sm text-yellow-600 mt-1">
+                    Export platform data before making retention changes
+                  </p>
+                  <Button variant="outline" size="sm" className="mt-2 border-yellow-300 text-yellow-700 hover:bg-yellow-100">
+                    Export Data
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -361,20 +353,15 @@ const AdminSettings = () => {
             className="border-black text-black hover:bg-gray-50"
             onClick={() => {
               setLocalSettings({
-                siteName: 'Kids Work Platform',
-                siteDescription: 'A platform for showcasing children\'s creative work',
-                allowRegistration: true,
-                requireEmailVerification: true,
-                enableNotifications: true,
-                maintenanceMode: false,
-                maxFileSize: '10',
-                allowedFileTypes: 'jpg,png,gif,pdf,doc,docx',
-                smtpServer: '',
-                smtpPort: '587',
-                smtpUsername: '',
-                smtpPassword: '',
-                enableBackups: true,
-                backupFrequency: 'daily'
+                enrollmentAutoApproval: false,
+                workUploadNotifications: true,
+                notifyAdminsOnUpload: true,
+                maxFileSizeMb: 10,
+                maxFilesPerChild: 50,
+                requireParentApproval: true,
+                autoNotifyOnRequests: true,
+                dataRetentionMonths: 24,
+                archiveOldWork: false
               });
             }}
           >

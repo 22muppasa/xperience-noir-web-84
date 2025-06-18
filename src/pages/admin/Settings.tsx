@@ -17,7 +17,7 @@ import {
   Shield, 
   Database,
   Users,
-  FileUp,
+  Link,
   Clock
 } from 'lucide-react';
 
@@ -28,33 +28,44 @@ const AdminSettings = () => {
     enrollmentAutoApproval: false,
     workUploadNotifications: true,
     notifyAdminsOnUpload: true,
-    maxFileSizeMb: 10,
-    maxFilesPerChild: 50,
+    requirePublicLinks: true,
+    autoVerifyLinks: false,
+    allowFolderLinks: true,
+    linkExpirationCheck: true,
     requireParentApproval: true,
     autoNotifyOnRequests: true,
     dataRetentionMonths: 24,
-    archiveOldWork: false
+    archiveOldWork: false,
+    maxChildrenPerParent: 10,
+    maxWorkItemsPerChild: 100,
+    maxProgramsPerSeason: 20
   });
 
   useEffect(() => {
     if (!isLoading) {
       const enrollmentSettings = getSetting('enrollment_auto_approval') || {};
       const workNotifications = getSetting('work_upload_notifications') || {};
-      const fileSettings = getSetting('file_upload_limits') || {};
+      const googleDriveSettings = getSetting('google_drive_settings') || {};
       const parentSettings = getSetting('parent_child_requests') || {};
       const retentionSettings = getSetting('data_retention') || {};
+      const platformLimits = getSetting('platform_limits') || {};
 
       setLocalSettings(prev => ({
         ...prev,
         enrollmentAutoApproval: enrollmentSettings.enabled ?? false,
         workUploadNotifications: workNotifications.enabled ?? true,
         notifyAdminsOnUpload: workNotifications.notify_admins ?? true,
-        maxFileSizeMb: fileSettings.max_size_mb ?? 10,
-        maxFilesPerChild: fileSettings.max_files_per_child ?? 50,
+        requirePublicLinks: googleDriveSettings.require_public_links ?? true,
+        autoVerifyLinks: googleDriveSettings.auto_verify_links ?? false,
+        allowFolderLinks: googleDriveSettings.allow_folder_links ?? true,
+        linkExpirationCheck: googleDriveSettings.link_expiration_check ?? true,
         requireParentApproval: parentSettings.require_admin_approval ?? true,
         autoNotifyOnRequests: parentSettings.auto_notify_admins ?? true,
         dataRetentionMonths: retentionSettings.keep_completed_enrollments_months ?? 24,
-        archiveOldWork: retentionSettings.archive_old_work ?? false
+        archiveOldWork: retentionSettings.archive_old_work ?? false,
+        maxChildrenPerParent: platformLimits.max_children_per_parent ?? 10,
+        maxWorkItemsPerChild: platformLimits.max_work_items_per_child ?? 100,
+        maxProgramsPerSeason: platformLimits.max_programs_per_season ?? 20
       }));
     }
   }, [isLoading, getSetting]);
@@ -73,9 +84,11 @@ const AdminSettings = () => {
       notify_admins: localSettings.notifyAdminsOnUpload
     });
 
-    updateSetting('file_upload_limits', {
-      max_size_mb: localSettings.maxFileSizeMb,
-      max_files_per_child: localSettings.maxFilesPerChild
+    updateSetting('google_drive_settings', {
+      require_public_links: localSettings.requirePublicLinks,
+      auto_verify_links: localSettings.autoVerifyLinks,
+      allow_folder_links: localSettings.allowFolderLinks,
+      link_expiration_check: localSettings.linkExpirationCheck
     });
 
     updateSetting('parent_child_requests', {
@@ -86,6 +99,12 @@ const AdminSettings = () => {
     updateSetting('data_retention', {
       keep_completed_enrollments_months: localSettings.dataRetentionMonths,
       archive_old_work: localSettings.archiveOldWork
+    });
+
+    updateSetting('platform_limits', {
+      max_children_per_parent: localSettings.maxChildrenPerParent,
+      max_work_items_per_child: localSettings.maxWorkItemsPerChild,
+      max_programs_per_season: localSettings.maxProgramsPerSeason
     });
   };
 
@@ -105,13 +124,13 @@ const AdminSettings = () => {
               <Users className="h-4 w-4 mr-2" />
               Enrollment
             </TabsTrigger>
-            <TabsTrigger value="uploads" className="text-black">
-              <FileUp className="h-4 w-4 mr-2" />
-              File Uploads
+            <TabsTrigger value="google-drive" className="text-black">
+              <Link className="h-4 w-4 mr-2" />
+              Google Drive
             </TabsTrigger>
             <TabsTrigger value="security" className="text-black">
               <Shield className="h-4 w-4 mr-2" />
-              Security
+              Security & Limits
             </TabsTrigger>
             <TabsTrigger value="data" className="text-black">
               <Database className="h-4 w-4 mr-2" />
@@ -173,37 +192,62 @@ const AdminSettings = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="uploads" className="space-y-6">
+          <TabsContent value="google-drive" className="space-y-6">
             <Card className="bg-white border-black">
               <CardHeader>
-                <CardTitle className="text-black">File Upload Settings</CardTitle>
+                <CardTitle className="text-black">Google Drive Link Settings</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center justify-between">
                   <div>
-                    <Label htmlFor="maxFileSize" className="text-black">Maximum File Size (MB)</Label>
-                    <Input
-                      id="maxFileSize"
-                      type="number"
-                      min="1"
-                      max="100"
-                      value={localSettings.maxFileSizeMb}
-                      onChange={(e) => handleSettingChange('maxFileSizeMb', parseInt(e.target.value))}
-                      className="bg-white text-black border-black"
-                    />
+                    <Label className="text-black">Require Public Links</Label>
+                    <p className="text-sm text-black">
+                      Only allow publicly accessible Google Drive links
+                    </p>
                   </div>
+                  <Switch
+                    checked={localSettings.requirePublicLinks}
+                    onCheckedChange={(checked) => handleSettingChange('requirePublicLinks', checked)}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
                   <div>
-                    <Label htmlFor="maxFiles" className="text-black">Max Files per Child</Label>
-                    <Input
-                      id="maxFiles"
-                      type="number"
-                      min="1"
-                      max="200"
-                      value={localSettings.maxFilesPerChild}
-                      onChange={(e) => handleSettingChange('maxFilesPerChild', parseInt(e.target.value))}
-                      className="bg-white text-black border-black"
-                    />
+                    <Label className="text-black">Auto-verify Links</Label>
+                    <p className="text-sm text-black">
+                      Automatically verify link accessibility when submitted
+                    </p>
                   </div>
+                  <Switch
+                    checked={localSettings.autoVerifyLinks}
+                    onCheckedChange={(checked) => handleSettingChange('autoVerifyLinks', checked)}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-black">Allow Folder Links</Label>
+                    <p className="text-sm text-black">
+                      Allow links to Google Drive folders (not just individual files)
+                    </p>
+                  </div>
+                  <Switch
+                    checked={localSettings.allowFolderLinks}
+                    onCheckedChange={(checked) => handleSettingChange('allowFolderLinks', checked)}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div>
+                    <Label className="text-black">Link Expiration Monitoring</Label>
+                    <p className="text-sm text-black">
+                      Periodically check if Google Drive links are still accessible
+                    </p>
+                  </div>
+                  <Switch
+                    checked={localSettings.linkExpirationCheck}
+                    onCheckedChange={(checked) => handleSettingChange('linkExpirationCheck', checked)}
+                  />
                 </div>
 
                 <Separator className="bg-black" />
@@ -212,7 +256,7 @@ const AdminSettings = () => {
                   <div>
                     <Label className="text-black">Upload Notifications</Label>
                     <p className="text-sm text-black">
-                      Send notifications when kids work is uploaded
+                      Send notifications when kids work links are shared
                     </p>
                   </div>
                   <Switch
@@ -225,7 +269,7 @@ const AdminSettings = () => {
                   <div>
                     <Label className="text-black">Notify Admins on Upload</Label>
                     <p className="text-sm text-black">
-                      Also notify admins when new work is uploaded
+                      Also notify admins when new work links are shared
                     </p>
                   </div>
                   <Switch
@@ -240,9 +284,50 @@ const AdminSettings = () => {
           <TabsContent value="security" className="space-y-6">
             <Card className="bg-white border-black">
               <CardHeader>
-                <CardTitle className="text-black">Security & Access Control</CardTitle>
+                <CardTitle className="text-black">Platform Limits</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div>
+                    <Label htmlFor="maxChildren" className="text-black">Max Children per Parent</Label>
+                    <Input
+                      id="maxChildren"
+                      type="number"
+                      min="1"
+                      max="50"
+                      value={localSettings.maxChildrenPerParent}
+                      onChange={(e) => handleSettingChange('maxChildrenPerParent', parseInt(e.target.value))}
+                      className="bg-white text-black border-black"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="maxWork" className="text-black">Max Work Items per Child</Label>
+                    <Input
+                      id="maxWork"
+                      type="number"
+                      min="10"
+                      max="500"
+                      value={localSettings.maxWorkItemsPerChild}
+                      onChange={(e) => handleSettingChange('maxWorkItemsPerChild', parseInt(e.target.value))}
+                      className="bg-white text-black border-black"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="maxPrograms" className="text-black">Max Programs per Season</Label>
+                    <Input
+                      id="maxPrograms"
+                      type="number"
+                      min="5"
+                      max="100"
+                      value={localSettings.maxProgramsPerSeason}
+                      onChange={(e) => handleSettingChange('maxProgramsPerSeason', parseInt(e.target.value))}
+                      className="bg-white text-black border-black"
+                    />
+                  </div>
+                </div>
+
+                <Separator className="bg-black" />
+
                 <div>
                   <Label className="text-black">Session Timeout</Label>
                   <p className="text-sm text-black mb-2">
@@ -257,25 +342,6 @@ const AdminSettings = () => {
                       <SelectItem value="8h">8 hours</SelectItem>
                       <SelectItem value="24h">24 hours</SelectItem>
                       <SelectItem value="7d">7 days</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <Separator className="bg-black" />
-
-                <div>
-                  <Label className="text-black">Password Requirements</Label>
-                  <p className="text-sm text-black mb-2">
-                    Minimum password strength requirements
-                  </p>
-                  <Select defaultValue="medium">
-                    <SelectTrigger className="bg-white text-black border-black">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="low">Basic (8+ characters)</SelectItem>
-                      <SelectItem value="medium">Medium (8+ chars, numbers)</SelectItem>
-                      <SelectItem value="high">Strong (8+ chars, numbers, symbols)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -356,12 +422,17 @@ const AdminSettings = () => {
                 enrollmentAutoApproval: false,
                 workUploadNotifications: true,
                 notifyAdminsOnUpload: true,
-                maxFileSizeMb: 10,
-                maxFilesPerChild: 50,
+                requirePublicLinks: true,
+                autoVerifyLinks: false,
+                allowFolderLinks: true,
+                linkExpirationCheck: true,
                 requireParentApproval: true,
                 autoNotifyOnRequests: true,
                 dataRetentionMonths: 24,
-                archiveOldWork: false
+                archiveOldWork: false,
+                maxChildrenPerParent: 10,
+                maxWorkItemsPerChild: 100,
+                maxProgramsPerSeason: 20
               });
             }}
           >

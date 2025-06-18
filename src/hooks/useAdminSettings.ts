@@ -49,9 +49,14 @@ export const useAdminSettings = () => {
         },
         {
           id: '3',
-          setting_key: 'file_upload_limits',
-          setting_value: { max_size_mb: 10, max_files_per_child: 50 },
-          description: 'File upload restrictions for kids work',
+          setting_key: 'google_drive_settings',
+          setting_value: { 
+            require_public_links: true, 
+            auto_verify_links: false,
+            allow_folder_links: true,
+            link_expiration_check: true
+          },
+          description: 'Google Drive link management and validation settings',
           updated_by: null,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
@@ -70,6 +75,19 @@ export const useAdminSettings = () => {
           setting_key: 'data_retention',
           setting_value: { keep_completed_enrollments_months: 24, archive_old_work: false },
           description: 'Data retention and archival policies',
+          updated_by: null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        },
+        {
+          id: '6',
+          setting_key: 'platform_limits',
+          setting_value: { 
+            max_children_per_parent: 10,
+            max_work_items_per_child: 100,
+            max_programs_per_season: 20
+          },
+          description: 'Platform usage limits and capacity management',
           updated_by: null,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()

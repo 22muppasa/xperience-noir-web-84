@@ -5,7 +5,6 @@ import {
   Calendar, 
   MessageSquare, 
   User, 
-  Settings, 
   FileText,
   Users,
   Image,
@@ -34,7 +33,6 @@ const DashboardSidebar = () => {
     { icon: MessageSquare, label: 'Messages', path: '/admin/messages' },
     { icon: Send, label: 'Social Posts', path: '/admin/social-posts' },
     { icon: FileText, label: 'Contact Forms', path: '/admin/contact-forms' },
-    { icon: Settings, label: 'Settings', path: '/admin/settings' },
   ];
 
   const customerMenuItems = [

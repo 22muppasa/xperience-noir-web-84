@@ -36,7 +36,6 @@ import AdminKidsWork from "./pages/admin/KidsWork";
 import AdminMessages from "./pages/admin/Messages";
 import AdminSocialPosts from "./pages/admin/SocialPosts";
 import AdminContactForms from "./pages/admin/ContactForms";
-import AdminSettings from "./pages/admin/Settings";
 
 const queryClient = new QueryClient();
 
@@ -83,7 +82,6 @@ function App() {
               <Route path="/admin/messages" element={<ProtectedRoute requiredRole="admin"><AdminMessages /></ProtectedRoute>} />
               <Route path="/admin/social-posts" element={<ProtectedRoute requiredRole="admin"><AdminSocialPosts /></ProtectedRoute>} />
               <Route path="/admin/contact-forms" element={<ProtectedRoute requiredRole="admin"><AdminContactForms /></ProtectedRoute>} />
-              <Route path="/admin/settings" element={<ProtectedRoute requiredRole="admin"><AdminSettings /></ProtectedRoute>} />
 
               {/* 404 Route */}
               <Route path="*" element={<NotFound />} />

@@ -13,7 +13,6 @@ import {
   Users, 
   FileText, 
   MessageSquare, 
-  Settings, 
   BarChart3, 
   Shield,
   Activity,
@@ -76,13 +75,6 @@ const AdminDashboard = () => {
       description: 'Review and approve submitted work',
       icon: FileText,
       href: '/admin/kids-work',
-      color: 'bg-black'
-    },
-    {
-      title: 'System Settings',
-      description: 'Configure system preferences',
-      icon: Settings,
-      href: '/admin/settings',
       color: 'bg-black'
     }
   ];
@@ -169,7 +161,7 @@ const AdminDashboard = () => {
             <CardTitle className="text-black">Quick Actions</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {quickActions.map((action, index) => (
                 <Button
                   key={index}

@@ -49,20 +49,6 @@ export const useAdminSettings = () => {
         },
         {
           id: '3',
-          setting_key: 'google_drive_settings',
-          setting_value: { 
-            require_public_links: true, 
-            auto_verify_links: false,
-            allow_folder_links: true,
-            link_expiration_check: true
-          },
-          description: 'Google Drive link management and validation settings',
-          updated_by: null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: '4',
           setting_key: 'parent_child_requests',
           setting_value: { require_admin_approval: true, auto_notify_admins: true },
           description: 'Parent-child association request settings',
@@ -71,16 +57,7 @@ export const useAdminSettings = () => {
           updated_at: new Date().toISOString()
         },
         {
-          id: '5',
-          setting_key: 'data_retention',
-          setting_value: { keep_completed_enrollments_months: 24, archive_old_work: false },
-          description: 'Data retention and archival policies',
-          updated_by: null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: '6',
+          id: '4',
           setting_key: 'platform_limits',
           setting_value: { 
             max_children_per_parent: 10,

@@ -130,18 +130,25 @@ const UserManagement = () => {
         }
       }
 
+      // Update the user role - remove .single() to avoid the error
       const { data, error } = await supabase
         .from('profiles')
         .update({ role })
         .eq('id', userId)
-        .select()
-        .single();
+        .select();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Role update error:', error);
+        throw error;
+      }
+
+      if (!data || data.length === 0) {
+        throw new Error('User not found or no permission to update this user');
+      }
 
       // Log audit event using existing audit_logs table
       const { data: currentUser } = await supabase.auth.getUser();
-      await supabase
+      const auditResult = await supabase
         .from('audit_logs')
         .insert({
           table_name: 'profiles',
@@ -152,7 +159,11 @@ const UserManagement = () => {
           user_id: currentUser.user?.id
         });
 
-      return data;
+      if (auditResult.error) {
+        console.warn('Failed to log audit event:', auditResult.error);
+      }
+
+      return data[0];
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });

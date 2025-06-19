@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Mail, Calendar, Shield, User, Check, AlertTriangle } from 'lucide-react';
+import { UserPlus, Mail, Calendar, Shield, User, Check } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -52,7 +53,8 @@ const UserManagement = () => {
     first_name: '',
     last_name: '',
     role: 'customer' as 'admin' | 'customer',
-    phone: ''
+    phone: '',
+    date_of_birth: ''
   });
 
   const { toast } = useToast();
@@ -74,96 +76,17 @@ const UserManagement = () => {
     }
   });
 
-  const createUserMutation = useMutation({
-    mutationFn: async (userData: typeof newUser) => {
-      const { data: currentUser } = await supabase.auth.getUser();
-      
-      const response = await supabase.functions.invoke('create-user', {
-        body: userData,
-        headers: {
-          'x-user-id': currentUser.user?.id
-        }
-      });
-
-      if (response.error) {
-        throw new Error(response.error.message || 'Failed to create user');
-      }
-
-      return response.data;
-    },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
-      setIsCreateUserOpen(false);
-      setNewUser({
-        email: '',
-        first_name: '',
-        last_name: '',
-        role: 'customer',
-        phone: ''
-      });
-      toast({
-        title: "User created successfully",
-        description: data.message || "New user profile has been created",
-      });
-    },
-    onError: (error) => {
-      console.error('Create user error:', error);
-      toast({
-        title: "Error creating user",
-        description: error.message || "Failed to create user profile. Please try again.",
-        variant: "destructive",
-      });
-    }
-  });
-
   const updateUserRoleMutation = useMutation({
-    mutationFn: async ({ userId, role, currentRole }: { userId: string; role: 'admin' | 'customer'; currentRole: 'admin' | 'customer' }) => {
-      // Check if this would remove the last admin
-      if (currentRole === 'admin' && role === 'customer') {
-        const { data: adminCount } = await supabase
-          .from('profiles')
-          .select('id', { count: 'exact' })
-          .eq('role', 'admin');
-        
-        if (adminCount && adminCount.length <= 1) {
-          throw new Error('Cannot remove the last admin user from the system');
-        }
-      }
-
-      // Update the user role - remove .single() to avoid the error
+    mutationFn: async ({ userId, role }: { userId: string; role: 'admin' | 'customer' }) => {
       const { data, error } = await supabase
         .from('profiles')
         .update({ role })
         .eq('id', userId)
-        .select();
+        .select()
+        .single();
 
-      if (error) {
-        console.error('Role update error:', error);
-        throw error;
-      }
-
-      if (!data || data.length === 0) {
-        throw new Error('User not found or no permission to update this user');
-      }
-
-      // Log audit event using existing audit_logs table
-      const { data: currentUser } = await supabase.auth.getUser();
-      const auditResult = await supabase
-        .from('audit_logs')
-        .insert({
-          table_name: 'profiles',
-          record_id: userId,
-          action: 'ROLE_CHANGE',
-          old_values: { role: currentRole },
-          new_values: { role },
-          user_id: currentUser.user?.id
-        });
-
-      if (auditResult.error) {
-        console.warn('Failed to log audit event:', auditResult.error);
-      }
-
-      return data[0];
+      if (error) throw error;
+      return data;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
@@ -177,7 +100,53 @@ const UserManagement = () => {
       console.error('Role update error:', error);
       toast({
         title: "Error updating role",
-        description: error.message || "Failed to update user role. Please try again.",
+        description: "Failed to update user role. Please try again.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const createUserMutation = useMutation({
+    mutationFn: async (userData: typeof newUser) => {
+      // For demo purposes, create a profile entry
+      // In production, you'd use Supabase Auth admin functions
+      const { data, error } = await supabase
+        .from('profiles')
+        .insert([{
+          id: crypto.randomUUID(),
+          email: userData.email,
+          first_name: userData.first_name,
+          last_name: userData.last_name,
+          role: userData.role,
+          phone: userData.phone
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      setIsCreateUserOpen(false);
+      setNewUser({
+        email: '',
+        first_name: '',
+        last_name: '',
+        role: 'customer',
+        phone: '',
+        date_of_birth: ''
+      });
+      toast({
+        title: "User created successfully",
+        description: "New user profile has been created",
+      });
+    },
+    onError: (error) => {
+      console.error('Create user error:', error);
+      toast({
+        title: "Error creating user",
+        description: "Failed to create user profile. Please try again.",
         variant: "destructive",
       });
     }
@@ -197,8 +166,7 @@ const UserManagement = () => {
     if (roleChangeDialog.user && roleChangeDialog.newRole) {
       updateUserRoleMutation.mutate({
         userId: roleChangeDialog.user.id,
-        role: roleChangeDialog.newRole,
-        currentRole: roleChangeDialog.user.role
+        role: roleChangeDialog.newRole
       });
     }
   };
@@ -260,10 +228,7 @@ const UserManagement = () => {
       <div className="max-w-xl mx-auto mt-16">
         <Card className="bg-red-50 border-red-300">
           <CardHeader>
-            <CardTitle className="text-red-900 flex items-center">
-              <AlertTriangle className="h-5 w-5 mr-2" />
-              Error loading users
-            </CardTitle>
+            <CardTitle className="text-red-900">Error loading users</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-red-700 mb-2">
@@ -312,7 +277,6 @@ const UserManagement = () => {
                     value={newUser.first_name}
                     onChange={(e) => setNewUser(prev => ({ ...prev, first_name: e.target.value }))}
                     className="bg-white border-black text-black"
-                    required
                   />
                 </div>
                 <div>
@@ -322,7 +286,6 @@ const UserManagement = () => {
                     value={newUser.last_name}
                     onChange={(e) => setNewUser(prev => ({ ...prev, last_name: e.target.value }))}
                     className="bg-white border-black text-black"
-                    required
                   />
                 </div>
               </div>
@@ -334,18 +297,6 @@ const UserManagement = () => {
                   type="email"
                   value={newUser.email}
                   onChange={(e) => setNewUser(prev => ({ ...prev, email: e.target.value }))}
-                  className="bg-white border-black text-black"
-                  required
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="phone" className="text-black">Phone (Optional)</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={newUser.phone}
-                  onChange={(e) => setNewUser(prev => ({ ...prev, phone: e.target.value }))}
                   className="bg-white border-black text-black"
                 />
               </div>
@@ -366,7 +317,7 @@ const UserManagement = () => {
               <Button 
                 onClick={() => createUserMutation.mutate(newUser)}
                 className="w-full bg-white text-black border border-black hover:bg-gray-100"
-                disabled={createUserMutation.isPending || !newUser.email || !newUser.first_name || !newUser.last_name}
+                disabled={createUserMutation.isPending}
               >
                 {createUserMutation.isPending ? 'Creating...' : 'Create User'}
               </Button>
@@ -450,7 +401,6 @@ const UserManagement = () => {
                   <Select
                     value={user.role}
                     onValueChange={(value: 'admin' | 'customer') => handleRoleChange(user, value)}
-                    disabled={updateUserRoleMutation.isPending}
                   >
                     <SelectTrigger className="w-32 bg-white border-black text-black">
                       <SelectValue />
@@ -487,12 +437,6 @@ const UserManagement = () => {
             <AlertDialogDescription className="text-black">
               Are you sure you want to change {roleChangeDialog.user?.first_name} {roleChangeDialog.user?.last_name}'s 
               role from {roleChangeDialog.user?.role} to {roleChangeDialog.newRole}?
-              {roleChangeDialog.user?.role === 'admin' && roleChangeDialog.newRole === 'customer' && (
-                <div className="mt-2 p-2 bg-yellow-50 border border-yellow-200 rounded text-yellow-800">
-                  <AlertTriangle className="h-4 w-4 inline mr-1" />
-                  Warning: This will remove admin privileges from this user.
-                </div>
-              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

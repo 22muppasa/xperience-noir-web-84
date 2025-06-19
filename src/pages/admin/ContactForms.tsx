@@ -44,7 +44,6 @@ const AdminContactForms: React.FC = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // 1) Fetch
   const { data: submissions = [], isLoading } = useQuery<Submission[]>({
     queryKey: ['contact-submissions'],
     queryFn: async () => {
@@ -57,7 +56,6 @@ const AdminContactForms: React.FC = () => {
     }
   });
 
-  // 2) Update status
   const updateStatusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: SubmissionStatus }) => {
       const { error } = await supabase
@@ -75,7 +73,6 @@ const AdminContactForms: React.FC = () => {
     }
   });
 
-  // 3) Mark as responded
   const markAsRespondedMutation = useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
@@ -104,13 +101,11 @@ const AdminContactForms: React.FC = () => {
   return (
     <DashboardLayout>
       <div className="space-y-6">
-        {/* Header */}
         <div>
           <h1 className="text-2xl font-bold text-black">Contact Form Management</h1>
           <p className="text-black">Manage and respond to contact form submissions</p>
         </div>
 
-        {/* Tabs */}
         <Tabs defaultValue="all" className="w-full">
           <TabsList className="bg-white border-black">
             <TabsTrigger value="all" className="text-black">All</TabsTrigger>
@@ -119,9 +114,7 @@ const AdminContactForms: React.FC = () => {
             <TabsTrigger value="responded" className="text-black">Responded</TabsTrigger>
           </TabsList>
 
-          {/* All Submissions */}
           <TabsContent value="all" className="space-y-4">
-            {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
               <Card className="bg-white border-black">
                 <CardContent className="p-4 text-center">
@@ -157,7 +150,6 @@ const AdminContactForms: React.FC = () => {
               </Card>
             </div>
 
-            {/* Table */}
             <Card className="bg-white border-black">
               <CardHeader>
                 <CardTitle className="flex items-center text-black">
@@ -206,24 +198,21 @@ const AdminContactForms: React.FC = () => {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="bg-white border-black text-black hover:bg-gray-50"
-                                onClick={() => updateStatusMutation.mutate({ id: sub.id, status: 'in_progress' })}
-                              >
+                                className="bg-white border-black text-black hover:bg-black hover:text-white"
+                                onClick={() => updateStatusMutation.mutate({ id: sub.id, status: 'in_progress' })}>
                                 <Reply className="h-4 w-4" />
                               </Button>
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="bg-white border-black text-black hover:bg-gray-50"
-                                onClick={() => markAsRespondedMutation.mutate(sub.id)}
-                              >
+                                className="bg-white border-black text-black hover:bg-black hover:text-white"
+                                onClick={() => markAsRespondedMutation.mutate(sub.id)}>
                                 Mark Responded
                               </Button>
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="bg-white border-black text-black hover:bg-gray-50"
-                              >
+                                className="bg-white border-black text-black hover:bg-black hover:text-white">
                                 <Archive className="h-4 w-4" />
                               </Button>
                             </div>
@@ -243,19 +232,11 @@ const AdminContactForms: React.FC = () => {
           </TabsContent>
 
           {/* Unread */}
-          <TabsContent value="unread" className="space-y-4">
-            {/* Copy the same pattern here, filtering with s.status === 'unread' */}
-          </TabsContent>
-
+          <TabsContent value="unread" className="space-y-4">{/* ... */}</TabsContent>
           {/* In Progress */}
-          <TabsContent value="in_progress" className="space-y-4">
-            {/* Copy the same pattern here, filtering with s.status === 'in_progress' */}
-          </TabsContent>
-
+          <TabsContent value="in_progress" className="space-y-4">{/* ... */}</TabsContent>
           {/* Responded */}
-          <TabsContent value="responded" className="space-y-4">
-            {/* Copy the same pattern here, filtering with s.status === 'responded' */}
-          </TabsContent>
+          <TabsContent value="responded" className="space-y-4">{/* ... */}</TabsContent>
         </Tabs>
       </div>
     </DashboardLayout>

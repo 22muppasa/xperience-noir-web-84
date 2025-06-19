@@ -14,26 +14,44 @@ const ContactForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email || !subject || !message) {
-      toast({ title: 'Missing fields', description: 'Please fill in all fields', variant: 'destructive' });
+      toast({
+        title: 'Missing fields',
+        description: 'Please fill in all fields before submitting.',
+        variant: 'destructive',
+      });
       return;
     }
+
     setIsSubmitting(true);
+
     const { error } = await supabase
       .from('contact_submissions')
-      .insert({
+      .insert([{
         name,
         email,
         subject,
         message,
-      });
+      }]);  // ← Payload must be an array
+
     setIsSubmitting(false);
 
     if (error) {
       console.error('Insert error:', error);
-      toast({ title: 'Submission failed', description: error.message, variant: 'destructive' });
+      toast({
+        title: 'Submission failed',
+        description: error.message,
+        variant: 'destructive',
+      });
     } else {
-      toast({ title: 'Submitted!', description: 'Thanks for reaching out—we’ll be in touch soon.' });
-      setName(''); setEmail(''); setSubject(''); setMessage('');
+      toast({
+        title: 'Submitted!',
+        description: 'Thanks for reaching out—we’ll be in touch soon.',
+      });
+      // clear the form
+      setName('');
+      setEmail('');
+      setSubject('');
+      setMessage('');
     }
   };
 

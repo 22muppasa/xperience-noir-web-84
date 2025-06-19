@@ -27,7 +27,7 @@ const AdminContactForms = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('contact_submissions')
-        
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;

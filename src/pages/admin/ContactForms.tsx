@@ -25,9 +25,9 @@ const AdminContactForms = () => {
   const { data: submissions = [], isLoading } = useQuery({
     queryKey: ['contact-submissions'],
     queryFn: async () => {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('contact_submissions')
-        .insert({ name, email, subject, message });
+        
         .order('created_at', { ascending: false });
 
       if (error) throw error;

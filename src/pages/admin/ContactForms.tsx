@@ -206,7 +206,7 @@ const AdminContactForms: React.FC = () => {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="bg-white border-black text-black hover:bg-gray-50"
+                                className="border-black text-black hover:bg-gray-50"
                                 onClick={() => updateStatusMutation.mutate({ id: sub.id, status: 'in_progress' })}
                               >
                                 <Reply className="h-4 w-4" />
@@ -214,16 +214,12 @@ const AdminContactForms: React.FC = () => {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="bg-white border-black text-black hover:bg-gray-50"
+                                className="border-black text-black hover:bg-gray-50"
                                 onClick={() => markAsRespondedMutation.mutate(sub.id)}
                               >
                                 Mark Responded
                               </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="bg-white border-black text-black hover:bg-gray-50"
-                              >
+                              <Button size="sm" variant="outline" className="border-black text-black hover:bg-gray-50">
                                 <Archive className="h-4 w-4" />
                               </Button>
                             </div>
@@ -244,17 +240,17 @@ const AdminContactForms: React.FC = () => {
 
           {/* Unread */}
           <TabsContent value="unread" className="space-y-4">
-            {/* Copy the same pattern here, filtering with s.status === 'unread' */}
+            {/* ...you can copy the same pattern as above, filtering on status === 'unread' */}
           </TabsContent>
 
           {/* In Progress */}
           <TabsContent value="in_progress" className="space-y-4">
-            {/* Copy the same pattern here, filtering with s.status === 'in_progress' */}
+            {/* ...same pattern for 'in_progress' */}
           </TabsContent>
 
           {/* Responded */}
           <TabsContent value="responded" className="space-y-4">
-            {/* Copy the same pattern here, filtering with s.status === 'responded' */}
+            {/* ...same pattern for 'responded' */}
           </TabsContent>
         </Tabs>
       </div>

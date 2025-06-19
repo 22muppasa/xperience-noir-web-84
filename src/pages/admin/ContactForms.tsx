@@ -212,7 +212,8 @@ const AdminContactForms: React.FC = () => {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                className="bg-white border-black text-black hover:bg-black hover:text-white">
+                                className="bg-white border-black text-black hover:bg-black hover:text-white"
+                                onClick={() => updateStatusMutation.mutate({ id: sub.id, status: 'archived' })}>
                                 <Archive className="h-4 w-4" />
                               </Button>
                             </div>

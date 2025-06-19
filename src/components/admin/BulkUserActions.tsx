@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -51,14 +50,15 @@ const BulkUserActions = ({ selectedUsers, onClearSelection }: BulkUserActionsPro
             userIds.map(async (id) => {
               await supabase.from('profiles').update({ role: 'admin' }).eq('id', id);
               
-              // Log audit event
+              // Log audit event using existing audit_logs table
               await supabase
-                .from('user_management_audit')
+                .from('audit_logs')
                 .insert({
-                  admin_user_id: currentUser.user?.id,
-                  target_user_id: id,
+                  table_name: 'profiles',
+                  record_id: id,
                   action: 'BULK_ROLE_CHANGE',
-                  new_values: { role: 'admin' }
+                  new_values: { role: 'admin' },
+                  user_id: currentUser.user?.id
                 });
             })
           );
@@ -80,14 +80,15 @@ const BulkUserActions = ({ selectedUsers, onClearSelection }: BulkUserActionsPro
             userIds.map(async (id) => {
               await supabase.from('profiles').update({ role: 'customer' }).eq('id', id);
               
-              // Log audit event
+              // Log audit event using existing audit_logs table
               await supabase
-                .from('user_management_audit')
+                .from('audit_logs')
                 .insert({
-                  admin_user_id: currentUser.user?.id,
-                  target_user_id: id,
+                  table_name: 'profiles',
+                  record_id: id,
                   action: 'BULK_ROLE_CHANGE',
-                  new_values: { role: 'customer' }
+                  new_values: { role: 'customer' },
+                  user_id: currentUser.user?.id
                 });
             })
           );
@@ -95,13 +96,15 @@ const BulkUserActions = ({ selectedUsers, onClearSelection }: BulkUserActionsPro
           
         case 'send_email':
           // In a real implementation, this would trigger an email service
-          // For now, we'll just log the action
+          // For now, we'll just log the action using existing audit_logs table
           await supabase
-            .from('user_management_audit')
+            .from('audit_logs')
             .insert({
-              admin_user_id: currentUser.user?.id,
+              table_name: 'bulk_operations',
+              record_id: 'bulk-email-' + Date.now(),
               action: 'BULK_EMAIL_SENT',
-              new_values: { recipient_count: userIds.length, recipient_ids: userIds }
+              new_values: { recipient_count: userIds.length, recipient_ids: userIds },
+              user_id: currentUser.user?.id
             });
           console.log('Bulk email would be sent to:', userIds);
           break;
@@ -125,11 +128,13 @@ const BulkUserActions = ({ selectedUsers, onClearSelection }: BulkUserActionsPro
           await Promise.all([
             ...userIds.map(id => supabase.from('profiles').delete().eq('id', id)),
             supabase
-              .from('user_management_audit')
+              .from('audit_logs')
               .insert({
-                admin_user_id: currentUser.user?.id,
+                table_name: 'profiles',
+                record_id: 'bulk-delete-' + Date.now(),
                 action: 'BULK_DELETE_USERS',
-                old_values: { deleted_user_count: userIds.length, deleted_user_ids: userIds }
+                old_values: { deleted_user_count: userIds.length, deleted_user_ids: userIds },
+                user_id: currentUser.user?.id
               })
           ]);
           break;

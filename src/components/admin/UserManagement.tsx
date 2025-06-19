@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -140,16 +139,17 @@ const UserManagement = () => {
 
       if (error) throw error;
 
-      // Log audit event
+      // Log audit event using existing audit_logs table
       const { data: currentUser } = await supabase.auth.getUser();
       await supabase
-        .from('user_management_audit')
+        .from('audit_logs')
         .insert({
-          admin_user_id: currentUser.user?.id,
-          target_user_id: userId,
+          table_name: 'profiles',
+          record_id: userId,
           action: 'ROLE_CHANGE',
           old_values: { role: currentRole },
-          new_values: { role }
+          new_values: { role },
+          user_id: currentUser.user?.id
         });
 
       return data;

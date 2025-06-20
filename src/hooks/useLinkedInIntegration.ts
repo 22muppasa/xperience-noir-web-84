@@ -79,9 +79,9 @@ export const useLinkedInIntegration = () => {
 
   const checkLinkedInConnection = async () => {
     try {
-      // Use RPC call to safely check admin settings without TypeScript issues
-      const { data, error } = await supabase.rpc('get_admin_setting', {
-        key: 'linkedin_access_token'
+      // Use the edge function to get admin setting
+      const { data, error } = await supabase.functions.invoke('get-admin-setting', {
+        body: { key: 'linkedin_access_token' }
       });
 
       if (error) {
@@ -89,7 +89,7 @@ export const useLinkedInIntegration = () => {
         return false;
       }
 
-      return !!data?.access_token;
+      return !!data?.data;
     } catch (error) {
       console.log('Error checking LinkedIn connection:', error);
       return false;

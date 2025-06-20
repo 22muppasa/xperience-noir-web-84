@@ -274,7 +274,7 @@ const AdminPrograms = () => {
                   <Button 
                     variant="outline" 
                     onClick={() => setIsCreateDialogOpen(false)}
-                    className="border-black text-black"
+                    className="border-black text-white hover:bg-gray-800"
                   >
                     Cancel
                   </Button>

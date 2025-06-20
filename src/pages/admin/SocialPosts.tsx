@@ -239,7 +239,7 @@ const AdminSocialPosts = () => {
               <CardHeader>
                 <CardTitle className="flex items-center text-black">
                   <FileText className="mr-2 h-5 w-5" /> Internal Social Posts
-                  <Badge variant="outline" className="ml-2 text-xs">For website display only</Badge>
+                  <Badge variant="outline" className="ml-2 text-xs text-black">For website display only</Badge>
                 </CardTitle>
               </CardHeader>
               <CardContent>

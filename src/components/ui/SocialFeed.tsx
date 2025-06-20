@@ -1,7 +1,7 @@
+// src/components/ui/SocialFeed.tsx
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/integrations/supabase/client'
-import { useLinkedInIntegration } from '@/hooks/useLinkedInIntegration'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -15,116 +15,78 @@ import {
 
 interface SocialPost {
   id: string
-  platform: 'internal' | 'linkedin'
-  title?: string
+  platform: 'internal'
+  title: string
   content: string
   image?: string
   date: string
-  likes?: number
-  comments?: number
-  link?: string
 }
 
 export default function SocialFeed() {
   const [visiblePosts, setVisiblePosts] = useState(6)
   const [isRefreshing, setIsRefreshing] = useState(false)
-  const { fetchLinkedInPosts, checkLinkedInConnection } = useLinkedInIntegration()
 
-  // 1) Internal posts
+  // -- 1) Fetch internal posts --
   const {
     data: internalPosts = [],
-    isLoading: loadingInternal,
-  } = useQuery<SocialPost[], Error>(
-    ['social-posts'],
-    async () => {
+    isLoading,
+    refetch,
+  } = useQuery<SocialPost[], Error>({
+    queryKey: ['social-posts'],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from('social_posts')
-        .select('*')
+        .select('id, title, content, image_url, published_at, created_at')
         .eq('status', 'published')
         .order('published_at', { ascending: false })
 
       if (error) throw error
 
-      return data.map((post) => ({
+      return (data || []).map((post) => ({
         id: post.id,
-        platform: 'internal' as const,
+        platform: 'internal',
         title: post.title,
         content: post.content,
-        image: post.image_url || undefined,
+        image: post.image_url ?? undefined,
         date: post.published_at || post.created_at!,
       }))
-    }
-  )
-
-  // 2) LinkedIn posts
-  const {
-    data: linkedInPosts = [],
-    isLoading: loadingLinkedIn,
-    refetch: refetchLinkedIn,
-  } = useQuery<SocialPost[], Error>(
-    ['linkedin-posts'],
-    async () => {
-      const isConnected = await checkLinkedInConnection()
-      if (!isConnected) return []
-      const raw = await fetchLinkedInPosts()
-      // assume fetchLinkedInPosts() returns items shaped like { id, content, ... }
-      return raw.map((p) => ({
-        id: p.id,
-        platform: 'linkedin' as const,
-        title: p.title,
-        content: p.content,
-        image: p.image,
-        date: p.date,
-        likes: p.likes,
-        comments: p.comments,
-        link: p.link,
-      }))
     },
-    { staleTime: 5 * 60 * 1000 }
-  )
+    // turn off window-focus refetch if you prefer:
+    refetchOnWindowFocus: false,
+  })
 
-  const allPosts = [...internalPosts, ...linkedInPosts].sort(
+  // -- 2) Sort & paginate --
+  const allPosts = internalPosts.sort(
     (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
   )
+  const displayed = allPosts.slice(0, visiblePosts)
+  const hasMore = allPosts.length > visiblePosts
 
-  const displayedPosts = allPosts.slice(0, visiblePosts)
-  const hasMorePosts = allPosts.length > visiblePosts
-
+  // -- 3) Handlers --
   const handleRefresh = async () => {
     setIsRefreshing(true)
     try {
-      await refetchLinkedIn()
+      await refetch()
     } finally {
       setIsRefreshing(false)
     }
   }
+  const loadMore = () => setVisiblePosts((v) => v + 6)
 
-  const loadMorePosts = () => setVisiblePosts((v) => v + 6)
-
-  const formatDate = (dateString: string) =>
-    new Date(dateString).toLocaleDateString('en-US', {
+  const formatDate = (d: string) =>
+    new Date(d).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
     })
 
-  const getPlatformColor = (platform: string) => {
-    switch (platform) {
-      case 'linkedin':
-        return 'bg-[#0077B5] text-white'
-      case 'internal':
-        return 'bg-gray-600 text-white'
-      default:
-        return 'bg-gray-500 text-white'
-    }
-  }
-
-  if (loadingInternal && loadingLinkedIn) {
+  // -- 4) Render --
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[24rem]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4" />
-          <p className="text-black">Loading social feed...</p>
+          <p className="text-black">Loading posts…</p>
         </div>
       </div>
     )
@@ -138,9 +100,7 @@ export default function SocialFeed() {
           <h2 className="text-2xl md:text-3xl font-medium text-black mb-1">
             Latest Updates
           </h2>
-          <p className="text-gray-600">
-            Stay up to date with our latest news and activities
-          </p>
+          <p className="text-gray-600">Stay up to date with our latest news</p>
         </div>
         <Button
           onClick={handleRefresh}
@@ -167,15 +127,15 @@ export default function SocialFeed() {
         <>
           {/* grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {displayedPosts.map((post) => (
+            {displayed.map((post) => (
               <Card
                 key={post.id}
                 className="bg-white border-black hover:shadow-lg transition-shadow"
               >
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <Badge className={getPlatformColor(post.platform)}>
-                      {post.platform === 'linkedin' ? 'LinkedIn' : 'News'}
+                    <Badge className="bg-gray-600 text-white">
+                      News
                     </Badge>
                     <div className="flex items-center text-sm text-gray-500">
                       <Calendar className="h-4 w-4 mr-1" />
@@ -183,17 +143,15 @@ export default function SocialFeed() {
                     </div>
                   </div>
 
-                  {post.title && (
-                    <h3 className="font-medium text-black mb-3 line-clamp-2">
-                      {post.title}
-                    </h3>
-                  )}
+                  <h3 className="font-medium text-black mb-3 line-clamp-2">
+                    {post.title}
+                  </h3>
 
                   {post.image && (
                     <div className="mb-4">
                       <img
                         src={post.image}
-                        alt={post.title || 'Post image'}
+                        alt={post.title}
                         className="w-full h-48 object-cover rounded-lg"
                       />
                     </div>
@@ -205,31 +163,10 @@ export default function SocialFeed() {
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
-                      {post.likes !== undefined && (
-                        <div className="flex items-center">
-                          <Heart className="h-4 w-4 mr-1" />
-                          {post.likes}
-                        </div>
-                      )}
-                      {post.comments !== undefined && (
-                        <div className="flex items-center">
-                          <MessageCircle className="h-4 w-4 mr-1" />
-                          {post.comments}
-                        </div>
-                      )}
+                      {/* if you have likes/comments in future, you can insert here */}
                     </div>
 
-                    {post.link && (
-                      <Button
-                        onClick={() => window.open(post.link, '_blank')}
-                        variant="outline"
-                        size="sm"
-                        className="border-black text-black hover:bg-gray-50"
-                      >
-                        <ExternalLink className="h-4 w-4 mr-1" />
-                        View
-                      </Button>
-                    )}
+                    {/* if you add a `link` field later, render it here */}
                   </div>
                 </CardContent>
               </Card>
@@ -237,14 +174,14 @@ export default function SocialFeed() {
           </div>
 
           {/* load more */}
-          {hasMorePosts && (
+          {hasMore && (
             <div className="text-center">
               <Button
-                onClick={loadMorePosts}
+                onClick={loadMore}
                 variant="outline"
                 className="border-black text-black hover:bg-gray-50"
               >
-                Load More Posts
+                Load More
               </Button>
             </div>
           )}

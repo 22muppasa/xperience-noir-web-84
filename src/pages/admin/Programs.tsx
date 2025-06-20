@@ -424,7 +424,7 @@ const AdminPrograms = () => {
                           </p>
                         </div>
                         <div className="flex space-x-2">
-                          <Button size="sm" variant="outline" className="border-black text-black">Edit</Button>
+                          <Button size="sm" variant="outline" className="border-black text-white">Edit</Button>
                           <Button size="sm" className="bg-black text-white hover:bg-gray-800">Publish</Button>
                         </div>
                       </div>

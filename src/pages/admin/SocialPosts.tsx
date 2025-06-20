@@ -278,7 +278,7 @@ const AdminSocialPosts = () => {
                             <div className="flex space-x-2">
                               <Button
                                 size="sm" variant="outline"
-                                className="border-black text-white hover: text-black hover:bg-gray-50"
+                                className="border-black text-white hover:text-black hover:bg-gray-50"
                                 onClick={() => handleEditPost(post)}
                               >
                                 <Edit className="h-4 w-4" />
@@ -415,7 +415,7 @@ const AdminSocialPosts = () => {
               <Button
                 onClick={handleUpdatePost}
                 disabled={updatePostMutation.isPending}
-                className="bg-black text-white hover:bg-gray-800"
+                className="bg-black text-white hover:text-black hover:bg-gray-800"
               >
                 {updatePostMutation.isPending ? 'Updating…' : 'Update Post'}
               </Button>

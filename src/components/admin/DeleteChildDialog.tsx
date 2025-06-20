@@ -110,7 +110,7 @@ const DeleteChildDialog = ({ child, isOpen, onOpenChange }: DeleteChildDialogPro
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel className="border-black text-white hover:text:black hover:bg-gray-50">
+          <AlertDialogCancel className="border-black text-white hover:text-black hover:bg-gray-50">
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction

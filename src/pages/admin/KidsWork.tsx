@@ -406,7 +406,7 @@ const AdminKidsWork = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => handleView(work)}
-                            className="flex-1 border-black text-white hover:bg-gray-50"
+                            className="flex-1 border-black text-white hover:text-black hover:bg-gray-50"
                           >
                             <Eye className="h-4 w-4 mr-1" />
                             View
@@ -416,7 +416,7 @@ const AdminKidsWork = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => handleOpenLink(work)}
-                            className="border-black text-black hover:bg-gray-50"
+                            className="border-black text-white hover:text-black hover:bg-gray-50"
                           >
                             <ExternalLink className="h-4 w-4" />
                           </Button>

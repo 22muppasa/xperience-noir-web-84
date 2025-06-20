@@ -33,10 +33,10 @@ interface Submission {
 
 const getStatusColor = (status: SubmissionStatus) => {
   switch (status) {
-    case 'unread': return 'bg-red-100 text-red-800 border-red-200';
+    case 'unread':      return 'bg-red-100 text-red-800 border-red-200';
     case 'in_progress': return 'bg-blue-100 text-blue-800 border-blue-200';
-    case 'responded': return 'bg-green-100 text-green-800 border-green-200';
-    default: return 'bg-white text-black border-black';
+    case 'responded':   return 'bg-green-100 text-green-800 border-green-200';
+    default:            return 'bg-white text-black border-black';
   }
 };
 
@@ -98,6 +98,87 @@ const AdminContactForms: React.FC = () => {
     );
   }
 
+  // Helper to render a table for a filtered list
+  const renderTable = (list: Submission[]) => (
+    list.length > 0 ? (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Contact</TableHead>
+            <TableHead>Subject</TableHead>
+            <TableHead>Submitted</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {list.map(sub => (
+            <TableRow key={sub.id}>
+              <TableCell>
+                <div className="flex items-center space-x-2">
+                  <User className="h-4 w-4 text-black" />
+                  <span className="font-medium text-black">{sub.name}</span>
+                </div>
+                <div className="text-sm text-black">{sub.email}</div>
+              </TableCell>
+              <TableCell>
+                <div className="font-medium text-black">{sub.subject}</div>
+                <div className="text-sm text-black truncate max-w-xs">{sub.message}</div>
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center text-sm text-black">
+                  <Clock className="mr-1 h-4 w-4" />
+                  {sub.created_at && new Date(sub.created_at).toLocaleDateString()}
+                </div>
+              </TableCell>
+              <TableCell>
+                <Badge className={getStatusColor(sub.status)}>
+                  {sub.status.replace('_', ' ')}
+                </Badge>
+              </TableCell>
+              <TableCell>
+                <div className="flex space-x-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="bg-white border-black text-black hover:bg-black hover:text-white"
+                    onClick={() => updateStatusMutation.mutate({ id: sub.id, status: 'in_progress' })}
+                  >
+                    <Reply className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="bg-white border-black text-black hover:bg-black hover:text-white"
+                    onClick={() => markAsRespondedMutation.mutate(sub.id)}
+                  >Mark Responded</Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="bg-white border-black text-black hover:bg-black hover:text-white"
+                    onClick={() => updateStatusMutation.mutate({ id: sub.id, status: 'archived' })}
+                  >
+                    <Archive className="h-4 w-4" />
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    ) : (
+      <div className="text-center py-8">
+        <Mail className="h-12 w-12 text-black mx-auto mb-4" />
+        <p className="text-black">No submissions in this category</p>
+      </div>
+    )
+  );
+
+  // Filtered lists
+  const unreadList      = submissions.filter(s => s.status === 'unread');
+  const inProgressList = submissions.filter(s => s.status === 'in_progress');
+  const respondedList   = submissions.filter(s => s.status === 'responded');
+
   return (
     <DashboardLayout>
       <div className="space-y-6">
@@ -108,48 +189,41 @@ const AdminContactForms: React.FC = () => {
 
         <Tabs defaultValue="all" className="w-full">
           <TabsList className="bg-white border-black">
-            <TabsTrigger value="all" className="text-black">All</TabsTrigger>
-            <TabsTrigger value="unread" className="text-black">Unread</TabsTrigger>
-            <TabsTrigger value="in_progress" className="text-black">In Progress</TabsTrigger>
-            <TabsTrigger value="responded" className="text-black">Responded</TabsTrigger>
+            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="unread">Unread</TabsTrigger>
+            <TabsTrigger value="in_progress">In Progress</TabsTrigger>
+            <TabsTrigger value="responded">Responded</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="all" className="space-y-4">
+          {/* All */}
+          <TabsContent value="all">
+            {/* Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
               <Card className="bg-white border-black">
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-black">
-                    {submissions.filter(s => s.status === 'unread').length}
-                  </div>
+                  <div className="text-2xl font-bold text-black">{unreadList.length}</div>
                   <div className="text-sm text-black">Unread</div>
                 </CardContent>
               </Card>
               <Card className="bg-white border-black">
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-black">
-                    {submissions.filter(s => s.status === 'in_progress').length}
-                  </div>
+                  <div className="text-2xl font-bold text-black">{inProgressList.length}</div>
                   <div className="text-sm text-black">In Progress</div>
                 </CardContent>
               </Card>
               <Card className="bg-white border-black">
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-black">
-                    {submissions.filter(s => s.status === 'responded').length}
-                  </div>
+                  <div className="text-2xl font-bold text-black">{respondedList.length}</div>
                   <div className="text-sm text-black">Responded</div>
                 </CardContent>
               </Card>
               <Card className="bg-white border-black">
                 <CardContent className="p-4 text-center">
-                  <div className="text-2xl font-bold text-black">
-                    {submissions.length}
-                  </div>
+                  <div className="text-2xl font-bold text-black">{submissions.length}</div>
                   <div className="text-sm text-black">Total</div>
                 </CardContent>
               </Card>
             </div>
-
             <Card className="bg-white border-black">
               <CardHeader>
                 <CardTitle className="flex items-center text-black">
@@ -157,87 +231,46 @@ const AdminContactForms: React.FC = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {submissions.length > 0 ? (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="text-black">Contact</TableHead>
-                        <TableHead className="text-black">Subject</TableHead>
-                        <TableHead className="text-black">Submitted</TableHead>
-                        <TableHead className="text-black">Status</TableHead>
-                        <TableHead className="text-black">Actions</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {submissions.map(sub => (
-                        <TableRow key={sub.id}>
-                          <TableCell>
-                            <div className="flex items-center space-x-2">
-                              <User className="h-4 w-4 text-black" />
-                              <span className="font-medium text-black">{sub.name}</span>
-                            </div>
-                            <div className="text-sm text-black">{sub.email}</div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="font-medium text-black">{sub.subject}</div>
-                            <div className="text-sm text-black truncate max-w-xs">{sub.message}</div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center text-sm text-black">
-                              <Clock className="mr-1 h-4 w-4" />
-                              {sub.created_at && new Date(sub.created_at).toLocaleDateString()}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <Badge className={getStatusColor(sub.status)}>
-                              {sub.status.replace('_', ' ')}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex space-x-2">
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="bg-white border-black text-black hover:bg-black hover:text-white"
-                                onClick={() => updateStatusMutation.mutate({ id: sub.id, status: 'in_progress' })}>
-                                <Reply className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="bg-white border-black text-black hover:bg-black hover:text-white"
-                                onClick={() => markAsRespondedMutation.mutate(sub.id)}>
-                                Mark Responded
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="bg-white border-black text-black hover:bg-black hover:text-white"
-                                onClick={() => updateStatusMutation.mutate({ id: sub.id, status: 'archived' })}>
-                                <Archive className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                ) : (
-                  <div className="text-center py-8">
-                    <Mail className="h-12 w-12 text-black mx-auto mb-4" />
-                    <p className="text-black">No contact submissions yet</p>
-                  </div>
-                )}
+                {renderTable(submissions)}
               </CardContent>
             </Card>
           </TabsContent>
 
           {/* Unread */}
-          <TabsContent value="unread" className="space-y-4">{/* ... */}</TabsContent>
+          <TabsContent value="unread">
+            <Card className="bg-white border-black">
+              <CardHeader>
+                <CardTitle className="text-black">Unread Submissions</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {renderTable(unreadList)}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* In Progress */}
-          <TabsContent value="in_progress" className="space-y-4">{/* ... */}</TabsContent>
+          <TabsContent value="in_progress">
+            <Card className="bg-white border-black">
+              <CardHeader>
+                <CardTitle className="text-black">In Progress</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {renderTable(inProgressList)}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           {/* Responded */}
-          <TabsContent value="responded" className="space-y-4">{/* ... */}</TabsContent>
+          <TabsContent value="responded">
+            <Card className="bg-white border-black">
+              <CardHeader>
+                <CardTitle className="text-black">Responded</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {renderTable(respondedList)}
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
     </DashboardLayout>

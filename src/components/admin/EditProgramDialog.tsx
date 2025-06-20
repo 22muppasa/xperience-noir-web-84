@@ -187,7 +187,7 @@ const EditProgramDialog = ({ program }: EditProgramDialogProps) => {
               type="button"
               variant="outline" 
               onClick={() => setIsOpen(false)}
-              className="border-black text-white hover:text-black hover:bg-gray-800"
+              className="border-black text-white hover:bg-gray-800"
             >
               Cancel
             </Button>

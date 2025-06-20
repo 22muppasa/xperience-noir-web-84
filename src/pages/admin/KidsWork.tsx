@@ -158,7 +158,7 @@ const AdminKidsWork = () => {
   });
 
   const getFileIcon = (work: KidsWork) => {
-    if (work.google_drive_link) return <Link className="h-5 w-5 text-black" />;
+    if (work.google_drive_link) return <Link className="h-5 w-5 text-white" />;
     if (work.file_type?.startsWith('image/')) return <Image className="h-5 w-5 text-black" />;
     if (work.file_type?.startsWith('video/')) return <Video className="h-5 w-5 text-black" />;
     return <FileText className="h-5 w-5 text-black" />;
@@ -406,7 +406,7 @@ const AdminKidsWork = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => handleView(work)}
-                            className="flex-1 border-black text-black hover:bg-gray-50"
+                            className="flex-1 border-black text-white hover:bg-gray-50"
                           >
                             <Eye className="h-4 w-4 mr-1" />
                             View

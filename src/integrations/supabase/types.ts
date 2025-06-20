@@ -9,6 +9,36 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_settings: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          setting_key: string
+          setting_value: Json
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          setting_key: string
+          setting_value: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          setting_key?: string
+          setting_value?: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       audit_logs: {
         Row: {
           action: string
@@ -457,6 +487,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      linkedin_posts_cache: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          image_url: string | null
+          last_synced: string
+          linkedin_post_id: string
+          linkedin_url: string
+        }
+        Insert: {
+          content: string
+          created_at: string
+          id?: string
+          image_url?: string | null
+          last_synced?: string
+          linkedin_post_id: string
+          linkedin_url: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          last_synced?: string
+          linkedin_post_id?: string
+          linkedin_url?: string
+        }
+        Relationships: []
       }
       messages: {
         Row: {

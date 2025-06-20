@@ -22,3 +22,6 @@ verify_jwt = false
 
 [functions.linkedin-posts]
 verify_jwt = false
+
+[functions.get-admin-setting]
+verify_jwt = false

@@ -352,7 +352,7 @@ const AdminSocialPosts = () => {
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)} className="border-black text-black">
+              <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)} className="border-black text-white">
                 Cancel
               </Button>
               <Button

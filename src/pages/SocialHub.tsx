@@ -1,7 +1,7 @@
 // src/pages/SocialHub.tsx
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-import AdminSocialPosts from "./pages/admin/SocialPosts";
+import AdminSocialPosts from "./admin/SocialPosts";
 import SocialFeed from '@/components/ui/SocialFeed';    // your public feed
 
 const SocialHub: React.FC = () => {

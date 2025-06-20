@@ -1,7 +1,7 @@
 // src/pages/Consulting.tsx
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Check, Users, Clock as ClockIcon, Shield, Target, Zap, Mail, Phone, MapPin, Calendar as CalendarIcon } from 'lucide-react';
+import { ArrowRight, Users, Clock as ClockIcon, Target, Zap, Mail, Phone, MapPin, Calendar as CalendarIcon } from 'lucide-react';
 import ContactForm from '@/components/ui/ContactForm';
 import AnimatedButton from '@/components/ui/AnimatedButton';
 import Navbar from '@/components/layout/Navbar';
@@ -116,7 +116,7 @@ const Consulting = () => {
               <div className="flex flex-wrap gap-4 animate-fade-in animate-delay-200">
                 <a href="#contact-section">
                   <AnimatedButton
-                    className="flex items-center gap-2 bg-white hover:bg-gray-100 transition text-black font-semibold rounded-md px-6 py-3 shadow-lg"
+                    className="flex items-center gap-2bg-white hover:bg-gray-100 transition text-black font-semibold rounded-md px-6 py-3 shadow-lg"
                     sparkleColor="black"
                     textColor="black"
                     icon={ArrowRight}
@@ -161,183 +161,4 @@ const Consulting = () => {
                     </div>
                     <div className="text-2xl font-bold text-white">100%</div>
                   </div>
-                </div>
-                <div className="space-y-4 mt-8">
-                  <div className="bg-zinc-900/90 backdrop-blur-sm rounded-lg p-4 animate-fade-in animate-delay-400 border border-gray-700">
-                    <div className="flex items-center gap-3 mb-2">
-                      <ClockIcon className="w-5 h-5 text-gray-100" />
-                      <span className="text-sm text-gray-100">Avg. Timeline</span>
-                    </div>
-                    <div className="text-2xl font-bold text-white">6 weeks</div>
-                  </div>
-                  <div className="bg-zinc-900/90 backdrop-blur-sm rounded-lg p-4 animate-fade-in animate-delay-600 border border-gray-700">
-                    <div className="flex items-center gap-3 mb-2">
-                      <Zap className="w-5 h-5 text-gray-100" />
-                      <span className="text-sm text-gray-100">Projects Completed</span>
-                    </div>
-                    <div className="text-2xl font-bold text-white">150+</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Past Projects Carousel */}
-      <section id="portfolio" className="py-20 px-4 md:px-6 bg-white text-black">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-semibold mb-6 text-black">Our Recent Projects</h2>
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto">
-              Explore our portfolio of successful digital transformations across various industries. Click on any project to learn more about our approach and results.
-            </p>
-          </div>
-          <Carousel className="w-full">
-            <CarouselPrevious />
-            <CarouselContent className="-ml-2 md:-ml-4">
-              {pastProjects.map((p) => (
-                <CarouselItem key={p.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <div className="group cursor-pointer bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                        <div className="aspect-[4/3] overflow-hidden bg-gray-200">
-                          <img
-                            src={p.image}
-                            alt={p.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                        </div>
-                        <div className="p-6">
-                          <div className="text-sm text-gray-500 mb-2">{p.category}</div>
-                          <h3 className="text-xl font-medium mb-3 text-black group-hover:text-zinc-800 transition-colors">
-                            {p.name}
-                          </h3>
-                          <p className="text-gray-800 text-sm leading-relaxed line-clamp-3">
-                            {p.description.substring(0, 120)}…
-                          </p>
-                          <div className="mt-4 flex items-center justify-between">
-                            <span className="text-sm font-medium text-black">Click to learn more</span>
-                            <ArrowRight className="w-4 h-4 text-black group-hover:translate-x-1 transition-transform" />
-                          </div>
-                        </div>
-                      </div>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto bg-white border border-gray-300 shadow-2xl text-black">
-                      <DialogHeader className="border-b border-gray-200 pb-6 mb-6">
-                        <DialogTitle className="text-3xl font-bold text-black mb-2">{p.name}</DialogTitle>
-                        <DialogDescription className="text-lg text-gray-600 font-medium">
-                          {p.category}
-                        </DialogDescription>
-                      </DialogHeader>
-                      {/* ...modal content... */}
-                      <div className="pt-6 border-t border-gray-200">
-                        <a href="#contact-section">
-                          <AnimatedButton
-                            sparkleColor="black"
-                            textColor="black"
-                            icon={ArrowRight}
-                            invertOnHover
-                            className="w-full justify-center bg-white text-black hover:bg-zinc-900 hover:text-white transition font-semibold rounded-md px-6 py-3"
-                          >
-                            Start Similar Project
-                          </AnimatedButton>
-                        </a>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselNext />
-          </Carousel>
-        </div>
-      </section>
-
-      {/* Services */}
-      <section className="py-20 px-4 md:px-6 bg-black text-white">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-semibold mb-6 text-white">Our Comprehensive Services</h2>
-            <p className="text-xl text-gray-200 max-w-3xl mx-auto">
-              From strategy to execution, we provide end-to-end solutions that address every aspect of your digital transformation journey.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Your service cards here */}
-          </div>
-        </div>
-      </section>
-
-      {/* Contact Info + Form */}
-      <section id="contact-section" className="py-20 px-4 md:px-6 bg-white text-black">
-        <div className="container mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
-            <div className="lg:col-span-2 space-y-8">
-              <h2 className="text-3xl md:text-4xl font-medium mb-6">Contact Information</h2>
-              <p className="text-lg text-gray-700 mb-8">
-                Reach out using any of the methods below, or fill out the contact form and we'll get back to you as soon as possible.
-              </p>
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center">
-                    <Mail size={20} />
-                  </div>
-                  <div>
-                    <h3 className="font-medium mb-1">Email</h3>
-                    <p className="text-gray-600 mb-1">General Inquiries:</p>
-                    <a href="mailto:hello@xperience.com" className="text-blue-600 hover:underline">hello@xperience.com</a>
-                    <p className="text-gray-600 mt-2 mb-1">Support:</p>
-                    <a href="mailto:support@xperience.com" className="text-blue-600 hover:underline">support@xperience.com</a>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center">
-                    <Phone size={20} />
-                  </div>
-                  <div>
-                    <h3 className="font-medium mb-1">Phone</h3>
-                    <p className="text-gray-600 mb-1">Main Office:</p>
-                    <a href="tel:+18885551234" className="text-blue-600 hover:underline">(888) 555-1234</a>
-                    <p className="text-gray-600 mt-2 mb-1">Support:</p>
-                    <a href="tel:+18885555678" className="text-blue-600 hover:underline">(888) 555-5678</a>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center">
-                    <MapPin size={20} />
-                  </div>
-                  <div>
-                    <h3 className="font-medium mb-1">Location</h3>
-                    <p className="text-gray-700">123 Tech Way</p>
-                    <p className="text-gray-700">Suite 400</p>
-                    <p className="text-gray-700">San Francisco, CA 94107</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center">
-                    <CalendarIcon size={20} />
-                  </div>
-                  <div>
-                    <h3 className="font-medium mb-1">Schedule a Call</h3>
-                    <p className="text-gray-700 mb-3">Book a 30-minute consultation with our team.</p>
-                    <a href="#contact-section">
-                      <Button variant="outline" className="border-black text-black hover:bg-black hover:text-white">
-                        Schedule Now
-                      </Button>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="lg:col-span-3 bg-zinc-900 rounded-2xl p-8 shadow-lg">
-              <ContactForm />
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
-};
-
-export default Consulting;
+                </

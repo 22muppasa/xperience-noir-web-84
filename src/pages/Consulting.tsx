@@ -114,7 +114,7 @@ const Consulting = () => {
                 We help businesses create exceptional digital experiences that engage audiences, drive growth, and deliver measurable results through strategic design and development.
               </p>
               <div className="flex flex-wrap gap-4 animate-fade-in animate-delay-200">
-                <a href="#contact-section">
+                <a href="#portfolio">
                   <AnimatedButton
                     className="flex items-center gap-2 bg-white hover:bg-gray-100 transition text-black font-semibold rounded-md px-6 py-3 shadow-lg"
                     sparkleColor="black"
@@ -133,15 +133,15 @@ const Consulting = () => {
                     View Our Work
                   </Button>
                 </a>
-                <a href="#contact-section">
+                <Link to="/contact">
                   <Button
                     variant="outline"
                     size="lg"
                     className="border-white text-white hover:bg-white hover:text-black hover:border-transparent transition rounded-md font-semibold px-6 py-3"
                   >
-                    Schedule a Call
+                    Contact Us
                   </Button>
-                </a>
+                </Link>
               </div>
             </div>
             <div className="relative">
@@ -232,7 +232,7 @@ const Consulting = () => {
                       </DialogHeader>
                       {/* ...modal content... */}
                       <div className="pt-6 border-t border-gray-200">
-                        <a href="#contact-section">
+                        <Link to="/contact">
                           <AnimatedButton
                             sparkleColor="black"
                             textColor="black"
@@ -242,7 +242,7 @@ const Consulting = () => {
                           >
                             Start Similar Project
                           </AnimatedButton>
-                        </a>
+                        </Link>
                       </div>
                     </DialogContent>
                   </Dialog>
@@ -269,73 +269,18 @@ const Consulting = () => {
         </div>
       </section>
 
-      {/* Contact Info + Form */}
-      <section id="contact-section" className="py-20 px-4 md:px-6 bg-white text-black">
-        <div className="container mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
-
-            {/* Left Contact Info */}
-            <div className="lg:col-span-2 space-y-8">
-              <h2 className="text-3xl md:text-4xl font-medium mb-6">Contact Information</h2>
-              <p className="text-lg text-gray-700 mb-8">
-                Reach out using any of the methods below, or fill out the contact form and we'll get back to you as soon as possible.
-              </p>
-              <div className="space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center">
-                    <Mail size={20} />
-                  </div>
-                  <div>
-                    <h3 className="font-medium mb-1">Email</h3>
-                    <p className="text-gray-600 mb-1">General Inquiries:</p>
-                    <a href="mailto:hello@xperience.com" className="text-blue-600 hover:underline">hello@xperience.com</a>
-                    <p className="text-gray-600 mt-2 mb-1">Support:</p>
-                    <a href="mailto:support@xperience.com" className="text-blue-600 hover:underline">support@xperience.com</a>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center">
-                    <Phone size={20} />
-                  </div>
-                  <div>
-                    <h3 className="font-medium mb-1">Phone</h3>
-                    <p className="text-gray-600 mb-1">Main Office:</p>
-                    <a href="tel:+18885551234" className="text-blue-600 hover:underline">(888) 555-1234</a>
-                    <p className="text-gray-600 mt-2 mb-1">Support:</p>
-                    <a href="tel:+18885555678" className="text-blue-600 hover:underline">(888) 555-5678</a>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center">
-                    <MapPin size={20} />
-                  </div>
-                  <div>
-                    <h3 className="font-medium mb-1">Location</h3>
-                    <p className="text-gray-700">123 Tech Way</p>
-                    <p className="text-gray-700">Suite 400</p>
-                    <p className="text-gray-700">San Francisco, CA 94107</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center">
-                    <CalendarIcon size={20} />
-                  </div>
-                  <div>
-                    <h3 className="font-medium mb-1">Schedule a Call</h3>
-                    <p className="text-gray-700 mb-3">Book a 30-minute consultation with our team.</p>
-                    <a href="#contact-section">
-                      <Button variant="outline" className="border-black text-black hover:bg-black hover:text-white">
-                        Schedule Now
-                      </Button>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="lg:col-span-3 bg-zinc-900 rounded-2xl p-8 shadow-lg">
-              <ContactForm />
-            </div>
-          </div>
+      {/* Contact CTA */}
+      <section className="py-20 px-4 md:px-6 bg-black text-white">
+        <div className="container mx-auto max-w-6xl text-center">
+          <Link to="/contact">
+            <Button
+              variant="outline"
+              size="lg"
+              className="border-white text-white hover:bg-white hover:text-black transition rounded-md font-semibold px-6 py-3"
+            >
+              Contact Us
+            </Button>
+          </Link>
         </div>
       </section>
     </div>

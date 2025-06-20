@@ -431,7 +431,7 @@ const AdminMessages = () => {
                     setReplyingTo(null);
                     setNewMessage({ recipient: '', subject: '', content: '' });
                   }}
-                  className="border-gray-300 text-gray-700 hover:bg-gray-50"
+                  className="border-gray-300 text-white hover:bg-gray-50"
                 >
                   Cancel
                 </Button>

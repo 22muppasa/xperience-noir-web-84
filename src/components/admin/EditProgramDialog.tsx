@@ -88,7 +88,7 @@ const EditProgramDialog = ({ program }: EditProgramDialogProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" variant="outline" className="border-black text-black">
+        <Button size="sm" variant="outline" className="border-black text-white">
           <Edit className="h-4 w-4" />
         </Button>
       </DialogTrigger>

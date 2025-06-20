@@ -31,7 +31,7 @@ export default function SocialHub() {
       {/* Newsletter Signup Section */}
       <section className="py-12 md:py-20 px-4 md:px-6 bg-gray-50">
         <div className="container mx-auto max-w-3xl text-center">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-medium mb-4 md:mb-6">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl text-black font-medium mb-4 md:mb-6">
             Stay Updated
           </h2>
           <p className="text-base md:text-lg text-gray-600 mb-6 md:mb-8">

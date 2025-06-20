@@ -97,7 +97,7 @@ export default function SocialFeed() {
       {/* header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl md:text-3xl font-medium text-black mb-1">
+          <h2 className="text-2xl md:text-3xl font-medium text-white mb-1">
             Latest Updates
           </h2>
           <p className="text-gray-600">Stay up to date with our latest news</p>

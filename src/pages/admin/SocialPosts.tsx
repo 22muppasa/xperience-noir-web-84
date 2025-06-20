@@ -1,4 +1,4 @@
-// src/components/admin/AdminSocialPosts.tsx
+// src/pages/admin/SocialPosts.tsx
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -67,7 +67,6 @@ const AdminSocialPosts = () => {
           postData.status === 'published'
             ? new Date().toISOString()
             : null,
-        // only include scheduled_for if set
         ...(postData.scheduled_for
           ? { scheduled_for: new Date(postData.scheduled_for).toISOString() }
           : {}),
@@ -209,7 +208,6 @@ const AdminSocialPosts = () => {
           </Button>
         </div>
 
-        {/* Tabs */}
         <Tabs defaultValue="posts" className="w-full">
           <TabsList className="bg-white border-black">
             <TabsTrigger value="posts" className="text-black">Internal Posts</TabsTrigger>
@@ -309,7 +307,7 @@ const AdminSocialPosts = () => {
             </Card>
           </TabsContent>
 
-          {/* LinkedIn & Analytics Tabs omitted for brevity */}
+          {/* LinkedIn & Analytics tabs unchanged */}
         </Tabs>
 
         {/* Create Dialog */}
@@ -318,7 +316,7 @@ const AdminSocialPosts = () => {
             <DialogHeader>
               <DialogTitle className="text-black">Create New Internal Post</DialogTitle>
               <DialogDescription className="text-black">
-                Create a new internal post for website display (not published to social media).
+                Create a new internal post for website display.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
@@ -357,8 +355,12 @@ const AdminSocialPosts = () => {
               <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)} className="border-black text-black">
                 Cancel
               </Button>
-              <Button onClick={handleCreatePost} disabled={createPostMutation.isLoading} className="bg-black text-white hover:bg-gray-800">
-                {createPostMutation.isLoading ? 'Creating...' : 'Create Post'}
+              <Button
+                onClick={handleCreatePost}
+                disabled={createPostMutation.isPending}
+                className="bg-black text-white hover:bg-gray-800"
+              >
+                {createPostMutation.isPending ? 'Creating…' : 'Create Post'}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -410,8 +412,12 @@ const AdminSocialPosts = () => {
               <Button variant="outline" onClick={() => setIsEditDialogOpen(false)} className="border-black text-black">
                 Cancel
               </Button>
-              <Button onClick={handleUpdatePost} disabled={updatePostMutation.isLoading} className="bg-black text-white hover:bg-gray-800">
-                {updatePostMutation.isLoading ? 'Updating...' : 'Update Post'}
+              <Button
+                onClick={handleUpdatePost}
+                disabled={updatePostMutation.isPending}
+                className="bg-black text-white hover:bg-gray-800"
+              >
+                {updatePostMutation.isPending ? 'Updating…' : 'Update Post'}
               </Button>
             </DialogFooter>
           </DialogContent>

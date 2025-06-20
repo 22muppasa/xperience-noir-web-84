@@ -11,7 +11,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel";
+} from '@/components/ui/carousel';
 import {
   Dialog,
   DialogContent,
@@ -19,10 +19,75 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 
 const pastProjects = [
-  /* ...your six project objects as before... */
+  {
+    id: 1,
+    name: "EduTech Academy",
+    category: "Education Technology",
+    image: "https://images.unsplash.com/photo-1486718448742-163732cd1544?auto=format&fit=crop&w=800&h=600&q=80",
+    description: "Transformed a cluttered educational platform into a streamlined learning experience that increased student engagement by 67% and course completion rates by 43%. We redesigned the entire user interface with a focus on intuitive navigation and implemented gamification elements to boost student motivation.",
+    metrics: { engagement: "+67%", completion: "+43%", satisfaction: "4.8/5" },
+    technologies: ["React", "Node.js", "PostgreSQL", "Redis"],
+    duration: "8 weeks",
+    teamSize: "6 people",
+  },
+  {
+    id: 2,
+    name: "HealthCore Wellness",
+    category: "Healthcare & Wellness",
+    image: "https://images.unsplash.com/photo-1487958449943-2429e8be8625-2429e8be8625?auto=format&fit=crop&w=800&h=600&q=80",
+    description: "Redesigned the patient portal and appointment system, resulting in a 52% improvement in booking efficiency and 38% increase in patient satisfaction scores. The new system features automated reminders, telemedicine integration, and a comprehensive health dashboard.",
+    metrics: { efficiency: "+52%", satisfaction: "+38%", retention: "+29%" },
+    technologies: ["Vue.js", "Python", "MongoDB", "WebRTC"],
+    duration: "10 weeks",
+    teamSize: "8 people",
+  },
+  {
+    id: 3,
+    name: "TechStart Solutions",
+    category: "Technology Startup",
+    image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&h=600&q=80",
+    description: "Built a comprehensive platform from the ground up, enabling them to scale from startup to series A funding with a 300% increase in user acquisition. The platform includes advanced analytics, automated workflows, and seamless third-party integrations.",
+    metrics: { users: "+300%", conversion: "+89%", revenue: "+245%" },
+    technologies: ["React", "TypeScript", "AWS", "GraphQL"],
+    duration: "12 weeks",
+    teamSize: "10 people",
+  },
+  {
+    id: 4,
+    name: "RetailMax Commerce",
+    category: "E-commerce",
+    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&h=600&q=80",
+    description: "Developed a modern e-commerce platform with advanced inventory management and personalized shopping experiences. The solution increased online sales by 180% and reduced cart abandonment by 45%.",
+    metrics: { sales: "+180%", abandonment: "-45%", speed: "+60%" },
+    technologies: ["Next.js", "Stripe", "Shopify", "Algolia"],
+    duration: "14 weeks",
+    teamSize: "7 people",
+  },
+  {
+    id: 5,
+    name: "FinanceFlow Pro",
+    category: "Financial Services",
+    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&h=600&q=80",
+    description: "Created a secure financial dashboard with real-time analytics and automated reporting features. Enhanced security protocols and user experience led to 95% user adoption rate and zero security incidents.",
+    metrics: { adoption: "95%", security: "100%", efficiency: "+75%" },
+    technologies: ["Angular", "Spring Boot", "MySQL", "Docker"],
+    duration: "16 weeks",
+    teamSize: "12 people",
+  },
+  {
+    id: 6,
+    name: "GreenEnergy Hub",
+    category: "Sustainability",
+    image: "https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&w=800&h=600&q=80",
+    description: "Built an innovative platform for renewable energy management and monitoring. The system helps companies track their carbon footprint and optimize energy consumption, resulting in 40% energy savings.",
+    metrics: { savings: "40%", efficiency: "+85%", adoption: "92%" },
+    technologies: ["React", "Python", "InfluxDB", "Grafana"],
+    duration: "10 weeks",
+    teamSize: "5 people",
+  },
 ];
 
 const Consulting = () => {
@@ -68,9 +133,17 @@ const Consulting = () => {
                     View Our Work
                   </Button>
                 </a>
+                <a href="#contact-section">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="border-white text-white hover:bg-white hover:text-black hover:border-transparent transition rounded-md font-semibold px-6 py-3"
+                  >
+                    Schedule a Call
+                  </Button>
+                </a>
               </div>
             </div>
-
             <div className="relative">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-4">
@@ -123,18 +196,23 @@ const Consulting = () => {
           <Carousel className="w-full">
             <CarouselPrevious />
             <CarouselContent className="-ml-2 md:-ml-4">
-              {pastProjects.map(p => (
+              {pastProjects.map((p) => (
                 <CarouselItem key={p.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
                   <Dialog>
                     <DialogTrigger asChild>
                       <div className="group cursor-pointer bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
                         <div className="aspect-[4/3] overflow-hidden bg-gray-200">
-                          <img src={p.image} alt={p.name}
-                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                          <img
+                            src={p.image}
+                            alt={p.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
                         </div>
                         <div className="p-6">
                           <div className="text-sm text-gray-500 mb-2">{p.category}</div>
-                          <h3 className="text-xl font-medium mb-3 text-black group-hover:text-zinc-800 transition-colors">{p.name}</h3>
+                          <h3 className="text-xl font-medium mb-3 text-black group-hover:text-zinc-800 transition-colors">
+                            {p.name}
+                          </h3>
                           <p className="text-gray-800 text-sm leading-relaxed line-clamp-3">
                             {p.description.substring(0, 120)}…
                           </p>
@@ -148,9 +226,11 @@ const Consulting = () => {
                     <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto bg-white border border-gray-300 shadow-2xl text-black">
                       <DialogHeader className="border-b border-gray-200 pb-6 mb-6">
                         <DialogTitle className="text-3xl font-bold text-black mb-2">{p.name}</DialogTitle>
-                        <DialogDescription className="text-lg text-gray-600 font-medium">{p.category}</DialogDescription>
+                        <DialogDescription className="text-lg text-gray-600 font-medium">
+                          {p.category}
+                        </DialogDescription>
                       </DialogHeader>
-                      {/* …rest of your detailed modal… */}
+                      {/* ...modal content... */}
                       <div className="pt-6 border-t border-gray-200">
                         <a href="#contact-section">
                           <AnimatedButton
@@ -184,7 +264,7 @@ const Consulting = () => {
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* …your six service cards as before… */}
+            {/* Your service cards here */}
           </div>
         </div>
       </section>
@@ -193,8 +273,7 @@ const Consulting = () => {
       <section id="contact-section" className="py-20 px-4 md:px-6 bg-white text-black">
         <div className="container mx-auto max-w-6xl">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
-            {/* left info */}
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 space-y-8">
               <h2 className="text-3xl md:text-4xl font-medium mb-6">Contact Information</h2>
               <p className="text-lg text-gray-700 mb-8">
                 Reach out using any of the methods below, or fill out the contact form and we'll get back to you as soon as possible.
@@ -202,7 +281,7 @@ const Consulting = () => {
               <div className="space-y-6">
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center">
-                    <Mail size={20}/>
+                    <Mail size={20} />
                   </div>
                   <div>
                     <h3 className="font-medium mb-1">Email</h3>
@@ -214,7 +293,7 @@ const Consulting = () => {
                 </div>
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center">
-                    <Phone size={20}/>
+                    <Phone size={20} />
                   </div>
                   <div>
                     <h3 className="font-medium mb-1">Phone</h3>
@@ -226,7 +305,7 @@ const Consulting = () => {
                 </div>
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center">
-                    <MapPin size={20}/>
+                    <MapPin size={20} />
                   </div>
                   <div>
                     <h3 className="font-medium mb-1">Location</h3>
@@ -237,30 +316,22 @@ const Consulting = () => {
                 </div>
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center">
-                    <CalendarIcon size={20}/>
+                    <CalendarIcon size={20} />
                   </div>
                   <div>
                     <h3 className="font-medium mb-1">Schedule a Call</h3>
                     <p className="text-gray-700 mb-3">Book a 30-minute consultation with our team.</p>
-                    <Button asChild>
-                      <a href="#" target="_blank" rel="noopener noreferrer">Schedule Now</a>
-                    </Button>
+                    <a href="#contact-section">
+                      <Button variant="outline" className="border-black text-black hover:bg-black hover:text-white">
+                        Schedule Now
+                      </Button>
+                    </a>
                   </div>
                 </div>
               </div>
-              <div className="mt-12">
-                <h3 className="text-xl font-medium mb-4">Follow Us</h3>
-                <div className="flex gap-4">
-                  {/* …social icons… */}
-                </div>
-              </div>
             </div>
-            {/* right form */}
-            <div className="lg:col-span-3">
-              <div className="bg-gray-50 border rounded-lg p-8">
-                <h2 className="text-2xl font-medium mb-6 text-black">Send Us a Message</h2>
-                <ContactForm />
-              </div>
+            <div className="lg:col-span-3 bg-zinc-900 rounded-2xl p-8 shadow-lg">
+              <ContactForm />
             </div>
           </div>
         </div>

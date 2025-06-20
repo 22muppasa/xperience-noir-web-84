@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -52,24 +53,14 @@ const ChildrenGrid = ({ children, onLinkParent }: ChildrenGridProps) => {
                   {child.first_name} {child.last_name}
                 </CardTitle>
                 <div className="flex space-x-2">
-                  {/* Link Parent Button */}
                   <Button
+                    variant="outline"
                     size="sm"
                     onClick={() => onLinkParent(child)}
-                    className="
-                      bg-white
-                      border
-                      border-black
-                      text-black
-                      hover:bg-black
-                      hover:text-white
-                      transition-colors
-                    "
+                    className="border-black text-white hover:bg-gray-50"
                   >
                     <Link className="h-4 w-4" />
                   </Button>
-
-                  {/* Delete Button */}
                   <Button
                     variant="outline"
                     size="sm"

@@ -344,7 +344,7 @@ const AdminPrograms = () => {
                             <TableCell>
                               <Badge 
                                 variant={program.status === 'published' ? 'default' : 'secondary'}
-                                className="text-white"
+                                className="text-black"
                               >
                                 {program.status}
                               </Badge>

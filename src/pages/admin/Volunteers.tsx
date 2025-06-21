@@ -225,7 +225,7 @@ const Volunteers = () => {
               Filter Applications
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4">
             <div className="flex gap-2">
               {['all', 'pending', 'approved', 'rejected', 'withdrawn'].map((status) => (
                 <Button
@@ -246,9 +246,9 @@ const Volunteers = () => {
         </Card>
 
         {/* Applications Table */}
-        <Card className="bg-white border-2 border-black">
+        <Card className="bg-white border-2 border-black text-black">
           <CardHeader>
-            <CardTitle className="text-black">Applications</CardTitle>
+            <CardTitle>Applications</CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (

@@ -1,9 +1,11 @@
+
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Calendar, Users, Gift, ArrowRight } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
+import { supabase } from '@/integrations/supabase/client';
 
 const GetInvolved = () => {
   const { toast } = useToast();
@@ -26,12 +28,22 @@ const GetInvolved = () => {
     e.preventDefault();
     setSubmitting(true);
     
-    // Simulate API call
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { error } = await supabase
+        .from('volunteer_applications')
+        .insert({
+          name: volunteerFormData.name,
+          email: volunteerFormData.email,
+          phone: volunteerFormData.phone || null,
+          area_of_interest: volunteerFormData.area,
+          experience: volunteerFormData.experience,
+          availability: volunteerFormData.availability,
+        });
+
+      if (error) throw error;
       
       toast({
-        title: "Application submitted",
+        title: "Application submitted successfully!",
         description: "Thank you for your interest in volunteering! We'll be in touch soon.",
       });
       
@@ -45,6 +57,7 @@ const GetInvolved = () => {
         availability: '',
       });
     } catch (error) {
+      console.error('Error submitting volunteer application:', error);
       toast({
         title: "Error submitting application",
         description: "Please try again later.",

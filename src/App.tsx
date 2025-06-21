@@ -32,6 +32,7 @@ import AdminCustomers from "./pages/admin/Customers";
 import AdminChildren from "./pages/admin/Children";
 import AdminPrograms from "./pages/admin/Programs";
 import AdminEnrollments from "./pages/admin/Enrollments";
+import AdminVolunteers from "./pages/admin/Volunteers";
 import AdminKidsWork from "./pages/admin/KidsWork";
 import AdminMessages from "./pages/admin/Messages";
 import AdminSocialPosts from "./pages/admin/SocialPosts";
@@ -78,6 +79,7 @@ function App() {
               <Route path="/admin/children" element={<ProtectedRoute requiredRole="admin"><AdminChildren /></ProtectedRoute>} />
               <Route path="/admin/programs" element={<ProtectedRoute requiredRole="admin"><AdminPrograms /></ProtectedRoute>} />
               <Route path="/admin/enrollments" element={<ProtectedRoute requiredRole="admin"><AdminEnrollments /></ProtectedRoute>} />
+              <Route path="/admin/volunteers" element={<ProtectedRoute requiredRole="admin"><AdminVolunteers /></ProtectedRoute>} />
               <Route path="/admin/kids-work" element={<ProtectedRoute requiredRole="admin"><AdminKidsWork /></ProtectedRoute>} />
               <Route path="/admin/messages" element={<ProtectedRoute requiredRole="admin"><AdminMessages /></ProtectedRoute>} />
               <Route path="/admin/social-posts" element={<ProtectedRoute requiredRole="admin"><AdminSocialPosts /></ProtectedRoute>} />

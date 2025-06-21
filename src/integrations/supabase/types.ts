@@ -827,6 +827,65 @@ export type Database = {
         }
         Relationships: []
       }
+      volunteer_applications: {
+        Row: {
+          area_of_interest: string
+          availability: string
+          created_at: string
+          email: string
+          experience: string
+          id: string
+          name: string
+          notes: string | null
+          phone: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          submitted_at: string
+          updated_at: string
+        }
+        Insert: {
+          area_of_interest: string
+          availability: string
+          created_at?: string
+          email: string
+          experience: string
+          id?: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitted_at?: string
+          updated_at?: string
+        }
+        Update: {
+          area_of_interest?: string
+          availability?: string
+          created_at?: string
+          email?: string
+          experience?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submitted_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "volunteer_applications_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       work_collection_items: {
         Row: {
           added_at: string

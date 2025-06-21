@@ -171,10 +171,10 @@ const Volunteers = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
             <CardContent className="p-4">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 bg-white">
                 <Users className="h-8 w-8 text-blue-600" />
                 <div>
-                  <p className="text-sm text-gray-600">Total Applications</p>
+                  <p className="text-sm text-black">Total Applications</p>
                   <p className="text-2xl font-bold text-black">{stats.total}</p>
                 </div>
               </div>

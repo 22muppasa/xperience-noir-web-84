@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -167,7 +166,7 @@ const Volunteers = () => {
           </div>
         </div>
 
-               {/* Stats Cards */}
+        {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card className="bg-white border-2 border-black">
             <CardContent className="p-4">
@@ -218,11 +217,10 @@ const Volunteers = () => {
           </Card>
         </div>
 
-
         {/* Filters */}
-        <Card>
+        <Card className="bg-white border-2 border-black">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-black">
               <Filter className="h-5 w-5" />
               Filter Applications
             </CardTitle>
@@ -248,9 +246,9 @@ const Volunteers = () => {
         </Card>
 
         {/* Applications Table */}
-        <Card>
+        <Card className="bg-white border-2 border-black">
           <CardHeader>
-            <CardTitle>Applications</CardTitle>
+            <CardTitle className="text-black">Applications</CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (

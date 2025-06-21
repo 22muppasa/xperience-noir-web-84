@@ -167,10 +167,10 @@ const Volunteers = () => {
           </div>
         </div>
 
-                {/* Stats Cards */}
+               {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="p-4 bg-white border-2 border-black">
+          <Card className="bg-white border-2 border-black">
+            <CardContent className="p-4">
               <div className="flex items-center gap-2">
                 <Users className="h-8 w-8 text-blue-600" />
                 <div>
@@ -181,8 +181,8 @@ const Volunteers = () => {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="p-4 bg-white border-2 border-black">
+          <Card className="bg-white border-2 border-black">
+            <CardContent className="p-4">
               <div className="flex items-center gap-2">
                 <Calendar className="h-8 w-8 text-yellow-600" />
                 <div>
@@ -193,8 +193,8 @@ const Volunteers = () => {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="p-4 bg-white border-2 border-black">
+          <Card className="bg-white border-2 border-black">
+            <CardContent className="p-4">
               <div className="flex items-center gap-2">
                 <Check className="h-8 w-8 text-green-600" />
                 <div>
@@ -205,8 +205,8 @@ const Volunteers = () => {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="p-4 bg-white border-2 border-black">
+          <Card className="bg-white border-2 border-black">
+            <CardContent className="p-4">
               <div className="flex items-center gap-2">
                 <X className="h-8 w-8 text-red-600" />
                 <div>
@@ -217,6 +217,7 @@ const Volunteers = () => {
             </CardContent>
           </Card>
         </div>
+
 
         {/* Filters */}
         <Card>

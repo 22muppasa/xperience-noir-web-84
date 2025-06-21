@@ -268,138 +268,69 @@ const GetInvolved = () => {
         </div>
       </section>
       
-      {/* Donate Section */}
+      {/* Simplified Donate Section */}
       <section id="donate-section" className="py-20 px-4 md:px-6 bg-white">
-        <div className="container mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <h2 className="text-3xl md:text-4xl font-medium mb-6 text-black">Support Our Mission</h2>
-              <p className="text-lg text-gray-800 mb-6">
-                Your donation helps us provide scholarships, develop new programs, and create opportunities for underrepresented groups in tech.
-              </p>
-              
-              <div className="space-y-4 mb-8">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                      <path d="M12 2v20" />
-                      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-medium mb-1 text-black">Fund a Scholarship</h3>
-                    <p className="text-gray-800">Provide financial support for students from underrepresented backgrounds.</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                      <path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14" />
-                      <path d="m7.5 4.27 9 5.15" />
-                      <polyline points="3.29 7 12 12 20.71 7" />
-                      <line x1="12" x2="12" y1="22" y2="12" />
-                      <circle cx="18.5" cy="15.5" r="2.5" />
-                      <path d="M20.27 17.27 22 19" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-medium mb-1 text-black">Support New Programs</h3>
-                    <p className="text-gray-800">Help us develop and launch new educational initiatives.</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
-                      <path d="M18 8a6 6 0 0 1-12 0" />
-                      <circle cx="12" cy="2" r="2" />
-                      <path d="m18 15 2 5h-4.75" />
-                      <path d="m4 15 2 5H1.25" />
-                      <path d="M14 21h-4" />
-                      <path d="M7 13a6 6 0 0 0 10 0" />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-medium mb-1 text-black">Community Outreach</h3>
-                    <p className="text-gray-800">Fund initiatives that bring technology education to underserved communities.</p>
-                  </div>
-                </div>
+        <div className="container mx-auto max-w-4xl text-center">
+          <h2 className="text-3xl md:text-4xl font-medium mb-6 text-black">Support Our Mission</h2>
+          <p className="text-lg text-gray-800 mb-8 max-w-2xl mx-auto">
+            Your donation helps us provide scholarships, develop new programs, and create opportunities for underrepresented groups in tech.
+          </p>
+          
+          <div className="space-y-4 mb-8 max-w-2xl mx-auto">
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                  <path d="M12 2v20" />
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                </svg>
               </div>
-              
-              <div className="space-y-4">
-                <Button size="lg" className="w-full md:w-auto">Donate Now</Button>
-                <p className="text-sm text-gray-700">
-                  XPerience is a 501(c)(3) nonprofit organization. All donations are tax-deductible.
-                </p>
+              <div className="text-left">
+                <h3 className="font-medium mb-1 text-black">Fund a Scholarship</h3>
+                <p className="text-gray-800">Provide financial support for students from underrepresented backgrounds.</p>
               </div>
             </div>
             
-            <div className="bg-gray-50 rounded-lg p-8">
-              <h3 className="text-xl font-medium mb-6 text-black">Choose Your Donation</h3>
-              
-              <div className="space-y-4 mb-6">
-                <div className="bg-white border rounded-md p-4 cursor-pointer hover:border-black transition-colors">
-                  <div className="flex justify-between items-center">
-                    <p className="font-medium text-black">One-time Donation</p>
-                    <div className="w-4 h-4 rounded-full border border-black flex items-center justify-center">
-                      <div className="w-2 h-2 rounded-full bg-black"></div>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="bg-white border rounded-md p-4 cursor-pointer hover:border-black transition-colors">
-                  <div className="flex justify-between items-center">
-                    <p className="font-medium text-black">Monthly Donation</p>
-                    <div className="w-4 h-4 rounded-full border border-gray-300"></div>
-                  </div>
-                </div>
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                  <path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14" />
+                  <path d="m7.5 4.27 9 5.15" />
+                  <polyline points="3.29 7 12 12 20.71 7" />
+                  <line x1="12" x2="12" y1="22" y2="12" />
+                  <circle cx="18.5" cy="15.5" r="2.5" />
+                  <path d="M20.27 17.27 22 19" />
+                </svg>
               </div>
-              
-              <div className="grid grid-cols-3 gap-3 mb-6">
-                <div className="bg-white border rounded-md py-3 px-4 text-center cursor-pointer hover:border-black transition-colors text-black">
-                  $25
-                </div>
-                <div className="bg-white border rounded-md py-3 px-4 text-center cursor-pointer hover:border-black transition-colors text-black">
-                  $50
-                </div>
-                <div className="bg-white border rounded-md py-3 px-4 text-center cursor-pointer hover:border-black transition-colors text-black">
-                  $100
-                </div>
-                <div className="bg-white border rounded-md py-3 px-4 text-center cursor-pointer hover:border-black transition-colors text-black">
-                  $250
-                </div>
-                <div className="bg-white border rounded-md py-3 px-4 text-center cursor-pointer hover:border-black transition-colors text-black">
-                  $500
-                </div>
-                <div className="bg-white border rounded-md py-3 px-4 text-center cursor-pointer hover:border-black transition-colors text-black">
-                  Custom
-                </div>
+              <div className="text-left">
+                <h3 className="font-medium mb-1 text-black">Support New Programs</h3>
+                <p className="text-gray-800">Help us develop and launch new educational initiatives.</p>
               </div>
-              
-              <Button size="lg" className="w-full">Continue to Payment</Button>
+            </div>
+            
+            <div className="flex items-start gap-3">
+              <div className="w-8 h-8 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4">
+                  <path d="M18 8a6 6 0 0 1-12 0" />
+                  <circle cx="12" cy="2" r="2" />
+                  <path d="m18 15 2 5h-4.75" />
+                  <path d="m4 15 2 5H1.25" />
+                  <path d="M14 21h-4" />
+                  <path d="M7 13a6 6 0 0 0 10 0" />
+                </svg>
+              </div>
+              <div className="text-left">
+                <h3 className="font-medium mb-1 text-black">Community Outreach</h3>
+                <p className="text-gray-800">Fund initiatives that bring technology education to underserved communities.</p>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
-      
-      {/* Corporate Partners */}
-      <section className="py-20 px-4 md:px-6 bg-gray-50">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-medium mb-6 text-black">Our Corporate Partners</h2>
-            <p className="text-lg text-gray-800 max-w-3xl mx-auto">
-              We're grateful for the support of these organizations who share our commitment to digital inclusion and education.
-            </p>
-          </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
-            {[1, 2, 3, 4, 5, 6].map((item) => (
-              <div key={item} className="flex items-center justify-center py-8 px-4 bg-white border rounded-lg hover-scale">
-                <div className="w-16 h-16 bg-gray-200 rounded-full"></div>
-              </div>
-            ))}
-          </div>
+          <Button size="lg" className="w-full md:w-auto">
+            Donate Now
+          </Button>
+          <p className="text-sm text-gray-700 mt-4">
+            XPerience is a 501(c)(3) nonprofit organization. All donations are tax-deductible.
+          </p>
         </div>
       </section>
       

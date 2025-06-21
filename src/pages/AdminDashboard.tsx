@@ -67,14 +67,14 @@ const AdminDashboard = () => {
       description: 'View and manage all user accounts',
       icon: Users,
       href: '/admin/customers',
-      color: 'bg-black'
+      color: 'bg-white border-black'
     },
     {
       title: 'Review Enrollments',
       description: 'Approve pending enrollment requests',
       icon: UserCheck,
       href: '/admin/enrollments',
-      color: 'bg-black',
+      color: 'bg-white border-black',
       badge: stats?.pendingEnrollments > 0 ? stats.pendingEnrollments : undefined
     },
     {
@@ -82,7 +82,7 @@ const AdminDashboard = () => {
       description: 'Manage volunteer applications',
       icon: Heart,
       href: '/admin/volunteers',
-      color: 'bg-black',
+      color: 'bg-white border-black',
       badge: stats?.pendingVolunteers > 0 ? stats.pendingVolunteers : undefined
     },
     {
@@ -90,7 +90,7 @@ const AdminDashboard = () => {
       description: 'Review and approve submitted work',
       icon: FileText,
       href: '/admin/kids-work',
-      color: 'bg-black'
+      color: 'bg-white border-black'
     }
   ];
 
@@ -181,7 +181,7 @@ const AdminDashboard = () => {
                 <Button
                   key={index}
                   variant="outline"
-                  className="h-auto p-4 flex flex-col items-start space-y-2 border-black bg-white hover:bg-gray-50 text-black relative"
+                  className={`h-auto p-4 flex flex-col items-start space-y-2 ${action.color} hover:bg-gray-50 text-black relative`}
                   onClick={() => window.location.href = action.href}
                 >
                   {action.badge && (
@@ -189,7 +189,7 @@ const AdminDashboard = () => {
                       {action.badge}
                     </div>
                   )}
-                  <div className={`p-2 rounded-lg ${action.color} text-white`}>
+                  <div className="p-2 rounded-lg bg-gray-100 text-black">
                     <action.icon className="h-5 w-5" />
                   </div>
                   <div className="text-left">

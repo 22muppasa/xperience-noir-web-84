@@ -170,7 +170,7 @@ const Volunteers = () => {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
-            <CardContent className="p-4 bg-white">
+            <CardContent className="p-4 bg-white border-2 border-black">
               <div className="flex items-center gap-2">
                 <Users className="h-8 w-8 text-blue-600" />
                 <div>

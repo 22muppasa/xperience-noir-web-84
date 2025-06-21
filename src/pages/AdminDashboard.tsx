@@ -151,7 +151,7 @@ const AdminDashboard = () => {
         {/* Quick Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {adminStats.map((stat, index) => (
-            <Card key={index} className="bg-white border-black">
+            <Card key={index} className="bg-white border-2 border-black">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-black">{stat.title}</CardTitle>
                 <stat.icon className="h-4 w-4 text-black" />
@@ -171,7 +171,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Quick Actions */}
-        <Card className="bg-white border-black">
+        <Card className="bg-white border-2 border-black">
           <CardHeader>
             <CardTitle className="text-black">Quick Actions</CardTitle>
           </CardHeader>
@@ -181,7 +181,7 @@ const AdminDashboard = () => {
                 <Button
                   key={index}
                   variant="outline"
-                  className={`h-auto p-4 flex flex-col items-start space-y-2 ${action.color} hover:bg-gray-50 text-black relative`}
+                  className={`h-auto p-4 flex flex-col items-start space-y-2 bg-white border-2 border-black hover:bg-gray-50 text-black relative`}
                   onClick={() => window.location.href = action.href}
                 >
                   {action.badge && (
@@ -203,7 +203,7 @@ const AdminDashboard = () => {
         </Card>
 
         {/* Analytics Dashboard */}
-        <Card className="bg-white border-black">
+        <Card className="bg-white border-2 border-black">
           <CardHeader>
             <CardTitle className="text-black">Analytics Overview</CardTitle>
           </CardHeader>

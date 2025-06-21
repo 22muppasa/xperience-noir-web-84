@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { Tables } from '@/integrations/supabase/types';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -35,20 +36,7 @@ import {
   Phone,
 } from 'lucide-react';
 
-interface VolunteerApplication {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  area_of_interest: string;
-  experience: string;
-  availability: string;
-  status: 'pending' | 'approved' | 'rejected' | 'withdrawn';
-  submitted_at: string;
-  reviewed_at?: string;
-  reviewed_by?: string;
-  notes?: string;
-}
+type VolunteerApplication = Tables<'volunteer_applications'>;
 
 const Volunteers = () => {
   const { toast } = useToast();
@@ -58,9 +46,9 @@ const Volunteers = () => {
   const [reviewNotes, setReviewNotes] = useState('');
 
   // Fetch volunteer applications
-  const { data: applications = [], isLoading } = useQuery<VolunteerApplication[]>({
+  const { data: applications = [], isLoading } = useQuery({
     queryKey: ['volunteer-applications', selectedStatus],
-    queryFn: async () => {
+    queryFn: async (): Promise<VolunteerApplication[]> => {
       let query = supabase
         .from('volunteer_applications')
         .select('*')

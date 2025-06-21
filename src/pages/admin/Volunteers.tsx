@@ -170,8 +170,8 @@ const Volunteers = () => {
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2 bg-white">
+            <CardContent className="p-4 bg-white">
+              <div className="flex items-center gap-2">
                 <Users className="h-8 w-8 text-blue-600" />
                 <div>
                   <p className="text-sm text-black">Total Applications</p>

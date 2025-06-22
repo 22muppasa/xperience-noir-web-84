@@ -37,7 +37,7 @@ const DeleteChildDialog: React.FC<DeleteChildDialogProps> = ({
 
   const deleteChildMutation = useMutation({
     mutationFn: async (childId: string) => {
-      // 1️⃣ Remove any parent‐child relationships
+      // 1️⃣ Remove any parent–child relationships
       const { error: relErr } = await supabase
         .from('parent_child_relationships')
         .delete()
@@ -69,11 +69,11 @@ const DeleteChildDialog: React.FC<DeleteChildDialogProps> = ({
       return data;
     },
     onSuccess: () => {
-      // Invalidate all queries that might include this child or their work
-      queryClient.invalidateQueries(['admin-children']);
-      queryClient.invalidateQueries(['admin-parent-child-relationships']);
-      queryClient.invalidateQueries(['admin-kids-work']);
-      queryClient.invalidateQueries(['customer-kids-work']);
+      // Invalidate all relevant queries by passing an object with queryKey
+      queryClient.invalidateQueries({ queryKey: ['admin-children'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-parent-child-relationships'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-kids-work'] });
+      queryClient.invalidateQueries({ queryKey: ['customer-kids-work'] });
 
       toast({
         title: 'Child deleted',
@@ -91,13 +91,11 @@ const DeleteChildDialog: React.FC<DeleteChildDialogProps> = ({
     },
   });
 
-  // React-Query v4 mutation.status is 'idle' | 'pending' | 'success' | 'error'
+  // React Query v4 uses "pending" instead of "loading"
   const isDeleting = deleteChildMutation.status === 'pending';
 
   const handleDelete = () => {
-    if (child) {
-      deleteChildMutation.mutate(child.id);
-    }
+    if (child) deleteChildMutation.mutate(child.id);
   };
 
   return (

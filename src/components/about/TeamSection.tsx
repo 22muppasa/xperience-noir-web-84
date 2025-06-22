@@ -30,13 +30,13 @@ const TeamSection = () => {
     },
     {
       id: 2,
-      name: "Lorem Ipsum",
-      role: "Head of Education",
-      bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&h=600&q=80",
+      name: "Sashank Muppaneni",
+      role: "Vice President of Business",
+      bio: "Helping local businesses by redesigning their websites to optimize digital presence.",
+      image: "https://i.ibb.co/qMXYPWvs/1740971668699.jpg",
       socialLinks: {
-        linkedin: "https://linkedin.com",
-        email: "marcus@xperience.com"
+        linkedin: "https://www.linkedin.com/in/sashank-muppaneni-5926b422b/",
+        email: "sashank.muppaneni@vhhscougars.org"
       }
     },
     {

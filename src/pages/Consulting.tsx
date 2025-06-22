@@ -198,7 +198,7 @@ const Consulting = () => {
                         Projects Completed
                       </span>
                     </div>
-                    <div className="text-2xl font-bold text-white">150+</div>
+                    <div className="text-2xl font-bold text-white">10+</div>
                   </div>
                 </div>
               </div>

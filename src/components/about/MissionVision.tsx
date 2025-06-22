@@ -8,10 +8,10 @@ const MissionVision = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
           <div>
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-medium mb-4 md:mb-6">Our Mission</h2>
-            <p className="text-base md:text-lg text-gray-600 mb-4 md:mb-6">
+            <p className="text-base md:text-lg text-white mb-4 md:mb-6">
               We're on a mission to empower individuals and organizations with the digital skills and resources they need to thrive in today's technology-driven world.
             </p>
-            <p className="text-base md:text-lg text-gray-600 mb-6 md:mb-8">
+            <p className="text-base md:text-lg text-white mb-6 md:mb-8">
               Through accessible education, expert consulting, and community initiatives, we're building a more inclusive digital future where everyone has the opportunity to participate and succeed.
             </p>
             

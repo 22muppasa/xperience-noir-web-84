@@ -9,7 +9,6 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -28,17 +27,17 @@ interface DeleteChildDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const DeleteChildDialog = ({
+const DeleteChildDialog: React.FC<DeleteChildDialogProps> = ({
   child,
   isOpen,
   onOpenChange,
-}: DeleteChildDialogProps) => {
+}) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const deleteChildMutation = useMutation({
     mutationFn: async (childId: string) => {
-      // 1️⃣ Delete any parent-child relationships (ON DELETE CASCADE also covers this)
+      // 1️⃣ Delete any parent-child relationships
       const { error: relErr } = await supabase
         .from('parent_child_relationships')
         .delete()
@@ -52,7 +51,7 @@ const DeleteChildDialog = ({
         .eq('child_id', childId);
       if (enrollErr) throw enrollErr;
 
-      // 3️⃣ **Explicitly delete** all kids_work for that child
+      // 3️⃣ Delete all kids_work for that child
       const { error: workErr } = await supabase
         .from('kids_work')
         .delete()
@@ -70,11 +69,11 @@ const DeleteChildDialog = ({
       return data;
     },
     onSuccess: () => {
-      // Invalidate any queries that might still include this child or their work
-      queryClient.invalidateQueries({ queryKey: ['admin-children'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-parent-child-relationships'] });
-      queryClient.invalidateQueries({ queryKey: ['admin-kids-work'] });
-      queryClient.invalidateQueries({ queryKey: ['customer-kids-work'] });
+      // invalidate any stale queries
+      queryClient.invalidateQueries(['admin-children']);
+      queryClient.invalidateQueries(['admin-parent-child-relationships']);
+      queryClient.invalidateQueries(['admin-kids-work']);
+      queryClient.invalidateQueries(['customer-kids-work']);
 
       toast({
         title: 'Child deleted',
@@ -92,6 +91,8 @@ const DeleteChildDialog = ({
     },
   });
 
+  const isDeleting = deleteChildMutation.status === 'loading';
+
   const handleDelete = () => {
     if (child) {
       deleteChildMutation.mutate(child.id);
@@ -105,27 +106,28 @@ const DeleteChildDialog = ({
           <AlertDialogTitle className="text-black">
             Delete Child
           </AlertDialogTitle>
-          <AlertDialogDescription className="text-black">
-            Are you sure you want to delete{' '}
-            <strong>
-              {child?.first_name} {child?.last_name}
-            </strong>
-            ? This will also permanently remove all of their shared work.
-          </AlertDialogDescription>
         </AlertDialogHeader>
+
+        <div className="px-6 pb-4 text-black">
+          Are you sure you want to delete{' '}
+          <strong>
+            {child?.first_name} {child?.last_name}
+          </strong>
+          ? This will also permanently remove all of their shared work.
+        </div>
+
         <AlertDialogFooter>
           <AlertDialogCancel className="border-black text-white hover:text-black hover:bg-gray-50">
             Cancel
           </AlertDialogCancel>
+
           <AlertDialogAction asChild>
             <Button
               onClick={handleDelete}
-              disabled={deleteChildMutation.isLoading}
+              disabled={isDeleting}
               className="bg-red-600 text-white hover:bg-red-700"
             >
-              {deleteChildMutation.isLoading
-                ? 'Deleting…'
-                : 'Delete Child'}
+              {isDeleting ? 'Deleting…' : 'Delete Child'}
             </Button>
           </AlertDialogAction>
         </AlertDialogFooter>

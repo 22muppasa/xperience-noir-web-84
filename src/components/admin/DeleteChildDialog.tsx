@@ -1,3 +1,5 @@
+// src/components/admin/DeleteChildDialog.tsx
+
 import React from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -26,49 +28,57 @@ interface DeleteChildDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const DeleteChildDialog = ({ child, isOpen, onOpenChange }: DeleteChildDialogProps) => {
+const DeleteChildDialog = ({
+  child,
+  isOpen,
+  onOpenChange,
+}: DeleteChildDialogProps) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const deleteChildMutation = useMutation({
     mutationFn: async (childId: string) => {
-      // Delete parent-child relationships
-      const { error: relationshipError } = await supabase
+      // 1️⃣ Delete any parent-child relationships (ON DELETE CASCADE also covers this)
+      const { error: relErr } = await supabase
         .from('parent_child_relationships')
         .delete()
         .eq('child_id', childId);
-      if (relationshipError) throw relationshipError;
+      if (relErr) throw relErr;
 
-      // Soft-delete in enrollments
-      const { error: enrollmentError } = await supabase
+      // 2️⃣ Soft-unlink from enrollments
+      const { error: enrollErr } = await supabase
         .from('enrollments')
         .update({ child_id: null })
         .eq('child_id', childId);
-      if (enrollmentError) throw enrollmentError;
+      if (enrollErr) throw enrollErr;
 
-      // Soft-delete in kids_work
-      const { error: workError } = await supabase
+      // 3️⃣ **Explicitly delete** all kids_work for that child
+      const { error: workErr } = await supabase
         .from('kids_work')
-        .update({ child_id: null })
+        .delete()
         .eq('child_id', childId);
-      if (workError) throw workError;
+      if (workErr) throw workErr;
 
-      // Finally delete the child record
-      const { data, error } = await supabase
+      // 4️⃣ Finally delete the child record itself
+      const { data, error: childErr } = await supabase
         .from('children')
         .delete()
         .eq('id', childId)
         .select()
         .single();
-      if (error) throw error;
+      if (childErr) throw childErr;
       return data;
     },
     onSuccess: () => {
+      // Invalidate any queries that might still include this child or their work
       queryClient.invalidateQueries({ queryKey: ['admin-children'] });
       queryClient.invalidateQueries({ queryKey: ['admin-parent-child-relationships'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-kids-work'] });
+      queryClient.invalidateQueries({ queryKey: ['customer-kids-work'] });
+
       toast({
         title: 'Child deleted',
-        description: 'The child and all related records have been removed successfully',
+        description: 'The child and all their related work have been removed.',
       });
       onOpenChange(false);
     },
@@ -92,18 +102,15 @@ const DeleteChildDialog = ({ child, isOpen, onOpenChange }: DeleteChildDialogPro
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
       <AlertDialogContent className="bg-white border-black">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-black">Delete Child</AlertDialogTitle>
+          <AlertDialogTitle className="text-black">
+            Delete Child
+          </AlertDialogTitle>
           <AlertDialogDescription className="text-black">
             Are you sure you want to delete{' '}
             <strong>
               {child?.first_name} {child?.last_name}
             </strong>
-            ? This action cannot be undone and will remove all associated records including:
-            <ul className="list-disc list-inside mt-2 text-sm">
-              <li>Parent-child relationships</li>
-              <li>Program enrollments (will be set to null)</li>
-              <li>Kids work records (will be set to null)</li>
-            </ul>
+            ? This will also permanently remove all of their shared work.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -116,7 +123,9 @@ const DeleteChildDialog = ({ child, isOpen, onOpenChange }: DeleteChildDialogPro
               disabled={deleteChildMutation.isLoading}
               className="bg-red-600 text-white hover:bg-red-700"
             >
-              {deleteChildMutation.isLoading ? 'Deleting...' : 'Delete Child'}
+              {deleteChildMutation.isLoading
+                ? 'Deleting…'
+                : 'Delete Child'}
             </Button>
           </AlertDialogAction>
         </AlertDialogFooter>

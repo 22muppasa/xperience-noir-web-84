@@ -431,7 +431,7 @@ const AdminMessages = () => {
                     setReplyingTo(null);
                     setNewMessage({ recipient: '', subject: '', content: '' });
                   }}
-                  className="border-gray-300 text-white hover:bg-gray-50"
+                  className="border-gray-300 text-white hover:text-black hover:bg-gray-50"
                 >
                   Cancel
                 </Button>
@@ -516,7 +516,7 @@ const AdminMessages = () => {
                                 <Button 
                                   size="sm" 
                                   variant="outline" 
-                                  className="border-blue-300 text-blue-700 hover:bg-blue-50 hover:text-blue-800"
+                                  className="border-blue-300 bg-white text-blue-700 hover:bg-blue-50 hover:text-blue-800"
                                   onClick={() => handleReply(message)}
                                 >
                                   <Reply className="h-3 w-3 mr-1" />
@@ -527,7 +527,7 @@ const AdminMessages = () => {
                                 <Button 
                                   size="sm" 
                                   variant="outline" 
-                                  className="border-green-300 text-green-700 hover:bg-green-50 hover:text-green-800"
+                                  className="border-green-300 bg-white text-green-700 hover:bg-green-50 hover:text-green-800"
                                   onClick={() => handleMarkAsRead(message.id)}
                                   disabled={markAsReadMutation.isPending}
                                 >
@@ -538,7 +538,7 @@ const AdminMessages = () => {
                               <Button 
                                 size="sm" 
                                 variant="outline" 
-                                className="border-red-300 text-red-700 hover:bg-red-50 hover:text-red-800"
+                                className="border-red-300 bg-white text-red-700 hover:bg-red-50 hover:text-red-800"
                                 onClick={() => deleteMessageMutation.mutate(message.id)}
                               >
                                 <Trash2 className="h-3 w-3" />

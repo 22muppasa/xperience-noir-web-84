@@ -292,7 +292,7 @@ const Volunteers = () => {
                                 size="sm"
                                 onClick={() => setSelectedApplication(application)}
                               >
-                                <Eye className="h-4 w-4" />
+                                <Eye className="h-4 w-4 text-white" />
                               </Button>
                             </DialogTrigger>
                             <DialogContent className="max-w-2xl">

@@ -304,7 +304,7 @@ const Volunteers = () => {
                                   <div className="grid grid-cols-2 gap-4">
                                     <div>
                                       <label className="text-sm font-medium text-gray-700">Name</label>
-                                      <p className="text-black">{selectedApplication.name}</p>
+                                      <p className="text-white">{selectedApplication.name}</p>
                                     </div>
                                     <div>
                                       <label className="text-sm font-medium text-gray-700">Status</label>
@@ -318,36 +318,36 @@ const Volunteers = () => {
                                         <Mail className="h-4 w-4" />
                                         Email
                                       </label>
-                                      <p className="text-black">{selectedApplication.email}</p>
+                                      <p className="text-white">{selectedApplication.email}</p>
                                     </div>
                                     <div>
                                       <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
                                         <Phone className="h-4 w-4" />
                                         Phone
                                       </label>
-                                      <p className="text-black">{selectedApplication.phone || 'Not provided'}</p>
+                                      <p className="text-white">{selectedApplication.phone || 'Not provided'}</p>
                                     </div>
                                   </div>
 
                                   <div>
                                     <label className="text-sm font-medium text-gray-700">Area of Interest</label>
-                                    <p className="text-black">{selectedApplication.area_of_interest}</p>
+                                    <p className="text-white">{selectedApplication.area_of_interest}</p>
                                   </div>
 
                                   <div>
                                     <label className="text-sm font-medium text-gray-700">Availability</label>
-                                    <p className="text-black">{selectedApplication.availability}</p>
+                                    <p className="text-white">{selectedApplication.availability}</p>
                                   </div>
 
                                   <div>
                                     <label className="text-sm font-medium text-gray-700">Experience</label>
-                                    <p className="text-black whitespace-pre-wrap">{selectedApplication.experience}</p>
+                                    <p className="text-white whitespace-pre-wrap">{selectedApplication.experience}</p>
                                   </div>
 
                                   {selectedApplication.notes && (
                                     <div>
                                       <label className="text-sm font-medium text-gray-700">Admin Notes</label>
-                                      <p className="text-black whitespace-pre-wrap">{selectedApplication.notes}</p>
+                                      <p className="text-white whitespace-pre-wrap">{selectedApplication.notes}</p>
                                     </div>
                                   )}
 

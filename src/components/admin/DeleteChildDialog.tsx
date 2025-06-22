@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,6 +12,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
 
 interface Child {
   id: string;
@@ -32,40 +32,34 @@ const DeleteChildDialog = ({ child, isOpen, onOpenChange }: DeleteChildDialogPro
 
   const deleteChildMutation = useMutation({
     mutationFn: async (childId: string) => {
-      // First delete related records manually since we can't use the RPC function yet
-      
       // Delete parent-child relationships
       const { error: relationshipError } = await supabase
         .from('parent_child_relationships')
         .delete()
         .eq('child_id', childId);
-      
       if (relationshipError) throw relationshipError;
 
-      // Set child_id to null in enrollments (soft delete)
+      // Soft-delete in enrollments
       const { error: enrollmentError } = await supabase
         .from('enrollments')
         .update({ child_id: null })
         .eq('child_id', childId);
-      
       if (enrollmentError) throw enrollmentError;
 
-      // Set child_id to null in kids_work (soft delete)
+      // Soft-delete in kids_work
       const { error: workError } = await supabase
         .from('kids_work')
         .update({ child_id: null })
         .eq('child_id', childId);
-      
       if (workError) throw workError;
 
-      // Finally delete the child
+      // Finally delete the child record
       const { data, error } = await supabase
         .from('children')
         .delete()
         .eq('id', childId)
         .select()
         .single();
-      
       if (error) throw error;
       return data;
     },
@@ -73,19 +67,19 @@ const DeleteChildDialog = ({ child, isOpen, onOpenChange }: DeleteChildDialogPro
       queryClient.invalidateQueries({ queryKey: ['admin-children'] });
       queryClient.invalidateQueries({ queryKey: ['admin-parent-child-relationships'] });
       toast({
-        title: "Child deleted",
-        description: "The child and all related records have been removed successfully",
+        title: 'Child deleted',
+        description: 'The child and all related records have been removed successfully',
       });
       onOpenChange(false);
     },
     onError: (error) => {
       console.error('Error deleting child:', error);
       toast({
-        title: "Error",
-        description: "Failed to delete child. Please try again.",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to delete child. Please try again.',
+        variant: 'destructive',
       });
-    }
+    },
   });
 
   const handleDelete = () => {
@@ -100,8 +94,11 @@ const DeleteChildDialog = ({ child, isOpen, onOpenChange }: DeleteChildDialogPro
         <AlertDialogHeader>
           <AlertDialogTitle className="text-black">Delete Child</AlertDialogTitle>
           <AlertDialogDescription className="text-black">
-            Are you sure you want to delete {child?.first_name} {child?.last_name}? 
-            This action cannot be undone and will remove all associated records including:
+            Are you sure you want to delete{' '}
+            <strong>
+              {child?.first_name} {child?.last_name}
+            </strong>
+            ? This action cannot be undone and will remove all associated records including:
             <ul className="list-disc list-inside mt-2 text-sm">
               <li>Parent-child relationships</li>
               <li>Program enrollments (will be set to null)</li>
@@ -113,12 +110,14 @@ const DeleteChildDialog = ({ child, isOpen, onOpenChange }: DeleteChildDialogPro
           <AlertDialogCancel className="border-black text-white hover:text-black hover:bg-gray-50">
             Cancel
           </AlertDialogCancel>
-          <AlertDialogAction
-            onClick={handleDelete}
-            disabled={deleteChildMutation.isPending}
-            className="bg-red-600 text-white hover:bg-red-700"
-          >
-            {deleteChildMutation.isPending ? 'Deleting...' : 'Delete Child'}
+          <AlertDialogAction asChild>
+            <Button
+              onClick={handleDelete}
+              disabled={deleteChildMutation.isLoading}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              {deleteChildMutation.isLoading ? 'Deleting...' : 'Delete Child'}
+            </Button>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

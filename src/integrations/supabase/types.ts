@@ -994,6 +994,10 @@ export type Database = {
           is_full: boolean
         }[]
       }
+      delete_child_comprehensive: {
+        Args: { child_id_param: string }
+        Returns: boolean
+      }
       get_admin_profiles: {
         Args: Record<PropertyKey, never>
         Returns: {

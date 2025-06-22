@@ -36,10 +36,11 @@ const DeleteChildDialog: React.FC<DeleteChildDialogProps> = ({
 
   const deleteChildMutation = useMutation({
     mutationFn: async (childId: string) => {
-      // Start a transaction by using RPC function for comprehensive deletion
-      const { data, error } = await supabase.rpc('delete_child_comprehensive', {
-        child_id_param: childId
-      });
+      // Call the comprehensive deletion function
+      const { data, error } = await supabase
+        .rpc('delete_child_comprehensive', {
+          child_id_param: childId
+        });
 
       if (error) throw error;
       return data;

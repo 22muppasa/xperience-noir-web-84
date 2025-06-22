@@ -37,28 +37,28 @@ const DeleteChildDialog: React.FC<DeleteChildDialogProps> = ({
 
   const deleteChildMutation = useMutation({
     mutationFn: async (childId: string) => {
-      // 1️⃣ Delete any parent-child relationships
+      // 1️⃣ Remove any parent‐child relationships
       const { error: relErr } = await supabase
         .from('parent_child_relationships')
         .delete()
         .eq('child_id', childId);
       if (relErr) throw relErr;
 
-      // 2️⃣ Soft-unlink from enrollments
+      // 2️⃣ Unlink from enrollments
       const { error: enrollErr } = await supabase
         .from('enrollments')
         .update({ child_id: null })
         .eq('child_id', childId);
       if (enrollErr) throw enrollErr;
 
-      // 3️⃣ Delete all kids_work for that child
+      // 3️⃣ Delete all associated kids_work rows
       const { error: workErr } = await supabase
         .from('kids_work')
         .delete()
         .eq('child_id', childId);
       if (workErr) throw workErr;
 
-      // 4️⃣ Finally delete the child record itself
+      // 4️⃣ Finally delete the child record
       const { data, error: childErr } = await supabase
         .from('children')
         .delete()
@@ -69,7 +69,7 @@ const DeleteChildDialog: React.FC<DeleteChildDialogProps> = ({
       return data;
     },
     onSuccess: () => {
-      // invalidate any stale queries
+      // Invalidate all queries that might include this child or their work
       queryClient.invalidateQueries(['admin-children']);
       queryClient.invalidateQueries(['admin-parent-child-relationships']);
       queryClient.invalidateQueries(['admin-kids-work']);
@@ -91,7 +91,8 @@ const DeleteChildDialog: React.FC<DeleteChildDialogProps> = ({
     },
   });
 
-  const isDeleting = deleteChildMutation.status === 'loading';
+  // React-Query v4 mutation.status is 'idle' | 'pending' | 'success' | 'error'
+  const isDeleting = deleteChildMutation.status === 'pending';
 
   const handleDelete = () => {
     if (child) {

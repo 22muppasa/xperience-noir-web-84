@@ -57,7 +57,7 @@ const ChildrenGrid = ({ children, onLinkParent }: ChildrenGridProps) => {
                     variant="outline"
                     size="sm"
                     onClick={() => onLinkParent(child)}
-                    className="border-black text-white hover:bg-gray-50"
+                    className="border-black text-black hover:bg-gray-50"
                   >
                     <Link className="h-4 w-4" />
                   </Button>

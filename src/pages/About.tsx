@@ -9,10 +9,10 @@ import CallToAction from '@/components/about/CallToAction';
 import ThemeToggle from '@/components/ThemeToggle';
 
 const About = () => {
-  const { isDarkMode } = useTheme();
+
   
   return (
-    <div className={`flex flex-col min-h-screen ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}`}>
+    <div className={`flex flex-col min-h-screen`}>
       <Navbar />
       <AboutHero />
       <MissionVision />

@@ -249,7 +249,7 @@ const ChildAssociationRequests = () => {
                           variant="outline"
                           size="sm"
                           onClick={() => setSelectedRequest(request)}
-                          className="border-black text-black hover:bg-gray-50"
+                          className="border-black text-white hover:text-black hover:bg-gray-50"
                         >
                           Review
                         </Button>

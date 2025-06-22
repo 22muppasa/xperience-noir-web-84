@@ -227,7 +227,7 @@ const MessageComposer = ({ replyTo }: MessageComposerProps) => {
               type="button"
               variant="outline"
               onClick={() => setIsOpen(false)}
-              className="flex-1 border-2 border-black text-black hover:bg-gray-100 hover:border-gray-800 px-6 py-3 font-semibold text-base"
+              className="flex-1 border-2 border-white hover:text-black hover:bg-gray-100 hover:border-gray-800 px-6 py-3 font-semibold text-base"
             >
               <X className="h-5 w-5 mr-2" />
               Cancel

@@ -19,14 +19,13 @@ const TeamSection = () => {
   const teamMembers: TeamMemberData[] = [
     {
       id: 1,
-      name: "Lorem Ipsum",
+      name: "Adam Lueken",
       role: "Founder & CEO",
-      bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&h=600&q=80",
+      bio: "I lead initiatives to run STEM camps and connect high school students with real-world software development opportunities. My role focuses on fostering innovation, mentoring future technologists, and bridging the gap between education and professional development through impactful programs and partnerships.",
+      image: "https://i.ibb.co/d4CyCjFS/lueken-6996936c3bc63b6c7e62.jpg",
       socialLinks: {
-        linkedin: "https://linkedin.com",
-        twitter: "https://twitter.com",
-        email: "alexandra@xperience.com"
+        linkedin: "https://www.linkedin.com/in/adam-lueken-37455a8/",
+        email: "adam.lueken@d128.org"
       }
     },
     {

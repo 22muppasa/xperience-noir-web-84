@@ -36,54 +36,61 @@ const DeleteChildDialog: React.FC<DeleteChildDialogProps> = ({
 
   const deleteChildMutation = useMutation({
     mutationFn: async (childId: string) => {
+      console.log('Starting comprehensive child deletion for ID:', childId);
+      
       // Call the comprehensive deletion function
       const { data, error } = await supabase
         .rpc('delete_child_comprehensive', {
           child_id_param: childId
         });
 
-      if (error) throw error;
+      console.log('Delete function response:', { data, error });
+
+      if (error) {
+        console.error('Error in delete_child_comprehensive:', error);
+        throw error;
+      }
+      
       return data;
     },
     onSuccess: () => {
-      // Comprehensive query invalidation to refresh all related admin views
-      const queriesToInvalidate = [
-        'admin-children',
-        'admin-parent-child-relationships', 
-        'admin-kids-work',
-        'customer-kids-work',
-        'admin-enrollments',
-        'admin-dashboard-stats',
-        'child-milestones',
-        'emergency-contacts',
-        'work-collections'
-      ];
+      console.log('Child deletion successful, invalidating queries...');
+      
+      // Invalidate all relevant queries to refresh the UI
+      queryClient.invalidateQueries({ queryKey: ['admin-children'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-parent-child-relationships'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-kids-work'] });
+      queryClient.invalidateQueries({ queryKey: ['customer-kids-work'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-enrollments'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-dashboard-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['child-milestones'] });
+      queryClient.invalidateQueries({ queryKey: ['emergency-contacts'] });
+      queryClient.invalidateQueries({ queryKey: ['work-collections'] });
 
-      queriesToInvalidate.forEach(queryKey => {
-        queryClient.invalidateQueries({ queryKey: [queryKey] });
-      });
-
-      // Also refetch any queries that might be affected
+      // Force refetch queries that might cache relationships
       queryClient.refetchQueries({ 
         predicate: (query) => {
-          const key = query.queryKey[0] as string;
+          const key = Array.isArray(query.queryKey) ? query.queryKey[0] as string : '';
           return key?.includes('children') || 
                  key?.includes('work') || 
                  key?.includes('relationship') ||
-                 key?.includes('enrollment');
+                 key?.includes('enrollment') ||
+                 key?.includes('admin');
         }
       });
+
+      console.log('All queries invalidated');
 
       toast({
         title: 'Child deleted successfully',
         description: 'The child and all their related data have been permanently removed.',
       });
+      
       onOpenChange(false);
     },
     onError: (error: any) => {
       console.error('Error deleting child:', error);
       
-      // Provide more specific error messages
       let errorMessage = 'Failed to delete child. Please try again.';
       
       if (error.message?.includes('foreign key')) {
@@ -92,6 +99,8 @@ const DeleteChildDialog: React.FC<DeleteChildDialogProps> = ({
         errorMessage = 'You do not have permission to delete this child.';
       } else if (error.message?.includes('network')) {
         errorMessage = 'Network error. Please check your connection and try again.';
+      } else if (error.message) {
+        errorMessage = `Error: ${error.message}`;
       }
 
       toast({
@@ -102,13 +111,16 @@ const DeleteChildDialog: React.FC<DeleteChildDialogProps> = ({
     },
   });
 
-  const isDeleting = deleteChildMutation.isPending;
-
   const handleDelete = () => {
     if (child) {
+      console.log('Initiating delete for child:', child);
       deleteChildMutation.mutate(child.id);
+    } else {
+      console.error('No child selected for deletion');
     }
   };
+
+  const isDeleting = deleteChildMutation.isPending;
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>

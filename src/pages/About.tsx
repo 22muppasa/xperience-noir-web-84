@@ -6,7 +6,7 @@ import MissionVision from '@/components/about/MissionVision';
 import CompanyTimeline from '@/components/about/CompanyTimeline';
 import TeamSection from '@/components/about/TeamSection';
 import CallToAction from '@/components/about/CallToAction';
-import ThemeToggle from '@/components/ThemeToggle';
+
 
 const About = () => {
 
@@ -19,7 +19,6 @@ const About = () => {
       <CompanyTimeline />
       <TeamSection />
       <CallToAction />
-      <ThemeToggle />
     </div>
   );
 };

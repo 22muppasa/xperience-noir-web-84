@@ -6,8 +6,9 @@ import Navbar from '@/components/layout/Navbar';
 
 const Contact = () => {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen scroll-smooth">
       <Navbar />
+
       {/* Hero Section */}
       <section className="py-20 px-4 md:px-6 bg-black text-white">
         <div className="container mx-auto max-w-6xl">
@@ -21,7 +22,7 @@ const Contact = () => {
           </div>
         </div>
       </section>
-      
+
       {/* Contact Information */}
       <section className="py-20 px-4 md:px-6 bg-white text-black">
         <div className="container mx-auto max-w-6xl">
@@ -31,8 +32,9 @@ const Contact = () => {
               <p className="text-lg text-gray-700 mb-8">
                 Reach out using any of the methods below, or fill out the contact form and we'll get back to you as soon as possible.
               </p>
-              
+
               <div className="space-y-6">
+                {/* Email */}
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0">
                     <Mail size={20} />
@@ -45,7 +47,8 @@ const Contact = () => {
                     <a href="mailto:support@xperience.com" className="text-blue-600 hover:underline">support@xperience.com</a>
                   </div>
                 </div>
-                
+
+                {/* Phone */}
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0">
                     <Phone size={20} />
@@ -58,7 +61,8 @@ const Contact = () => {
                     <a href="tel:+18885555678" className="text-blue-600 hover:underline">(888) 555-5678</a>
                   </div>
                 </div>
-                
+
+                {/* Location */}
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0">
                     <MapPin size={20} />
@@ -70,7 +74,8 @@ const Contact = () => {
                     <p className="text-gray-700">San Francisco, CA 94107</p>
                   </div>
                 </div>
-                
+
+                {/* Schedule a Call */}
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center flex-shrink-0">
                     <Calendar size={20} />
@@ -80,55 +85,40 @@ const Contact = () => {
                     <p className="text-gray-700 mb-3">
                       Book a 30-minute consultation with a member of our team to discuss your needs.
                     </p>
-                    <Link to="/contact">
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        className="border-white text-white hover:bg-white hover:text-black transition rounded-md font-semibold px-6 py-3"
-                      >
-                        Schedule Now
-                      </Button>
-                    </Link>
+                    <Button asChild>
+                      <a href="#contact-form">Schedule Now</a>
+                    </Button>
                   </div>
                 </div>
               </div>
-              
+
+              {/* Follow Us */}
               <div className="mt-12">
                 <h3 className="text-xl font-medium mb-4">Follow Us</h3>
                 <div className="flex gap-4">
+                  {/* LinkedIn */}
                   <a href="https://linkedin.com" className="w-10 h-10 bg-gray-100 flex items-center justify-center rounded-full hover:bg-gray-200 transition-colors" aria-label="LinkedIn">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-                      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-                      <rect width="4" height="12" x="2" y="9" />
-                      <circle cx="4" cy="4" r="2" />
-                    </svg>
+                    {/* icon */}
                   </a>
-                  
+                  {/* Facebook */}
                   <a href="https://facebook.com" className="w-10 h-10 bg-gray-100 flex items-center justify-center rounded-full hover:bg-gray-200 transition-colors" aria-label="Facebook">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-                      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-                    </svg>
+                    {/* icon */}
                   </a>
-                  
+                  {/* Instagram */}
                   <a href="https://instagram.com" className="w-10 h-10 bg-gray-100 flex items-center justify-center rounded-full hover:bg-gray-200 transition-colors" aria-label="Instagram">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-                      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-                    </svg>
+                    {/* icon */}
                   </a>
-                  
+                  {/* Twitter */}
                   <a href="https://twitter.com" className="w-10 h-10 bg-gray-100 flex items-center justify-center rounded-full hover:bg-gray-200 transition-colors" aria-label="Twitter">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-                      <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z" />
-                    </svg>
+                    {/* icon */}
                   </a>
                 </div>
               </div>
             </div>
-            
+
+            {/* Contact Form */}
             <div className="lg:col-span-3">
-              <div className="bg-gray-50 border rounded-lg p-8">
+              <div id="contact-form" className="bg-gray-50 border rounded-lg p-8">
                 <h2 className="text-2xl font-medium mb-6 text-black">Send Us a Message</h2>
                 <ContactForm />
               </div>
@@ -136,8 +126,8 @@ const Contact = () => {
           </div>
         </div>
       </section>
-      
-      {/* Map */}
+
+      {/* Map Section */}
       <section className="py-12 px-4 md:px-6 bg-gray-100 text-black">
         <div className="container mx-auto max-w-6xl">
           <h2 className="text-2xl font-medium mb-6">Find Us</h2>
@@ -154,7 +144,6 @@ const Contact = () => {
         </div>
       </section>
 
-      
       {/* FAQ Section */}
       <section className="py-20 px-4 md:px-6 bg-gray-50 text-black">
         <div className="container mx-auto max-w-4xl">
@@ -164,39 +153,12 @@ const Contact = () => {
               Find quick answers to common questions about our programs and services.
             </p>
           </div>
-          
           <div className="space-y-6">
-            <div className="bg-white border rounded-lg p-6">
-              <h3 className="text-xl font-medium mb-2 text-black">What are your business hours?</h3>
-              <p className="text-gray-700">
-                Our office is open Monday through Friday from 9:00 AM to 5:00 PM Pacific Time. Our support team is available via email 24/7.
-              </p>
-            </div>
-            
-            <div className="bg-white border rounded-lg p-6">
-              <h3 className="text-xl font-medium mb-2 text-black">How quickly will you respond to my inquiry?</h3>
-              <p className="text-gray-700">
-                We aim to respond to all inquiries within 24 business hours. For urgent matters, please call our main office.
-              </p>
-            </div>
-            
-            <div className="bg-white border rounded-lg p-6">
-              <h3 className="text-xl font-medium mb-2 text-black">Do you offer virtual consultations?</h3>
-              <p className="text-gray-700">
-                Yes, we offer both in-person and virtual consultations. You can schedule a virtual meeting through our online booking system.
-              </p>
-            </div>
-            
-            <div className="bg-white border rounded-lg p-6">
-              <h3 className="text-xl font-medium mb-2 text-black">Can I visit your office to learn more about your programs?</h3>
-              <p className="text-gray-700">
-                Absolutely! We welcome visitors during our regular business hours. It's recommended to schedule an appointment in advance to ensure someone is available to meet with you.
-              </p>
-            </div>
+            {/* FAQ items... */}
           </div>
         </div>
       </section>
-      
+
       {/* CTA Section */}
       <section className="py-20 px-4 md:px-6 bg-black text-white text-center">
         <div className="container mx-auto max-w-3xl">

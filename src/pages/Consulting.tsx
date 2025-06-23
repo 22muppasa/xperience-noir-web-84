@@ -25,39 +25,89 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 
-// Remove the static pastProjects array and replace with this interface:
-interface PortfolioProject {
-  id: string;
-  name: string;
-  category: string;
-  description: string;
-  image_url: string;
-  project_url?: string;
-  technologies: string[];
-  metrics: Record<string, any>;
-  duration?: string;
-  team_size?: string;
-}
+const pastProjects = [
+  {
+    id: 1,
+    name: "EduTech Academy",
+    category: "Education Technology",
+    image:
+      "https://images.unsplash.com/photo-1486718448742-163732cd1544?auto=format&fit=crop&w=800&h=600&q=80",
+    description:
+      "Transformed a cluttered educational platform into a streamlined learning experience that increased student engagement by 67% and course completion rates by 43%. We redesigned the entire user interface with a focus on intuitive navigation and implemented gamification elements to boost student motivation.",
+    metrics: { engagement: "+67%", completion: "+43%", satisfaction: "4.8/5" },
+    technologies: ["React", "Node.js", "PostgreSQL", "Redis"],
+    duration: "8 weeks",
+    teamSize: "6 people",
+  },
+  {
+    id: 2,
+    name: "HealthCore Wellness",
+    category: "Healthcare & Wellness",
+    image:
+      "https://images.unsplash.com/photo-1487958449943-2429e8be8625-2429e8be8625?auto=format&fit=crop&w=800&h=600&q=80",
+    description:
+      "Redesigned the patient portal and appointment system, resulting in a 52% improvement in booking efficiency and 38% increase in patient satisfaction scores. The new system features automated reminders, telemedicine integration, and a comprehensive health dashboard.",
+    metrics: { efficiency: "+52%", satisfaction: "+38%", retention: "+29%" },
+    technologies: ["Vue.js", "Python", "MongoDB", "WebRTC"],
+    duration: "10 weeks",
+    teamSize: "8 people",
+  },
+  {
+    id: 3,
+    name: "TechStart Solutions",
+    category: "Technology Startup",
+    image:
+      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&h=600&q=80",
+    description:
+      "Built a comprehensive platform from the ground up, enabling them to scale from startup to series A funding with a 300% increase in user acquisition. The platform includes advanced analytics, automated workflows, and seamless third-party integrations.",
+    metrics: { users: "+300%", conversion: "+89%", revenue: "+245%" },
+    technologies: ["React", "TypeScript", "AWS", "GraphQL"],
+    duration: "12 weeks",
+    teamSize: "10 people",
+  },
+  {
+    id: 4,
+    name: "RetailMax Commerce",
+    category: "E-commerce",
+    image:
+      "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=800&h=600&q=80",
+    description:
+      "Developed a modern e-commerce platform with advanced inventory management and personalized shopping experiences. The solution increased online sales by 180% and reduced cart abandonment by 45%.",
+    metrics: { sales: "+180%", abandonment: "-45%", speed: "+60%" },
+    technologies: ["Next.js", "Stripe", "Shopify", "Algolia"],
+    duration: "14 weeks",
+    teamSize: "7 people",
+  },
+  {
+    id: 5,
+    name: "FinanceFlow Pro",
+    category: "Financial Services",
+    image:
+      "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&h=600&q=80",
+    description:
+      "Created a secure financial dashboard with real-time analytics and automated reporting features. Enhanced security protocols and user experience led to 95% user adoption rate and zero security incidents.",
+    metrics: { adoption: "95%", security: "100%", efficiency: "+75%" },
+    technologies: ["Angular", "Spring Boot", "MySQL", "Docker"],
+    duration: "16 weeks",
+    teamSize: "12 people",
+  },
+  {
+    id: 6,
+    name: "GreenEnergy Hub",
+    category: "Sustainability",
+    image:
+      "https://images.unsplash.com/photo-1466611653911-95081537e5b7?auto=format&fit=crop&w=800&h=600&q=80",
+    description:
+      "Built an innovative platform for renewable energy management and monitoring. The system helps companies track their carbon footprint and optimize energy consumption, resulting in 40% energy savings.",
+    metrics: { savings: "40%", efficiency: "+85%", adoption: "92%" },
+    technologies: ["React", "Python", "InfluxDB", "Grafana"],
+    duration: "10 weeks",
+    teamSize: "5 people",
+  },
+];
 
 const Consulting = () => {
-  // Add this query to fetch projects from database
-  const { data: pastProjects = [], isLoading: projectsLoading } = useQuery({
-    queryKey: ['published-portfolio-projects'],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from('portfolio_projects')
-        .select('*')
-        .eq('status', 'published')
-        .order('sort_order', { ascending: true });
-
-      if (error) throw error;
-      return data as PortfolioProject[];
-    },
-  });
-
   return (
     <div className="flex flex-col min-h-screen bg-black text-white">
       <Navbar />
@@ -173,162 +223,69 @@ const Consulting = () => {
               approach and results.
             </p>
           </div>
-
-          {projectsLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="animate-pulse">
-                  <div className="bg-gray-200 rounded-xl h-64"></div>
-                </div>
-              ))}
-            </div>
-          ) : pastProjects.length > 0 ? (
-            <Carousel className="w-full">
-              <CarouselPrevious />
-              <CarouselContent className="-ml-2 md:-ml-4">
-                {pastProjects.map((p) => (
-                  <CarouselItem
-                    key={p.id}
-                    className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3"
-                  >
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <div className="group cursor-pointer bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
-                          <div className="aspect-[4/3] overflow-hidden bg-gray-200">
-                            <img
-                              src={p.image_url}
-                              alt={p.name}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                            />
-                          </div>
-                          <div className="p-6">
-                            <div className="text-sm text-gray-500 mb-2">
-                              {p.category}
-                            </div>
-                            <h3 className="text-xl font-medium mb-3 text-black group-hover:text-zinc-800 transition-colors">
-                              {p.name}
-                            </h3>
-                            <p className="text-gray-800 text-sm leading-relaxed line-clamp-3">
-                              {p.description.substring(0, 120)}…
-                            </p>
-                            <div className="mt-4 flex items-center justify-between">
-                              <span className="text-sm font-medium text-black">
-                                Click to learn more
-                              </span>
-                              <ArrowRight className="w-4 h-4 text-black group-hover:translate-x-1 transition-transform" />
-                            </div>
-                          </div>
+          <Carousel className="w-full">
+            <CarouselPrevious />
+            <CarouselContent className="-ml-2 md:-ml-4">
+              {pastProjects.map((p) => (
+                <CarouselItem
+                  key={p.id}
+                  className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3"
+                >
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <div className="group cursor-pointer bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                        <div className="aspect-[4/3] overflow-hidden bg-gray-200">
+                          <img
+                            src={p.image}
+                            alt={p.name}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
                         </div>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto bg-white border border-gray-300 shadow-2xl text-black">
-                        <DialogHeader className="border-b border-gray-200 pb-6 mb-6">
-                          <DialogTitle className="text-3xl font-bold text-black mb-2">
+                        <div className="p-6">
+                          <div className="text-sm text-gray-500 mb-2">
+                            {p.category}
+                          </div>
+                          <h3 className="text-xl font-medium mb-3 text-black group-hover:text-zinc-800 transition-colors">
                             {p.name}
-                          </DialogTitle>
-                          <div className="text-lg text-gray-600 mb-4">{p.category}</div>
-                        </DialogHeader>
-                        
-                        <div className="space-y-6">
-                          <div className="aspect-video overflow-hidden rounded-lg">
-                            <img
-                              src={p.image_url}
-                              alt={p.name}
-                              className="w-full h-full object-cover"
-                            />
+                          </h3>
+                          <p className="text-gray-800 text-sm leading-relaxed line-clamp-3">
+                            {p.description.substring(0, 120)}…
+                          </p>
+                          <div className="mt-4 flex items-center justify-between">
+                            <span className="text-sm font-medium text-black">
+                              Click to learn more
+                            </span>
+                            <ArrowRight className="w-4 h-4 text-black group-hover:translate-x-1 transition-transform" />
                           </div>
-                          
-                          <div>
-                            <h4 className="text-xl font-semibold mb-3 text-black">Project Overview</h4>
-                            <p className="text-gray-700 leading-relaxed">{p.description}</p>
-                          </div>
-
-                          {Object.keys(p.metrics).length > 0 && (
-                            <div>
-                              <h4 className="text-xl font-semibold mb-3 text-black">Key Results</h4>
-                              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                {Object.entries(p.metrics).map(([key, value]) => (
-                                  <div key={key} className="bg-gray-50 rounded-lg p-4 text-center">
-                                    <div className="text-2xl font-bold text-black">{value}</div>
-                                    <div className="text-sm text-gray-600 capitalize">{key}</div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {p.technologies.length > 0 && (
-                            <div>
-                              <h4 className="text-xl font-semibold mb-3 text-black">Technologies Used</h4>
-                              <div className="flex flex-wrap gap-2">
-                                {p.technologies.map((tech) => (
-                                  <span
-                                    key={tech}
-                                    className="bg-black text-white px-3 py-1 rounded-full text-sm"
-                                  >
-                                    {tech}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          <div className="grid grid-cols-2 gap-4">
-                            {p.duration && (
-                              <div>
-                                <h5 className="font-semibold text-black">Duration</h5>
-                                <p className="text-gray-700">{p.duration}</p>
-                              </div>
-                            )}
-                            {p.team_size && (
-                              <div>
-                                <h5 className="font-semibold text-black">Team Size</h5>
-                                <p className="text-gray-700">{p.team_size}</p>
-                              </div>
-                            )}
-                          </div>
-
-                          {p.project_url && (
-                            <div>
-                              <a
-                                href={p.project_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center gap-2 text-black hover:text-gray-700 transition-colors"
-                              >
-                                <span>View Live Project</span>
-                                <ArrowRight className="w-4 h-4" />
-                              </a>
-                            </div>
-                          )}
                         </div>
-                        
-                        <div className="pt-6 border-t border-gray-200">
-                          <Link to="/contact">
-                            <AnimatedButton
-                              sparkleColor="black"
-                              textColor="black"
-                              icon={ArrowRight}
-                              invertOnHover
-                              className="w-full justify-center bg-white text-black hover:bg-zinc-900 hover:text-white transition font-semibold rounded-md px-6 py-3"
-                            >
-                              Start Similar Project
-                            </AnimatedButton>
-                          </Link>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </CarouselItem>
-                ))}
-              </CarouselContent>
-              <CarouselNext />
-            </Carousel>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-600 text-lg">
-                No projects have been published yet. Check back soon for our latest work!
-              </p>
-            </div>
-          )}
+                      </div>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto bg-white border border-gray-300 shadow-2xl text-black">
+                      <DialogHeader className="border-b border-gray-200 pb-6 mb-6">
+                        <DialogTitle className="text-3xl font-bold text-black mb-2">
+                          {p.name}
+                        </DialogTitle>
+                      </DialogHeader>
+                      <div className="pt-6 border-t border-gray-200">
+                        <Link to="/contact">
+                          <AnimatedButton
+                            sparkleColor="black"
+                            textColor="black"
+                            icon={ArrowRight}
+                            invertOnHover
+                            className="w-full justify-center bg-white text-black hover:bg-zinc-900 hover:text-white transition font-semibold rounded-md px-6 py-3"
+                          >
+                            Start Similar Project
+                          </AnimatedButton>
+                        </Link>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselNext />
+          </Carousel>
         </div>
       </section>
 

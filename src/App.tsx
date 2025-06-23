@@ -1,8 +1,9 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import Index from "./pages/Index";
@@ -36,7 +37,6 @@ import AdminKidsWork from "./pages/admin/KidsWork";
 import AdminMessages from "./pages/admin/Messages";
 import AdminSocialPosts from "./pages/admin/SocialPosts";
 import AdminContactForms from "./pages/admin/ContactForms";
-import AdminPortfolio from "./pages/admin/Portfolio";
 
 const queryClient = new QueryClient();
 
@@ -84,7 +84,6 @@ function App() {
               <Route path="/admin/messages" element={<ProtectedRoute requiredRole="admin"><AdminMessages /></ProtectedRoute>} />
               <Route path="/admin/social-posts" element={<ProtectedRoute requiredRole="admin"><AdminSocialPosts /></ProtectedRoute>} />
               <Route path="/admin/contact-forms" element={<ProtectedRoute requiredRole="admin"><AdminContactForms /></ProtectedRoute>} />
-              <Route path="/admin/portfolio" element={<ProtectedRoute requiredRole="admin"><AdminPortfolio /></ProtectedRoute>} />
 
               {/* 404 Route */}
               <Route path="*" element={<NotFound />} />

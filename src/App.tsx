@@ -5,7 +5,7 @@ import About from '@/pages/About';
 import Consulting from '@/pages/Consulting';
 import Contact from '@/pages/Contact';
 import Programs from '@/pages/Programs';
-import AdminDashboard from '@/pages/admin/AdminDashboard';
+import AdminDashboard from '@/pages/AdminDashboard';
 import Children from '@/pages/admin/Children';
 import Customers from '@/pages/admin/Customers';
 import AdminPrograms from '@/pages/admin/Programs';

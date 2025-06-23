@@ -1,97 +1,86 @@
-
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
-import ProtectedRoute from "@/components/auth/ProtectedRoute";
-import Index from "./pages/Index";
-import About from "./pages/About";
-import Programs from "./pages/Programs";
-import Impact from "./pages/Impact";
-import GetInvolved from "./pages/GetInvolved";
-import Blog from "./pages/Blog";
-import SocialHub from "./pages/SocialHub";
-import Consulting from "./pages/Consulting";
-import Contact from "./pages/Contact";
-import Auth from "./pages/Auth";
-import NotFound from "./pages/NotFound";
-
-// Customer Dashboard Pages
-import CustomerDashboard from "./pages/CustomerDashboard";
-import CustomerPrograms from "./pages/customer/Programs";
-import CustomerChildren from "./pages/customer/Children";
-import CustomerKidsWork from "./pages/customer/KidsWork";
-import CustomerMessages from "./pages/customer/Messages";
-import CustomerProfile from "./pages/customer/Profile";
-
-// Admin Dashboard Pages
-import AdminDashboard from "./pages/AdminDashboard";
-import AdminCustomers from "./pages/admin/Customers";
-import AdminChildren from "./pages/admin/Children";
-import AdminPrograms from "./pages/admin/Programs";
-import AdminEnrollments from "./pages/admin/Enrollments";
-import AdminVolunteers from "./pages/admin/Volunteers";
-import AdminKidsWork from "./pages/admin/KidsWork";
-import AdminMessages from "./pages/admin/Messages";
-import AdminSocialPosts from "./pages/admin/SocialPosts";
-import AdminContactForms from "./pages/admin/ContactForms";
-
-const queryClient = new QueryClient();
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Home from '@/pages/Home';
+import About from '@/pages/About';
+import Consulting from '@/pages/Consulting';
+import Contact from '@/pages/Contact';
+import Programs from '@/pages/Programs';
+import Volunteer from '@/pages/Volunteer';
+import Donate from '@/pages/Donate';
+import CustomerDashboard from '@/pages/customer/CustomerDashboard';
+import CustomerProfile from '@/pages/customer/CustomerProfile';
+import CustomerKids from '@/pages/customer/CustomerKids';
+import CustomerKidsWork from '@/pages/customer/CustomerKidsWork';
+import CustomerProgramDetails from '@/pages/customer/CustomerProgramDetails';
+import AdminDashboard from '@/pages/admin/AdminDashboard';
+import Children from '@/pages/admin/Children';
+import Customers from '@/pages/admin/Customers';
+import AdminPrograms from '@/pages/admin/Programs';
+import Enrollments from '@/pages/admin/Enrollments';
+import KidsWork from '@/pages/admin/KidsWork';
+import AdminMessages from '@/pages/admin/AdminMessages';
+import ContactForms from '@/pages/admin/ContactForms';
+import Volunteers from '@/pages/admin/Volunteers';
+import SocialPosts from '@/pages/admin/SocialPosts';
+import Settings from '@/pages/admin/Settings';
+import ProtectedRoute from '@/components/auth/ProtectedRoute';
+import CustomerProtectedRoute from '@/components/auth/CustomerProtectedRoute';
+import SocialFeed from '@/pages/SocialFeed';
+import Portfolio from '@/pages/admin/Portfolio';
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AuthProvider>
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<Index />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/programs" element={<Programs />} />
-              <Route path="/impact" element={<Impact />} />
-              <Route path="/get-involved" element={<GetInvolved />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/social" element={<SocialHub />} />
-              <Route path="/social-hub" element={<Navigate to="/social" replace />} />
-              <Route path="/consulting" element={<Consulting />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/auth" element={<Auth />} />
+    <Router>
+      <div className="flex flex-col min-h-screen">
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/consulting" element={<Consulting />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/programs" element={<Programs />} />
+          <Route path="/volunteer" element={<Volunteer />} />
+          <Route path="/donate" element={<Donate />} />
+          <Route path="/social-feed" element={<SocialFeed />} />
 
-              {/* Dashboard Redirect - for backward compatibility */}
-              <Route path="/dashboard" element={<Navigate to="/customer" replace />} />
+          {/* Customer Routes */}
+          <Route path="/customer/*" element={
+            <CustomerProtectedRoute>
+              <Routes>
+                <Route index element={<CustomerDashboard />} />
+                <Route path="profile" element={<CustomerProfile />} />
+                <Route path="kids" element={<CustomerKids />} />
+                <Route path="kids/:kidId/work" element={<CustomerKidsWork />} />
+        		    <Route path="programs/:programId" element={<CustomerProgramDetails />} />
+              </Routes>
+            </CustomerProtectedRoute>
+          } />
+          
+          {/* Admin Routes */}
+          <Route path="/admin/*" element={
+            <ProtectedRoute requiredRole="admin">
+              <Routes>
+                <Route index element={<AdminDashboard />} />
+                <Route path="children" element={<Children />} />
+                <Route path="customers" element={<Customers />} />
+                <Route path="programs" element={<AdminPrograms />} />
+                <Route path="enrollments" element={<Enrollments />} />
+                <Route path="kids-work" element={<KidsWork />} />
+                <Route path="messages" element={<AdminMessages />} />
+                <Route path="contact-forms" element={<ContactForms />} />
+                <Route path="volunteers" element={<Volunteers />} />
+                <Route path="social-posts" element={<SocialPosts />} />
+                <Route path="portfolio" element={<Portfolio />} />
+                <Route path="settings" element={<Settings />} />
+              </Routes>
+            </ProtectedRoute>
+          } />
 
-              {/* Customer Protected Routes */}
-              <Route path="/customer" element={<ProtectedRoute requiredRole="customer"><CustomerDashboard /></ProtectedRoute>} />
-              <Route path="/customer/programs" element={<ProtectedRoute requiredRole="customer"><CustomerPrograms /></ProtectedRoute>} />
-              <Route path="/customer/children" element={<ProtectedRoute requiredRole="customer"><CustomerChildren /></ProtectedRoute>} />
-              <Route path="/customer/kids-work" element={<ProtectedRoute requiredRole="customer"><CustomerKidsWork /></ProtectedRoute>} />
-              <Route path="/customer/messages" element={<ProtectedRoute requiredRole="customer"><CustomerMessages /></ProtectedRoute>} />
-              <Route path="/customer/profile" element={<ProtectedRoute requiredRole="customer"><CustomerProfile /></ProtectedRoute>} />
-
-              {/* Admin Protected Routes */}
-              <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><AdminDashboard /></ProtectedRoute>} />
-              <Route path="/admin/customers" element={<ProtectedRoute requiredRole="admin"><AdminCustomers /></ProtectedRoute>} />
-              <Route path="/admin/children" element={<ProtectedRoute requiredRole="admin"><AdminChildren /></ProtectedRoute>} />
-              <Route path="/admin/programs" element={<ProtectedRoute requiredRole="admin"><AdminPrograms /></ProtectedRoute>} />
-              <Route path="/admin/enrollments" element={<ProtectedRoute requiredRole="admin"><AdminEnrollments /></ProtectedRoute>} />
-              <Route path="/admin/volunteers" element={<ProtectedRoute requiredRole="admin"><AdminVolunteers /></ProtectedRoute>} />
-              <Route path="/admin/kids-work" element={<ProtectedRoute requiredRole="admin"><AdminKidsWork /></ProtectedRoute>} />
-              <Route path="/admin/messages" element={<ProtectedRoute requiredRole="admin"><AdminMessages /></ProtectedRoute>} />
-              <Route path="/admin/social-posts" element={<ProtectedRoute requiredRole="admin"><AdminSocialPosts /></ProtectedRoute>} />
-              <Route path="/admin/contact-forms" element={<ProtectedRoute requiredRole="admin"><AdminContactForms /></ProtectedRoute>} />
-
-              {/* 404 Route */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </AuthProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
+          {/* Not Found Route - Catch-all for undefined routes */}
+          <Route path="*" element={<div>404 Not Found</div>} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

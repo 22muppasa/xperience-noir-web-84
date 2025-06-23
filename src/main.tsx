@@ -3,7 +3,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '@/contexts/AuthContext';
-import { Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter } from 'react-router-dom';
 import App from './App.tsx';
 import './index.css';
 

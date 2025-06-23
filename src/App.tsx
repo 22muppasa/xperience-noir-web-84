@@ -36,7 +36,7 @@ import AdminKidsWork from "./pages/admin/KidsWork";
 import AdminMessages from "./pages/admin/Messages";
 import AdminSocialPosts from "./pages/admin/SocialPosts";
 import AdminContactForms from "./pages/admin/ContactForms";
-import AdminPortfolio from "./pages/admin/portfolio"
+import AdminPortfolio from "./pages/admin/Portfolio"
 
 const queryClient = new QueryClient();
 

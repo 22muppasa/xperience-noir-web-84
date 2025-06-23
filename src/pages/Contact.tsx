@@ -65,8 +65,9 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-medium mb-1">Location</h3>
-                    <p className="text-gray-700">145 Lakeview Pkwy</p>
-                    <p className="text-gray-700">Vernon Hills, IL 60061</p>
+                    <p className="text-gray-700">123 Tech Way</p>
+                    <p className="text-gray-700">Suite 400</p>
+                    <p className="text-gray-700">San Francisco, CA 94107</p>
                   </div>
                 </div>
                 
@@ -79,9 +80,15 @@ const Contact = () => {
                     <p className="text-gray-700 mb-3">
                       Book a 30-minute consultation with a member of our team to discuss your needs.
                     </p>
-                    <Button asChild>
-                      <a href="#" target="_blank" rel="noopener noreferrer">Schedule Now</a>
-                    </Button>
+                    <Link to="/contact">
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        className="border-white text-white hover:bg-white hover:text-black transition rounded-md font-semibold px-6 py-3"
+                      >
+                        Schedule Now
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </div>

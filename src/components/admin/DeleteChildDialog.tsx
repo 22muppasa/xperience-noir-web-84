@@ -160,7 +160,7 @@ const DeleteChildDialog: React.FC<DeleteChildDialogProps> = ({
 
         <AlertDialogFooter>
           <AlertDialogCancel 
-            className="border-black text-black hover:text-black hover:bg-gray-50"
+            className="border-black text-white hover:text-black hover:bg-gray-50"
             disabled={isDeleting}
           >
             Cancel

@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
+import Index from '@/pages/Index';
 import About from '@/pages/About';
 import Consulting from '@/pages/Consulting';
 import Contact from '@/pages/Contact';
@@ -24,7 +25,7 @@ function App() {
     <div className="flex flex-col min-h-screen">
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<About />} />
+        <Route path="/" element={<Index />} />
         <Route path="/about" element={<About />} />
         <Route path="/consulting" element={<Consulting />} />
         <Route path="/contact" element={<Contact />} />

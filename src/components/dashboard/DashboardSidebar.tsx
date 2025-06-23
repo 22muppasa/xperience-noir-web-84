@@ -12,7 +12,7 @@ import {
   Baby,
   UserCog,
   UserCheck,
-  Heart
+  Heart,
   Briefcase
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';

@@ -5,6 +5,7 @@ import About from '@/pages/About';
 import Consulting from '@/pages/Consulting';
 import Contact from '@/pages/Contact';
 import Programs from '@/pages/Programs';
+import SocialHub from '@/pages/SocialHub';
 import AdminDashboard from '@/pages/AdminDashboard';
 import Children from '@/pages/admin/Children';
 import Customers from '@/pages/admin/Customers';
@@ -28,6 +29,7 @@ function App() {
         <Route path="/consulting" element={<Consulting />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/programs" element={<Programs />} />
+        <Route path="/social" element={<SocialHub />} />
         
         {/* Admin Routes */}
         <Route path="/admin/*" element={

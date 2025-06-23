@@ -689,68 +689,6 @@ export type Database = {
           },
         ]
       }
-      portfolio_projects: {
-        Row: {
-          category: string
-          created_at: string
-          created_by: string | null
-          description: string
-          duration: string | null
-          id: string
-          image_url: string
-          metrics: Json | null
-          name: string
-          project_url: string | null
-          sort_order: number | null
-          status: Database["public"]["Enums"]["portfolio_status"]
-          team_size: string | null
-          technologies: string[] | null
-          updated_at: string
-        }
-        Insert: {
-          category: string
-          created_at?: string
-          created_by?: string | null
-          description: string
-          duration?: string | null
-          id?: string
-          image_url: string
-          metrics?: Json | null
-          name: string
-          project_url?: string | null
-          sort_order?: number | null
-          status?: Database["public"]["Enums"]["portfolio_status"]
-          team_size?: string | null
-          technologies?: string[] | null
-          updated_at?: string
-        }
-        Update: {
-          category?: string
-          created_at?: string
-          created_by?: string | null
-          description?: string
-          duration?: string | null
-          id?: string
-          image_url?: string
-          metrics?: Json | null
-          name?: string
-          project_url?: string | null
-          sort_order?: number | null
-          status?: Database["public"]["Enums"]["portfolio_status"]
-          team_size?: string | null
-          technologies?: string[] | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "portfolio_projects_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       profiles: {
         Row: {
           address: string | null
@@ -1058,7 +996,7 @@ export type Database = {
       }
       delete_child_comprehensive: {
         Args: { child_id_param: string }
-        Returns: undefined
+        Returns: boolean
       }
       get_admin_profiles: {
         Args: Record<PropertyKey, never>
@@ -1103,7 +1041,6 @@ export type Database = {
         | "archived"
         | "in_progress"
         | "responded"
-      portfolio_status: "draft" | "published" | "archived"
       post_status: "draft" | "scheduled" | "published" | "archived"
       program_status: "draft" | "published" | "archived"
       user_role: "admin" | "customer"
@@ -1230,7 +1167,6 @@ export const Constants = {
         "in_progress",
         "responded",
       ],
-      portfolio_status: ["draft", "published", "archived"],
       post_status: ["draft", "scheduled", "published", "archived"],
       program_status: ["draft", "published", "archived"],
       user_role: ["admin", "customer"],

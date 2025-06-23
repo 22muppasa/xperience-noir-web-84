@@ -136,13 +136,18 @@ const Contact = () => {
         <div className="container mx-auto max-w-6xl">
           <h2 className="text-2xl font-medium mb-6">Find Us</h2>
           <div className="aspect-[16/9] w-full bg-white rounded-lg overflow-hidden border">
-            {/* This is a placeholder for a map. In a real app, you would embed a Google Maps or other map service here */}
-            <div className="w-full h-full flex items-center justify-center">
-              <p className="text-gray-600">Map Embed Placeholder</p>
-            </div>
+            <iframe
+              title="Vernon Hills High School Location"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2954.4009699145736!2d-87.95205792464262!3d42.22724597120559!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x880f961786bafebd%3A0xc65b97cc886e0c30!2sVernon%20Hills%20High%20School!5e0!3m2!1sen!2sus!4v1750701323970!5m2!1sen!2sus"
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="w-full h-full border-0"
+            />
           </div>
         </div>
       </section>
+
       
       {/* FAQ Section */}
       <section className="py-20 px-4 md:px-6 bg-gray-50 text-black">

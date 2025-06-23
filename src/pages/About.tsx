@@ -3,7 +3,7 @@ import Navbar from '@/components/layout/Navbar';
 import { useTheme } from '@/contexts/ThemeContext';
 import AboutHero from '@/components/about/AboutHero';
 import MissionVision from '@/components/about/MissionVision';
-import CompanyTimeline from '@/components/about/CompanyTimeline';
+// import CompanyTimeline from '@/components/about/CompanyTimeline';
 import TeamSection from '@/components/about/TeamSection';
 import CallToAction from '@/components/about/CallToAction';
 
@@ -16,7 +16,7 @@ const About = () => {
       <Navbar />
       <AboutHero />
       <MissionVision />
-      <CompanyTimeline />
+      {/* <CompanyTimeline /> */}
       <TeamSection />
       <CallToAction />
     </div>

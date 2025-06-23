@@ -140,10 +140,10 @@ const Portfolio = () => {
                     {project.status}
                   </Badge>
                 </div>
-                <p className="text-sm text-gray-600">{project.category}</p>
+                <p className="text-sm text-white">{project.category}</p>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-sm text-gray-700 line-clamp-2">
+                <p className="text-sm text-white line-clamp-2">
                   {project.description}
                 </p>
                 
@@ -194,7 +194,7 @@ const Portfolio = () => {
                   <select
                     value={project.status}
                     onChange={(e) => handleStatusChange(project.id, e.target.value)}
-                    className="text-xs border rounded px-2 py-1"
+                    className="text-xs border text-black rounded px-2 py-1"
                   >
                     <option value="draft">Draft</option>
                     <option value="published">Published</option>

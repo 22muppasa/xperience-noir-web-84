@@ -69,9 +69,8 @@ const Contact = () => {
                   </div>
                   <div>
                     <h3 className="font-medium mb-1">Location</h3>
-                    <p className="text-gray-700">123 Tech Way</p>
-                    <p className="text-gray-700">Suite 400</p>
-                    <p className="text-gray-700">San Francisco, CA 94107</p>
+                    <p className="text-gray-700">145 Lakeview Pkwy</p>
+                    <p className="text-gray-700">Vernon Hills, IL 60061</p>
                   </div>
                 </div>
 

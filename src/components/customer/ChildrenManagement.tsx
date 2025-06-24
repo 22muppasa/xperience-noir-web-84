@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -42,6 +43,24 @@ interface ChildAssociationRequest {
   reviewed_at: string | null;
   notes: string | null;
   children: Child;
+}
+
+interface ChildRegistrationRequest {
+  id: string;
+  parent_id: string;
+  first_name: string;
+  last_name: string;
+  date_of_birth: string | null;
+  emergency_contact_name: string | null;
+  emergency_contact_phone: string | null;
+  medical_notes: string | null;
+  status: 'pending' | 'approved' | 'rejected';
+  requested_at: string;
+  reviewed_at: string | null;
+  reviewed_by: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 const ChildrenManagement = () => {
@@ -126,7 +145,7 @@ const ChildrenManagement = () => {
       }
       
       console.log('Fetched registration requests:', data);
-      return data;
+      return data as ChildRegistrationRequest[];
     },
     enabled: !!user?.id
   });

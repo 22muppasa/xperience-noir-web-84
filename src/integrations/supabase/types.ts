@@ -171,6 +171,75 @@ export type Database = {
           },
         ]
       }
+      child_registration_requests: {
+        Row: {
+          created_at: string
+          date_of_birth: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          first_name: string
+          id: string
+          last_name: string
+          medical_notes: string | null
+          notes: string | null
+          parent_id: string
+          requested_at: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date_of_birth?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          first_name: string
+          id?: string
+          last_name: string
+          medical_notes?: string | null
+          notes?: string | null
+          parent_id: string
+          requested_at?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date_of_birth?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          first_name?: string
+          id?: string
+          last_name?: string
+          medical_notes?: string | null
+          notes?: string | null
+          parent_id?: string
+          requested_at?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "child_registration_requests_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "child_registration_requests_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       children: {
         Row: {
           created_at: string
@@ -1048,6 +1117,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_child_name_exists: {
+        Args: { first_name_param: string; last_name_param: string }
+        Returns: boolean
+      }
       check_enrollment_capacity: {
         Args: { program_id_param: string }
         Returns: {
@@ -1055,6 +1128,10 @@ export type Database = {
           max_participants: number
           is_full: boolean
         }[]
+      }
+      create_child_from_registration: {
+        Args: { registration_id: string }
+        Returns: string
       }
       delete_child_comprehensive: {
         Args: { child_id_param: string }

@@ -1,15 +1,16 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Baby, Users, Clock } from 'lucide-react';
+import { Baby, Users, Clock, FileCheck } from 'lucide-react';
 import RequestChildDialog from './RequestChildDialog';
+import RegisterChildDialog from './RegisterChildDialog';
 import ChildCard from './ChildCard';
 import PendingRequestCard from './PendingRequestCard';
+import RegistrationRequestCard from './RegistrationRequestCard';
 
 interface Child {
   id: string;
@@ -45,6 +46,7 @@ interface ChildAssociationRequest {
 
 const ChildrenManagement = () => {
   const { user } = useAuth();
+  const [isRegisterDialogOpen, setIsRegisterDialogOpen] = useState(false);
 
   // Fetch user's approved children relationships (all relationship types)
   const { data: myChildren = [], isLoading } = useQuery({
@@ -104,6 +106,31 @@ const ChildrenManagement = () => {
     enabled: !!user?.id
   });
 
+  // Fetch user's child registration requests
+  const { data: registrationRequests = [] } = useQuery({
+    queryKey: ['child-registration-requests', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return [];
+      
+      console.log('Fetching registration requests for user:', user.id);
+      
+      const { data, error } = await supabase
+        .from('child_registration_requests')
+        .select('*')
+        .eq('parent_id', user.id)
+        .order('requested_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching registration requests:', error);
+        throw error;
+      }
+      
+      console.log('Fetched registration requests:', data);
+      return data;
+    },
+    enabled: !!user?.id
+  });
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-32">
@@ -123,7 +150,13 @@ const ChildrenManagement = () => {
           <p className="text-black">Manage your children and view their information</p>
         </div>
         
-        <RequestChildDialog myChildren={myChildren} pendingRequests={pendingRequests} />
+        <div className="flex space-x-2">
+          <RequestChildDialog myChildren={myChildren} pendingRequests={pendingRequests} />
+          <RegisterChildDialog 
+            isOpen={isRegisterDialogOpen} 
+            onOpenChange={setIsRegisterDialogOpen} 
+          />
+        </div>
       </div>
 
       <Tabs defaultValue="approved" className="space-y-6">
@@ -136,6 +169,10 @@ const ChildrenManagement = () => {
             <Clock className="h-4 w-4" />
             <span>Pending Requests ({pendingRequests.length})</span>
           </TabsTrigger>
+          <TabsTrigger value="registrations" className="flex items-center space-x-2 text-black">
+            <FileCheck className="h-4 w-4" />
+            <span>Registration Requests ({registrationRequests.length})</span>
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="approved">
@@ -145,9 +182,15 @@ const ChildrenManagement = () => {
                 <Baby className="h-12 w-12 text-black mx-auto mb-4" />
                 <h3 className="text-lg font-semibold mb-2 text-black">No children associated</h3>
                 <p className="text-black mb-4">
-                  Request to add your children to view their work and progress.
+                  Request to add your children or register a new child to view their work and progress.
                 </p>
-                <RequestChildDialog myChildren={myChildren} pendingRequests={pendingRequests} />
+                <div className="flex justify-center space-x-2">
+                  <RequestChildDialog myChildren={myChildren} pendingRequests={pendingRequests} />
+                  <RegisterChildDialog 
+                    isOpen={isRegisterDialogOpen} 
+                    onOpenChange={setIsRegisterDialogOpen} 
+                  />
+                </div>
               </CardContent>
             </Card>
           ) : (
@@ -168,13 +211,43 @@ const ChildrenManagement = () => {
                 <p className="text-black mb-4">
                   You don't have any pending child association requests.
                 </p>
-                <RequestChildDialog myChildren={myChildren} pendingRequests={pendingRequests} />
+                <div className="flex justify-center space-x-2">
+                  <RequestChildDialog myChildren={myChildren} pendingRequests={pendingRequests} />
+                  <RegisterChildDialog 
+                    isOpen={isRegisterDialogOpen} 
+                    onOpenChange={setIsRegisterDialogOpen} 
+                  />
+                </div>
               </CardContent>
             </Card>
           ) : (
             <div className="space-y-4">
               {pendingRequests.map((request) => (
                 <PendingRequestCard key={request.id} request={request} />
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="registrations">
+          {registrationRequests.length === 0 ? (
+            <Card className="bg-white border-black">
+              <CardContent className="p-12 text-center">
+                <FileCheck className="h-12 w-12 text-black mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2 text-black">No registration requests</h3>
+                <p className="text-black mb-4">
+                  You haven't submitted any child registration requests yet.
+                </p>
+                <RegisterChildDialog 
+                  isOpen={isRegisterDialogOpen} 
+                  onOpenChange={setIsRegisterDialogOpen} 
+                />
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-4">
+              {registrationRequests.map((request) => (
+                <RegistrationRequestCard key={request.id} request={request} />
               ))}
             </div>
           )}

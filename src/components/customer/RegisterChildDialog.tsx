@@ -8,22 +8,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { UserPlus } from 'lucide-react';
 
 interface ChildData {
   first_name: string;
   last_name: string;
-  date_of_birth: string;
-  emergency_contact_name: string;
+  date_of_birth:   string;
+  emergency_contact_name:  string;
   emergency_contact_phone: string;
-  medical_notes: string;
+  medical_notes:           string;
 }
 
 interface Props {
@@ -38,11 +32,11 @@ export default function RegisterChildDialog({ isOpen, onOpenChange }: Props) {
 
   const [childData, setChildData] = useState<ChildData>({
     first_name: '',
-    last_name: '',
+    last_name:  '',
     date_of_birth: '',
     emergency_contact_name: '',
     emergency_contact_phone: '',
-    medical_notes: ''
+    medical_notes: '',
   });
 
   const canSubmit = Boolean(childData.first_name && childData.last_name);
@@ -50,62 +44,44 @@ export default function RegisterChildDialog({ isOpen, onOpenChange }: Props) {
   const manageChild = useMutation({
     mutationFn: async (data: ChildData) => {
       if (!user?.id) throw new Error('Not authenticated');
-
-      // 1) Try to find an existing child by name
-      const { data: existingChild, error: fetchChildErr } = await supabase
+      // 1) look for existing child
+      const { data: existing, error: fetchErr } = await supabase
         .from('children')
         .select('id')
         .match({
           first_name: data.first_name,
-          last_name: data.last_name
+          last_name:  data.last_name
         })
         .maybeSingle();
-      if (fetchChildErr) throw fetchChildErr;
+      if (fetchErr) throw fetchErr;
 
       let childId: string;
-      if (existingChild) {
-        childId = existingChild.id;
+      if (existing) {
+        childId = existing.id;
       } else {
-        // 2) Insert new child
-        const { data: newChild, error: insertChildErr } = await supabase
+        // 2) create new child
+        const { data: newChild, error: insertErr } = await supabase
           .from('children')
-          .insert([data])
+          .insert([ data ])
           .select('id')
           .single();
-        if (insertChildErr) throw insertChildErr;
+        if (insertErr) throw insertErr;
         childId = newChild.id;
       }
 
-      // 3) Check existing parent-child relationship
-      const { data: existingRel, error: fetchRelErr } = await supabase
-        .from('parent_child_relationships')
-        .select('id')
-        .match({
-          parent_id: user.id,
-          child_id: childId
-        })
-        .maybeSingle();
-      if (fetchRelErr) throw fetchRelErr;
-
-      if (existingRel) {
-        // Already linked
-        throw new Error(`You're already associated with ${data.first_name} ${data.last_name}.`);
-      }
-
-      // 4) Create the link
+      // 3) link to parent
       const { data: rel, error: relErr } = await supabase
         .from('parent_child_relationships')
         .insert([{
-          parent_id:         user.id,
-          child_id:          childId,
+          parent_id:       user.id,
+          child_id:        childId,
           relationship_type: 'parent',
-          status:            'approved',
-          assigned_by:       user.id
+          status:          'approved',
+          assigned_by:     user.id
         }])
         .select()
         .single();
       if (relErr) throw relErr;
-
       return rel;
     },
     onSuccess: () => {
@@ -117,21 +93,13 @@ export default function RegisterChildDialog({ isOpen, onOpenChange }: Props) {
         date_of_birth: '',
         emergency_contact_name: '',
         emergency_contact_phone: '',
-        medical_notes: ''
+        medical_notes: '',
       });
-      toast({
-        title: 'Success',
-        description: 'Child has been registered and linked.'
-      });
+      toast({ title: 'Child linked!', description: 'Your child is now registered.' });
     },
     onError: (err: any) => {
-      toast({
-        title: err.message.includes('already associated')
-          ? 'Already Linked'
-          : 'Error',
-        description: err.message,
-        variant: err.message.includes('already associated') ? 'warning' : 'destructive'
-      });
+      console.error(err);
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
     }
   });
 
@@ -147,7 +115,6 @@ export default function RegisterChildDialog({ isOpen, onOpenChange }: Props) {
         <DialogHeader>
           <DialogTitle className="text-black">Add or Register a Child</DialogTitle>
         </DialogHeader>
-
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -155,9 +122,7 @@ export default function RegisterChildDialog({ isOpen, onOpenChange }: Props) {
               <Input
                 id="first_name"
                 value={childData.first_name}
-                onChange={e =>
-                  setChildData(cs => ({ ...cs, first_name: e.target.value }))
-                }
+                onChange={e => setChildData(cs => ({ ...cs, first_name: e.target.value }))}
                 className="bg-white border-black text-black"
               />
             </div>
@@ -166,9 +131,7 @@ export default function RegisterChildDialog({ isOpen, onOpenChange }: Props) {
               <Input
                 id="last_name"
                 value={childData.last_name}
-                onChange={e =>
-                  setChildData(cs => ({ ...cs, last_name: e.target.value }))
-                }
+                onChange={e => setChildData(cs => ({ ...cs, last_name: e.target.value }))}
                 className="bg-white border-black text-black"
               />
             </div>
@@ -180,9 +143,7 @@ export default function RegisterChildDialog({ isOpen, onOpenChange }: Props) {
               id="date_of_birth"
               type="date"
               value={childData.date_of_birth}
-              onChange={e =>
-                setChildData(cs => ({ ...cs, date_of_birth: e.target.value }))
-              }
+              onChange={e => setChildData(cs => ({ ...cs, date_of_birth: e.target.value }))}
               className="bg-white border-black text-black"
             />
           </div>
@@ -193,9 +154,7 @@ export default function RegisterChildDialog({ isOpen, onOpenChange }: Props) {
               <Input
                 id="emergency_contact_name"
                 value={childData.emergency_contact_name}
-                onChange={e =>
-                  setChildData(cs => ({ ...cs, emergency_contact_name: e.target.value }))
-                }
+                onChange={e => setChildData(cs => ({ ...cs, emergency_contact_name: e.target.value }))}
                 className="bg-white border-black text-black"
               />
             </div>
@@ -204,9 +163,7 @@ export default function RegisterChildDialog({ isOpen, onOpenChange }: Props) {
               <Input
                 id="emergency_contact_phone"
                 value={childData.emergency_contact_phone}
-                onChange={e =>
-                  setChildData(cs => ({ ...cs, emergency_contact_phone: e.target.value }))
-                }
+                onChange={e => setChildData(cs => ({ ...cs, emergency_contact_phone: e.target.value }))}
                 className="bg-white border-black text-black"
               />
             </div>
@@ -218,9 +175,7 @@ export default function RegisterChildDialog({ isOpen, onOpenChange }: Props) {
               id="medical_notes"
               rows={3}
               value={childData.medical_notes}
-              onChange={e =>
-                setChildData(cs => ({ ...cs, medical_notes: e.target.value }))
-              }
+              onChange={e => setChildData(cs => ({ ...cs, medical_notes: e.target.value }))}
               className="bg-white border-black text-black"
             />
           </div>
@@ -237,5 +192,3 @@ export default function RegisterChildDialog({ isOpen, onOpenChange }: Props) {
     </Dialog>
   );
 }
-
-export default RegisterChildDialog;

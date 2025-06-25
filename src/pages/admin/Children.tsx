@@ -1,15 +1,16 @@
-// src/pages/AdminChildren.tsx
+
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
+import ChildAssociationRequests from '@/components/admin/ChildAssociationRequests';
 import CreateChildDialog from '@/components/admin/CreateChildDialog';
 import LinkParentDialog from '@/components/admin/LinkParentDialog';
 import ChildrenGrid from '@/components/admin/ChildrenGrid';
 import RelationshipsList from '@/components/admin/RelationshipsList';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, Baby, Search } from 'lucide-react';
+import { Users, Baby, Clock, Search } from 'lucide-react';
 
 interface Child {
   id: string;
@@ -52,6 +53,7 @@ const AdminChildren = () => {
         .from('children')
         .select('*')
         .order('created_at', { ascending: false });
+      
       if (error) throw error;
       return data as Child[];
     }
@@ -69,6 +71,7 @@ const AdminChildren = () => {
           profiles!parent_id(first_name, last_name, email)
         `)
         .order('assigned_at', { ascending: false });
+      
       if (error) throw error;
       return data as ParentChildRelationship[];
     }
@@ -112,6 +115,7 @@ const AdminChildren = () => {
             <h1 className="text-3xl font-bold text-black">Children Management</h1>
             <p className="text-black mt-1">Manage children profiles and parent associations</p>
           </div>
+          
           <div className="flex space-x-2">
             <CreateChildDialog 
               isOpen={isCreateChildOpen} 
@@ -131,8 +135,12 @@ const AdminChildren = () => {
           />
         </div>
 
-        <Tabs defaultValue="children" className="space-y-6">
+        <Tabs defaultValue="requests" className="space-y-6">
           <TabsList className="bg-white border-black">
+            <TabsTrigger value="requests" className="flex items-center space-x-2 text-black">
+              <Clock className="h-4 w-4" />
+              <span>Association Requests</span>
+            </TabsTrigger>
             <TabsTrigger value="children" className="flex items-center space-x-2 text-black">
               <Baby className="h-4 w-4" />
               <span>Children ({filteredChildren.length})</span>
@@ -142,6 +150,10 @@ const AdminChildren = () => {
               <span>Relationships ({filteredRelationships.length})</span>
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="requests">
+            <ChildAssociationRequests />
+          </TabsContent>
 
           <TabsContent value="children">
             <ChildrenGrid 

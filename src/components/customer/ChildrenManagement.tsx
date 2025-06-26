@@ -6,7 +6,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Baby, Users } from 'lucide-react';
-import RequestChildDialog from './RequestChildDialog';
 import RegisterChildDialog from './RegisterChildDialog';
 import ChildCard from './ChildCard';
 
@@ -84,7 +83,6 @@ const ChildrenManagement = () => {
         </div>
         
         <div className="flex space-x-2">
-          <RequestChildDialog myChildren={myChildren} pendingRequests={[]} />
           <RegisterChildDialog 
             isOpen={isRegisterDialogOpen} 
             onOpenChange={setIsRegisterDialogOpen} 
@@ -109,8 +107,7 @@ const ChildrenManagement = () => {
                 <p className="text-black mb-4">
                   Register your children to view their work and progress.
                 </p>
-                <div className="flex justify-center space-x-2">
-                  <RequestChildDialog myChildren={myChildren} pendingRequests={[]} />
+                <div className="flex justify-center">
                   <RegisterChildDialog 
                     isOpen={isRegisterDialogOpen} 
                     onOpenChange={setIsRegisterDialogOpen} 

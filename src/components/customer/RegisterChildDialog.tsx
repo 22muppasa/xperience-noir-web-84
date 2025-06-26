@@ -9,8 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { UserPlus, AlertCircle } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { UserPlus } from 'lucide-react';
 
 interface RegisterChildDialogProps {
   isOpen: boolean;
@@ -30,50 +29,82 @@ const RegisterChildDialog = ({ isOpen, onOpenChange }: RegisterChildDialogProps)
     emergency_contact_phone: '',
     medical_notes: ''
   });
-  const [nameCheckResult, setNameCheckResult] = useState<boolean | null>(null);
-  const [isCheckingName, setIsCheckingName] = useState(false);
-
-  const checkNameMutation = useMutation({
-    mutationFn: async ({ first_name, last_name }: { first_name: string; last_name: string }) => {
-      const { data, error } = await supabase.rpc('check_child_name_exists', {
-        first_name_param: first_name,
-        last_name_param: last_name
-      });
-      
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: (exists) => {
-      setNameCheckResult(exists);
-    },
-    onError: (error) => {
-      console.error('Name check error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to check child name availability",
-        variant: "destructive"
-      });
-    }
-  });
 
   const registerChildMutation = useMutation({
     mutationFn: async (data: typeof childData) => {
       if (!user?.id) throw new Error('User not authenticated');
       
-      const { data: result, error } = await supabase
-        .from('child_registration_requests')
-        .insert([{
-          parent_id: user.id,
-          ...data
-        }])
-        .select()
+      // First check if child already exists
+      const { data: existingChild, error: checkError } = await supabase
+        .from('children')
+        .select('id')
+        .ilike('first_name', data.first_name)
+        .ilike('last_name', data.last_name)
         .single();
-      
-      if (error) throw error;
-      return result;
+
+      if (checkError && checkError.code !== 'PGRST116') {
+        throw checkError;
+      }
+
+      let childId: string;
+
+      if (existingChild) {
+        // Child exists, check if already linked to this parent
+        const { data: existingRelationship, error: relationshipError } = await supabase
+          .from('parent_child_relationships')
+          .select('id')
+          .eq('parent_id', user.id)
+          .eq('child_id', existingChild.id)
+          .single();
+
+        if (relationshipError && relationshipError.code !== 'PGRST116') {
+          throw relationshipError;
+        }
+
+        if (existingRelationship) {
+          throw new Error('This child is already linked to your account');
+        }
+
+        // Link existing child to parent
+        const { error: linkError } = await supabase
+          .from('parent_child_relationships')
+          .insert([{
+            parent_id: user.id,
+            child_id: existingChild.id,
+            relationship_type: 'parent',
+            status: 'approved'
+          }]);
+
+        if (linkError) throw linkError;
+        childId = existingChild.id;
+      } else {
+        // Create new child
+        const { data: newChild, error: createError } = await supabase
+          .from('children')
+          .insert([data])
+          .select()
+          .single();
+
+        if (createError) throw createError;
+
+        // Link new child to parent
+        const { error: linkError } = await supabase
+          .from('parent_child_relationships')
+          .insert([{
+            parent_id: user.id,
+            child_id: newChild.id,
+            relationship_type: 'parent',
+            status: 'approved'
+          }]);
+
+        if (linkError) throw linkError;
+        childId = newChild.id;
+      }
+
+      return { childId, isExisting: !!existingChild };
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['child-registration-requests'] });
+    onSuccess: (result) => {
+      queryClient.invalidateQueries({ queryKey: ['my-children'] });
       onOpenChange(false);
       setChildData({
         first_name: '',
@@ -83,40 +114,34 @@ const RegisterChildDialog = ({ isOpen, onOpenChange }: RegisterChildDialogProps)
         emergency_contact_phone: '',
         medical_notes: ''
       });
-      setNameCheckResult(null);
       toast({
-        title: "Registration request submitted",
-        description: "Your child registration request has been submitted for review by an administrator"
+        title: result.isExisting ? "Child linked successfully" : "Child registered successfully",
+        description: result.isExisting 
+          ? "The existing child has been linked to your account"
+          : "Your child has been registered and linked to your account"
       });
     },
-    onError: (error) => {
+    onError: (error: any) => {
       console.error('Registration error:', error);
       toast({
         title: "Error",
-        description: "Failed to submit registration request",
+        description: error.message || "Failed to register child",
         variant: "destructive"
       });
     }
   });
 
-  const handleNameCheck = () => {
-    if (childData.first_name && childData.last_name) {
-      setIsCheckingName(true);
-      checkNameMutation.mutate({
-        first_name: childData.first_name,
-        last_name: childData.last_name
-      });
-      setIsCheckingName(false);
-    }
-  };
-
   const handleSubmit = () => {
-    if (nameCheckResult === false) {
-      registerChildMutation.mutate(childData);
+    if (!childData.first_name || !childData.last_name) {
+      toast({
+        title: "Error",
+        description: "First name and last name are required",
+        variant: "destructive"
+      });
+      return;
     }
+    registerChildMutation.mutate(childData);
   };
-
-  const isFormValid = childData.first_name && childData.last_name && nameCheckResult === false;
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -137,10 +162,7 @@ const RegisterChildDialog = ({ isOpen, onOpenChange }: RegisterChildDialogProps)
               <Input
                 id="first_name"
                 value={childData.first_name}
-                onChange={(e) => {
-                  setChildData(prev => ({ ...prev, first_name: e.target.value }));
-                  setNameCheckResult(null);
-                }}
+                onChange={(e) => setChildData(prev => ({ ...prev, first_name: e.target.value }))}
                 className="bg-white border-black text-black"
                 required
               />
@@ -150,40 +172,12 @@ const RegisterChildDialog = ({ isOpen, onOpenChange }: RegisterChildDialogProps)
               <Input
                 id="last_name"
                 value={childData.last_name}
-                onChange={(e) => {
-                  setChildData(prev => ({ ...prev, last_name: e.target.value }));
-                  setNameCheckResult(null);
-                }}
+                onChange={(e) => setChildData(prev => ({ ...prev, last_name: e.target.value }))}
                 className="bg-white border-black text-black"
                 required
               />
             </div>
           </div>
-
-          {childData.first_name && childData.last_name && (
-            <div className="space-y-2">
-              <Button
-                type="button"
-                onClick={handleNameCheck}
-                disabled={isCheckingName || checkNameMutation.isPending}
-                className="bg-blue-600 text-white hover:bg-blue-700"
-              >
-                {isCheckingName || checkNameMutation.isPending ? 'Checking...' : 'Check Name Availability'}
-              </Button>
-              
-              {nameCheckResult !== null && (
-                <Alert className={nameCheckResult ? "border-red-300 bg-red-50" : "border-green-300 bg-green-50"}>
-                  <AlertCircle className="h-4 w-4" />
-                  <AlertDescription className="text-black">
-                    {nameCheckResult 
-                      ? `A child with the name "${childData.first_name} ${childData.last_name}" already exists in our system.`
-                      : `Great! The name "${childData.first_name} ${childData.last_name}" is available.`
-                    }
-                  </AlertDescription>
-                </Alert>
-              )}
-            </div>
-          )}
 
           <div>
             <Label htmlFor="date_of_birth" className="text-black">Date of Birth</Label>
@@ -231,9 +225,9 @@ const RegisterChildDialog = ({ isOpen, onOpenChange }: RegisterChildDialogProps)
           <Button 
             onClick={handleSubmit}
             className="w-full bg-white text-black border border-black hover:bg-gray-100"
-            disabled={!isFormValid || registerChildMutation.isPending}
+            disabled={registerChildMutation.isPending}
           >
-            {registerChildMutation.isPending ? 'Submitting...' : 'Submit Registration Request'}
+            {registerChildMutation.isPending ? 'Registering...' : 'Register Child'}
           </Button>
         </div>
       </DialogContent>

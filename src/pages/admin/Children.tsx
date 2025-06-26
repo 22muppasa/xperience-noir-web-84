@@ -135,12 +135,8 @@ const AdminChildren = () => {
           />
         </div>
 
-        <Tabs defaultValue="requests" className="space-y-6">
+        <Tabs defaultValue="children" className="space-y-6">
           <TabsList className="bg-white border-black">
-            <TabsTrigger value="requests" className="flex items-center space-x-2 text-black">
-              <Clock className="h-4 w-4" />
-              <span>Association Requests</span>
-            </TabsTrigger>
             <TabsTrigger value="children" className="flex items-center space-x-2 text-black">
               <Baby className="h-4 w-4" />
               <span>Children ({filteredChildren.length})</span>
@@ -150,10 +146,6 @@ const AdminChildren = () => {
               <span>Relationships ({filteredRelationships.length})</span>
             </TabsTrigger>
           </TabsList>
-
-          <TabsContent value="requests">
-            <ChildAssociationRequests />
-          </TabsContent>
 
           <TabsContent value="children">
             <ChildrenGrid 

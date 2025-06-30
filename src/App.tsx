@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -61,9 +62,6 @@ function App() {
               <Route path="/consulting" element={<Consulting />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/auth" element={<Auth />} />
-
-              {/* Dashboard Redirect - for backward compatibility */}
-              <Route path="/dashboard" element={<Navigate to="/customer" replace />} />
 
               {/* Customer Protected Routes */}
               <Route path="/customer" element={<ProtectedRoute requiredRole="customer"><CustomerDashboard /></ProtectedRoute>} />

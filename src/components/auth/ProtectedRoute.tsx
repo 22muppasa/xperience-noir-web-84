@@ -20,14 +20,15 @@ const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
     );
   }
 
+  // If user is not authenticated, redirect to auth page
   if (!user) {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
+  // If a specific role is required and user doesn't have it, redirect to 404
+  // This prevents unwanted redirects during role changes or page refreshes
   if (requiredRole && userRole !== requiredRole) {
-    // Redirect to appropriate dashboard based on role
-    const redirectPath = userRole === 'admin' ? '/admin' : '/customer';
-    return <Navigate to={redirectPath} replace />;
+    return <Navigate to="/404" replace />;
   }
 
   return <>{children}</>;

@@ -51,8 +51,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               
               setUserRole(profile?.role || 'customer');
               
-              // Redirect to homepage after successful login/signup
-              if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+              // Only redirect to homepage after explicit sign in, not on page refresh or token refresh
+              if (event === 'SIGNED_IN') {
                 navigate('/');
               }
             } catch (error) {

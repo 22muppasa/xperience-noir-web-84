@@ -242,6 +242,7 @@ const AdminKidsWork = () => {
       );
     }
     
+    
     return (
       <div className="flex items-center justify-center p-8 bg-white rounded-lg border border-black">
         <div className="text-center">
@@ -465,7 +466,7 @@ const AdminKidsWork = () => {
             </div>
             
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsViewDialogOpen(false)} className="border-black text-black">
+              <Button variant="outline" onClick={() => setIsViewDialogOpen(false)} className="border-black text-white">
                 Close
               </Button>
               {selectedWork && (

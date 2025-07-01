@@ -51,8 +51,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               
               setUserRole(profile?.role || 'customer');
               
-              // Only redirect to homepage after explicit sign in from auth page
-              // Don't redirect on token refresh or initial session load
+              // ONLY redirect on explicit sign in from auth page - not on refresh or token refresh
               if (event === 'SIGNED_IN' && window.location.pathname === '/auth') {
                 navigate('/');
               }

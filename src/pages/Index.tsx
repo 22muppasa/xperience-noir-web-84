@@ -32,24 +32,24 @@ const Index = () => {
   // Carousel images
   const carouselImages = [
     {
-      src: "https://i.ibb.co/yc2P68WK/code4-255f298a5efe444e0bf6-1.jpg",
-      alt: "Camp"
+      src: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop&crop=entropy&cs=tinysrgb",
+      alt: "Laptop with code"
     },
     {
-      src: "https://i.ibb.co/rR4wKNZZ/code3-677e9c69d303d04c3d8f.jpg",
-      alt: "Camp 1"
+      src: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop&crop=entropy&cs=tinysrgb",
+      alt: "Developer workspace"
     },
     {
-      src: "https://i.ibb.co/5WHZ4Pb3/code5-7d87c54abed326e3ac77.jpg",
-      alt: "Camp 2"
+      src: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=800&h=600&fit=crop&crop=entropy&cs=tinysrgb",
+      alt: "Woman coding"
     },
     {
-      src: "https://i.ibb.co/Ps4gMMw9/code1-3537655fb7ad07a2d9a8.jpg",
-      alt: "Camp 3"
+      src: "https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=800&h=600&fit=crop&crop=entropy&cs=tinysrgb",
+      alt: "Digital workspace"
     },
     {
-      src: "https://i.ibb.co/qYfmgCW1/code2-36b5dcb788a3ee35df93.jpg",
-      alt: "Camp 4"
+      src: "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?w=800&h=600&fit=crop&crop=entropy&cs=tinysrgb",
+      alt: "Computer setup"
     }
   ];
 
@@ -65,7 +65,7 @@ const Index = () => {
       <section className="flex flex-col justify-center min-h-[85vh] px-4 md:px-6 py-16 pt-24 relative z-10 bg-white">
         <div className="container mx-auto max-w-6xl">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div>
+            <div className="flex flex-col justify-center">
               <h1 className="text-5xl md:text-7xl font-medium leading-tight tracking-tighter mb-6 animate-fade-in text-black">
                 Transform Your Digital Experience
               </h1>
@@ -96,35 +96,37 @@ const Index = () => {
                 </Link>
               </div>
             </div>
-            <animated.div style={fadeIn} className="relative h-96 lg:h-full group">
-              <Carousel 
-                className="w-full h-full"
-                plugins={[
-                  Autoplay({
-                    delay: 4000,
-                  }),
-                ]}
-                opts={{
-                  align: "start",
-                  loop: true,
-                }}
-              >
-                <CarouselContent className="h-full">
-                  {carouselImages.map((image, index) => (
-                    <CarouselItem key={index} className="relative h-full">
-                      <div className="relative w-full h-full">
-                        <img 
-                          src={image.src}
-                          alt={image.alt}
-                          className="w-full h-full object-cover rounded-3xl shadow-xl"
-                        />
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious className="opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <CarouselNext className="opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </Carousel>
+            <animated.div style={fadeIn} className="relative flex items-center justify-center">
+              <div className="w-full max-w-md lg:max-w-lg h-80 lg:h-96 group">
+                <Carousel 
+                  className="w-full h-full"
+                  plugins={[
+                    Autoplay({
+                      delay: 4000,
+                    }),
+                  ]}
+                  opts={{
+                    align: "start",
+                    loop: true,
+                  }}
+                >
+                  <CarouselContent className="h-full">
+                    {carouselImages.map((image, index) => (
+                      <CarouselItem key={index} className="h-full">
+                        <div className="relative w-full h-full">
+                          <img 
+                            src={image.src}
+                            alt={image.alt}
+                            className="w-full h-full object-cover rounded-3xl shadow-xl"
+                          />
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                  <CarouselPrevious className="opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <CarouselNext className="opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </Carousel>
+              </div>
             </animated.div>
           </div>
         </div>

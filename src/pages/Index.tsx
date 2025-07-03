@@ -5,6 +5,13 @@ import { ArrowRight, Code, PenSquare, User } from 'lucide-react';
 import AnimatedBackground from '@/components/ui/AnimatedBackground';
 import AnimatedButton from '@/components/ui/AnimatedButton';
 import Navbar from '@/components/layout/Navbar';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const Index = () => {
   // Animation for hero image
@@ -20,6 +27,30 @@ const Index = () => {
     to: { opacity: 1, transform: 'translateY(0)' },
     config: { duration: 700, delay: 300 }
   });
+
+  // Carousel images
+  const carouselImages = [
+    {
+      src: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
+      alt: "Digital Experience"
+    },
+    {
+      src: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7",
+      alt: "Woman with Laptop"
+    },
+    {
+      src: "https://images.unsplash.com/photo-1518770660439-4636190af475",
+      alt: "Circuit Board"
+    },
+    {
+      src: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
+      alt: "Programming Monitor"
+    },
+    {
+      src: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
+      alt: "MacBook Pro"
+    }
+  ];
 
   return (
     <div className="flex flex-col min-h-screen relative">
@@ -65,11 +96,21 @@ const Index = () => {
               </div>
             </div>
             <animated.div style={fadeIn} className="relative h-96 lg:h-full">
-              <img 
-                src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b"
-                alt="Digital Experience" 
-                className="absolute inset-0 w-full h-full object-cover rounded-3xl shadow-xl"
-              />
+              <Carousel className="w-full h-full">
+                <CarouselContent>
+                  {carouselImages.map((image, index) => (
+                    <CarouselItem key={index}>
+                      <img 
+                        src={image.src}
+                        alt={image.alt}
+                        className="absolute inset-0 w-full h-full object-cover rounded-3xl shadow-xl"
+                      />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+              </Carousel>
             </animated.div>
           </div>
         </div>

@@ -32,24 +32,24 @@ const Index = () => {
   // Carousel images
   const carouselImages = [
     {
-      src: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&h=600&fit=crop&crop=entropy&cs=tinysrgb",
-      alt: "Laptop with code"
+      src: "https://i.ibb.co/yc2P68WK/code4-255f298a5efe444e0bf6-1.jpg",
+      alt: "Camp"
     },
     {
-      src: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop&crop=entropy&cs=tinysrgb",
-      alt: "Developer workspace"
+      src: "https://i.ibb.co/rR4wKNZZ/code3-677e9c69d303d04c3d8f.jpg",
+      alt: "Camp 1"
     },
     {
-      src: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?w=800&h=600&fit=crop&crop=entropy&cs=tinysrgb",
-      alt: "Woman coding"
+      src: "https://i.ibb.co/5WHZ4Pb3/code5-7d87c54abed326e3ac77.jpg",
+      alt: "Camp 2"
     },
     {
-      src: "https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=800&h=600&fit=crop&crop=entropy&cs=tinysrgb",
-      alt: "Digital workspace"
+      src: "https://i.ibb.co/Ps4gMMw9/code1-3537655fb7ad07a2d9a8.jpg",
+      alt: "Camp 3"
     },
     {
-      src: "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?w=800&h=600&fit=crop&crop=entropy&cs=tinysrgb",
-      alt: "Computer setup"
+      src: "https://i.ibb.co/qYfmgCW1/code2-36b5dcb788a3ee35df93.jpg",
+      alt: "Camp 4"
     }
   ];
 

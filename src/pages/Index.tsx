@@ -97,14 +97,16 @@ const Index = () => {
             </div>
             <animated.div style={fadeIn} className="relative h-96 lg:h-full">
               <Carousel className="w-full h-full">
-                <CarouselContent>
+                <CarouselContent className="h-full">
                   {carouselImages.map((image, index) => (
-                    <CarouselItem key={index}>
-                      <img 
-                        src={image.src}
-                        alt={image.alt}
-                        className="absolute inset-0 w-full h-full object-cover rounded-3xl shadow-xl"
-                      />
+                    <CarouselItem key={index} className="relative h-full">
+                      <div className="relative w-full h-full">
+                        <img 
+                          src={image.src}
+                          alt={image.alt}
+                          className="w-full h-full object-cover rounded-3xl shadow-xl"
+                        />
+                      </div>
                     </CarouselItem>
                   ))}
                 </CarouselContent>

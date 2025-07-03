@@ -12,6 +12,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import Autoplay from "embla-carousel-autoplay";
 
 const Index = () => {
   // Animation for hero image
@@ -95,8 +96,19 @@ const Index = () => {
                 </Link>
               </div>
             </div>
-            <animated.div style={fadeIn} className="relative h-96 lg:h-full">
-              <Carousel className="w-full h-full">
+            <animated.div style={fadeIn} className="relative h-96 lg:h-full group">
+              <Carousel 
+                className="w-full h-full"
+                plugins={[
+                  Autoplay({
+                    delay: 4000,
+                  }),
+                ]}
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
+              >
                 <CarouselContent className="h-full">
                   {carouselImages.map((image, index) => (
                     <CarouselItem key={index} className="relative h-full">
@@ -110,8 +122,8 @@ const Index = () => {
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
+                <CarouselPrevious className="opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <CarouselNext className="opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </Carousel>
             </animated.div>
           </div>

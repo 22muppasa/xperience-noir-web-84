@@ -32,24 +32,24 @@ const Index = () => {
   // Carousel images
   const carouselImages = [
     {
-      src: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b",
-      alt: "Digital Experience"
+      src: "https://i.ibb.co/yc2P68WK/code4-255f298a5efe444e0bf6-1.jpg",
+      alt: "Camp"
     },
     {
-      src: "https://images.unsplash.com/photo-1649972904349-6e44c42644a7",
-      alt: "Woman with Laptop"
+      src: "https://i.ibb.co/rR4wKNZZ/code3-677e9c69d303d04c3d8f.jpg",
+      alt: "Camp 1"
     },
     {
-      src: "https://images.unsplash.com/photo-1518770660439-4636190af475",
-      alt: "Circuit Board"
+      src: "https://i.ibb.co/5WHZ4Pb3/code5-7d87c54abed326e3ac77.jpg",
+      alt: "Camp 2"
     },
     {
-      src: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6",
-      alt: "Programming Monitor"
+      src: "https://i.ibb.co/Ps4gMMw9/code1-3537655fb7ad07a2d9a8.jpg",
+      alt: "Camp 3"
     },
     {
-      src: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d",
-      alt: "MacBook Pro"
+      src: "https://i.ibb.co/qYfmgCW1/code2-36b5dcb788a3ee35df93.jpg",
+      alt: "Camp 4"
     }
   ];
 

@@ -46,10 +46,6 @@ const Index = () => {
     {
       src: "https://i.ibb.co/Ps4gMMw9/code1-3537655fb7ad07a2d9a8.jpg",
       alt: "Camp 3"
-    },
-    {
-      src: "https://i.ibb.co/qYfmgCW1/code2-36b5dcb788a3ee35df93.jpg",
-      alt: "Camp 4"
     }
   ];
 

@@ -42,7 +42,9 @@ const Contact = () => {
                   <div>
                     <h3 className="font-medium mb-1">Email</h3>
                     <p className="text-gray-600 mb-1">General Inquiries:</p>
-                    <a href="mailto:hello@xperience.com" className="text-blue-600 hover:underline">xperiencecode@gmail.com</a>
+                    <a href="mailto:xperiencecode@gmail.com" className="text-blue-600 hover:underline">
+                      xperiencecode@gmail.com
+                    </a>
                   </div>
                 </div>
 
@@ -54,7 +56,10 @@ const Contact = () => {
                   <div>
                     <h3 className="font-medium mb-1">Phone</h3>
                     <p className="text-gray-600 mb-1">Main Office:</p>
-                    <a href="tel:+18885551234" className="text-blue-600 hover:underline">(847) 920-8744</a>
+                    <a href="tel:+18885551234" className="text-blue-600 hover:underline">
+                      (847) 920‑8744
+                    </a>
+                  </div>
                 </div>
 
                 {/* Location */}
@@ -65,7 +70,7 @@ const Contact = () => {
                   <div>
                     <h3 className="font-medium mb-1">Location</h3>
                     <p className="text-gray-700">145 Lakeview Pkwy</p>
-                    <p className="text-gray-700">Vernon Hills, IL 60061</p>
+                    <p className="text-gray-700">Vernon Hills, IL 60061</p>
                   </div>
                 </div>
 
@@ -90,9 +95,22 @@ const Contact = () => {
               <div className="mt-12">
                 <h3 className="text-xl font-medium mb-4">Follow Us</h3>
                 <div className="flex gap-4">
-                  <a href="https://www.linkedin.com/company/xperiencecoding/posts/?feedView=all" className="w-10 h-10 bg-gray-100 flex items-center justify-center rounded-full hover:bg-gray-200 transition-colors" aria-label="LinkedIn">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-                      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                  <a
+                    href="https://www.linkedin.com/company/xperiencecoding/posts/?feedView=all"
+                    aria-label="LinkedIn"
+                    className="w-10 h-10 bg-gray-100 flex items-center justify-center rounded-full hover:bg-gray-200 transition-colors"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="w-5 h-5"
+                    >
+                      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
                       <rect width="4" height="12" x="2" y="9" />
                       <circle cx="4" cy="4" r="2" />
                     </svg>
@@ -152,10 +170,20 @@ const Contact = () => {
             Whether you're looking to learn new skills or enhance your digital presence, we're here to help you succeed.
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
-            <Button variant="outline" size="lg" asChild className="text-white border-white hover:bg-white hover:text-black">
+            <Button
+              variant="outline"
+              size="lg"
+              asChild
+              className="text-white border-white hover:bg-white hover:text-black"
+            >
               <Link to="/programs">Explore Programs</Link>
             </Button>
-            <Button variant="outline" size="lg" asChild className="text-white border-white hover:bg-white hover:text-black">
+            <Button
+              variant="outline"
+              size="lg"
+              asChild
+              className="text-white border-white hover:bg-white hover:text-black"
+            >
               <Link to="/consulting">Learn About Consulting</Link>
             </Button>
           </div>

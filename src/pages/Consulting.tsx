@@ -102,15 +102,6 @@ const Consulting = () => {
                     View Our Work
                   </Button>
                 </a>
-                <Link to="/contact">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="border-white text-white hover:bg-white hover:text-black hover:border-transparent transition rounded-md font-semibold px-6 py-3"
-                  >
-                    Contact Us
-                  </Button>
-                </Link>
               </div>
             </div>
             <div className="relative">

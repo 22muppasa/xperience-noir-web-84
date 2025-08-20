@@ -1,13 +1,16 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 import SystemStats from '@/components/admin/SystemStats';
 import ActivityLog from '@/components/admin/ActivityLog';
+import ExternalProgramLinkDialog from '@/components/admin/ExternalProgramLinkDialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAdminSettings } from '@/hooks/useAdminSettings';
 import { 
   Users, 
   FileText, 
@@ -16,11 +19,15 @@ import {
   Shield,
   Activity,
   Calendar,
-  Heart
+  Heart,
+  Link,
+  ExternalLink
 } from 'lucide-react';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
+  const { isExternalProgramsEnabled, getExternalProgramsLink } = useAdminSettings();
+  const [isExternalProgramDialogOpen, setIsExternalProgramDialogOpen] = useState(false);
 
   // Fetch real statistics from Supabase
   const { data: stats, isLoading } = useQuery({
@@ -75,6 +82,14 @@ const AdminDashboard = () => {
       icon: FileText,
       href: '/admin/kids-work',
       color: 'bg-white border-black'
+    },
+    {
+      title: 'External Programs',
+      description: isExternalProgramsEnabled() ? 'External program link is active' : 'Set up external program link',
+      icon: Link,
+      onClick: () => setIsExternalProgramDialogOpen(true),
+      color: 'bg-white border-black',
+      badge: isExternalProgramsEnabled() ? 'Active' : undefined
     }
   ];
 
@@ -94,11 +109,11 @@ const AdminDashboard = () => {
       trend: stats?.pendingVolunteers > 0 ? 'up' : 'stable'
     },
     {
-      title: 'Active Programs',
-      value: isLoading ? '...' : stats?.activePrograms.toString() || '0',
-      change: stats?.activePrograms > 0 ? `${stats.activePrograms} available` : 'No programs yet',
-      icon: Calendar,
-      trend: 'up'
+      title: 'External Programs',
+      value: isExternalProgramsEnabled() ? 'Active' : 'Not Set',
+      change: isExternalProgramsEnabled() ? 'Link configured' : 'No link set',
+      icon: ExternalLink,
+      trend: isExternalProgramsEnabled() ? 'up' : 'stable'
     }
   ];
 
@@ -149,16 +164,16 @@ const AdminDashboard = () => {
             <CardTitle className="text-black">Quick Actions</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {quickActions.map((action, index) => (
                 <Button
                   key={index}
                   variant="outline"
                   className={`h-auto p-4 flex flex-col items-start space-y-2 bg-white border-2 border-black hover:bg-gray-50 text-black relative`}
-                  onClick={() => window.location.href = action.href}
+                  onClick={action.onClick || (() => window.location.href = action.href || '#')}
                 >
                   {action.badge && (
-                    <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center">
+                    <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center">
                       {action.badge}
                     </div>
                   )}
@@ -185,6 +200,12 @@ const AdminDashboard = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* External Program Link Dialog */}
+      <ExternalProgramLinkDialog
+        open={isExternalProgramDialogOpen}
+        onOpenChange={setIsExternalProgramDialogOpen}
+      />
     </DashboardLayout>
   );
 };

@@ -94,6 +94,19 @@ export const useAdminSettings = () => {
           updated_by: null,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
+        },
+        {
+          id: '6',
+          setting_key: 'external_programs',
+          setting_value: getStoredSetting('external_programs', {
+            enabled: false,
+            link: '',
+            description: 'External program platform link'
+          }),
+          description: 'External program platform link management',
+          updated_by: null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         }
       ];
 
@@ -119,6 +132,16 @@ export const useAdminSettings = () => {
         }
         if (value.max_login_attempts < 3 || value.max_login_attempts > 10) {
           throw new Error('Max login attempts must be between 3 and 10');
+        }
+      }
+      
+      // Validate external programs
+      if (key === 'external_programs') {
+        if (value.enabled && !value.link.trim()) {
+          throw new Error('Program link is required when external programs are enabled');
+        }
+        if (value.link && !value.link.startsWith('http')) {
+          throw new Error('Program link must be a valid URL starting with http:// or https://');
         }
       }
       
@@ -174,6 +197,19 @@ export const useAdminSettings = () => {
     return getSetting('security_limits')?.max_login_attempts || 5;
   };
 
+  // External programs helper functions
+  const isExternalProgramsEnabled = () => {
+    return getSetting('external_programs')?.enabled || false;
+  };
+
+  const getExternalProgramsLink = () => {
+    return getSetting('external_programs')?.link || '';
+  };
+
+  const getExternalProgramsDescription = () => {
+    return getSetting('external_programs')?.description || '';
+  };
+
   return {
     settings,
     isLoading,
@@ -186,6 +222,10 @@ export const useAdminSettings = () => {
     getMaxWorkItemsPerChild,
     requiresEmailVerification,
     getPasswordMinLength,
-    getMaxLoginAttempts
+    getMaxLoginAttempts,
+    // External programs helpers
+    isExternalProgramsEnabled,
+    getExternalProgramsLink,
+    getExternalProgramsDescription
   };
 };

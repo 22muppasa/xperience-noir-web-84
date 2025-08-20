@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,10 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus, Mail, Calendar, Shield, User, Check } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
+import { Mail, Calendar, Shield, User, Check } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -42,20 +38,11 @@ const UserManagement = () => {
   const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'customer'>('all');
   const [dateFilter, setDateFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
-  const [isCreateUserOpen, setIsCreateUserOpen] = useState(false);
   const [roleChangeDialog, setRoleChangeDialog] = useState<{
     isOpen: boolean;
     user: Profile | null;
     newRole: 'admin' | 'customer' | null;
   }>({ isOpen: false, user: null, newRole: null });
-  const [newUser, setNewUser] = useState({
-    email: '',
-    first_name: '',
-    last_name: '',
-    role: 'customer' as 'admin' | 'customer',
-    phone: '',
-    date_of_birth: ''
-  });
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -101,52 +88,6 @@ const UserManagement = () => {
       toast({
         title: "Error updating role",
         description: "Failed to update user role. Please try again.",
-        variant: "destructive",
-      });
-    }
-  });
-
-  const createUserMutation = useMutation({
-    mutationFn: async (userData: typeof newUser) => {
-      // For demo purposes, create a profile entry
-      // In production, you'd use Supabase Auth admin functions
-      const { data, error } = await supabase
-        .from('profiles')
-        .insert([{
-          id: crypto.randomUUID(),
-          email: userData.email,
-          first_name: userData.first_name,
-          last_name: userData.last_name,
-          role: userData.role,
-          phone: userData.phone
-        }])
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
-      setIsCreateUserOpen(false);
-      setNewUser({
-        email: '',
-        first_name: '',
-        last_name: '',
-        role: 'customer',
-        phone: '',
-        date_of_birth: ''
-      });
-      toast({
-        title: "User created successfully",
-        description: "New user profile has been created",
-      });
-    },
-    onError: (error) => {
-      console.error('Create user error:', error);
-      toast({
-        title: "Error creating user",
-        description: "Failed to create user profile. Please try again.",
         variant: "destructive",
       });
     }
@@ -256,74 +197,6 @@ const UserManagement = () => {
           <h2 className="text-2xl font-bold text-black">User Management</h2>
           <p className="text-black">Manage all users and their permissions</p>
         </div>
-        
-        <Dialog open={isCreateUserOpen} onOpenChange={setIsCreateUserOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-white text-black border border-black hover:bg-gray-100">
-              <UserPlus className="h-4 w-4 mr-2" />
-              Add User
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="bg-white border-black">
-            <DialogHeader>
-              <DialogTitle className="text-black">Create New User</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="first_name" className="text-black">First Name</Label>
-                  <Input
-                    id="first_name"
-                    value={newUser.first_name}
-                    onChange={(e) => setNewUser(prev => ({ ...prev, first_name: e.target.value }))}
-                    className="bg-white border-black text-black"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="last_name" className="text-black">Last Name</Label>
-                  <Input
-                    id="last_name"
-                    value={newUser.last_name}
-                    onChange={(e) => setNewUser(prev => ({ ...prev, last_name: e.target.value }))}
-                    className="bg-white border-black text-black"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <Label htmlFor="email" className="text-black">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={newUser.email}
-                  onChange={(e) => setNewUser(prev => ({ ...prev, email: e.target.value }))}
-                  className="bg-white border-black text-black"
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="role" className="text-black">Role</Label>
-                <Select value={newUser.role} onValueChange={(value: 'admin' | 'customer') => setNewUser(prev => ({ ...prev, role: value }))}>
-                  <SelectTrigger className="bg-white border-black text-black">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border-black">
-                    <SelectItem value="customer" className="text-black">Customer</SelectItem>
-                    <SelectItem value="admin" className="text-black">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <Button 
-                onClick={() => createUserMutation.mutate(newUser)}
-                className="w-full bg-white text-black border border-black hover:bg-gray-100"
-                disabled={createUserMutation.isPending}
-              >
-                {createUserMutation.isPending ? 'Creating...' : 'Create User'}
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
       </div>
 
       {/* Enhanced Filters */}

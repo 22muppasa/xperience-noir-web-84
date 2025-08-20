@@ -17,7 +17,6 @@ import {
   Shield,
   Activity,
   Calendar,
-  UserCheck,
   Heart
 } from 'lucide-react';
 
@@ -33,8 +32,6 @@ const AdminDashboard = () => {
         pendingWorkResult,
         messagesResult,
         programsResult,
-        enrollmentsResult,
-        pendingEnrollmentsResult,
         volunteerApplicationsResult,
         pendingVolunteersResult
       ] = await Promise.all([
@@ -42,8 +39,6 @@ const AdminDashboard = () => {
         supabase.from('kids_work').select('id', { count: 'exact' }),
         supabase.from('messages').select('id', { count: 'exact' }),
         supabase.from('programs').select('id', { count: 'exact' }),
-        supabase.from('enrollments').select('id', { count: 'exact' }),
-        supabase.from('enrollments').select('id', { count: 'exact' }).eq('status', 'pending'),
         supabase.from('volunteer_applications').select('id', { count: 'exact' }),
         supabase.from('volunteer_applications').select('id', { count: 'exact' }).eq('status', 'pending')
       ]);
@@ -53,8 +48,6 @@ const AdminDashboard = () => {
         pendingReviews: pendingWorkResult.count || 0,
         totalMessages: messagesResult.count || 0,
         activePrograms: programsResult.count || 0,
-        totalEnrollments: enrollmentsResult.count || 0,
-        pendingEnrollments: pendingEnrollmentsResult.count || 0,
         totalVolunteers: volunteerApplicationsResult.count || 0,
         pendingVolunteers: pendingVolunteersResult.count || 0
       };
@@ -70,14 +63,6 @@ const AdminDashboard = () => {
       color: 'bg-white border-black'
     },
     {
-      title: 'Review Enrollments',
-      description: 'Approve pending enrollment requests',
-      icon: UserCheck,
-      href: '/admin/enrollments',
-      color: 'bg-white border-black',
-      badge: stats?.pendingEnrollments > 0 ? stats.pendingEnrollments : undefined
-    },
-    {
       title: 'Review Volunteers',
       description: 'Manage volunteer applications',
       icon: Heart,
@@ -91,6 +76,13 @@ const AdminDashboard = () => {
       icon: FileText,
       href: '/admin/kids-work',
       color: 'bg-white border-black'
+    },
+    {
+      title: 'Manage Programs',
+      description: 'Create and manage programs',
+      icon: Calendar,
+      href: '/admin/programs',
+      color: 'bg-white border-black'
     }
   ];
 
@@ -103,18 +95,18 @@ const AdminDashboard = () => {
       trend: 'up'
     },
     {
-      title: 'Pending Enrollments',
-      value: isLoading ? '...' : stats?.pendingEnrollments.toString() || '0',
-      change: stats?.pendingEnrollments > 0 ? 'Needs approval' : 'All approved',
-      icon: UserCheck,
-      trend: stats?.pendingEnrollments > 0 ? 'up' : 'stable'
-    },
-    {
       title: 'Pending Volunteers',
       value: isLoading ? '...' : stats?.pendingVolunteers.toString() || '0',
       change: stats?.pendingVolunteers > 0 ? 'Needs review' : 'All reviewed',
       icon: Heart,
       trend: stats?.pendingVolunteers > 0 ? 'up' : 'stable'
+    },
+    {
+      title: 'Kids Work Items',
+      value: isLoading ? '...' : stats?.pendingReviews.toString() || '0',
+      change: stats?.pendingReviews > 0 ? 'Items to review' : 'All reviewed',
+      icon: FileText,
+      trend: 'up'
     },
     {
       title: 'Active Programs',

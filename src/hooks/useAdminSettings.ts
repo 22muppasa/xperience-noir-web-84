@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -20,10 +19,19 @@ export const useAdminSettings = () => {
   const { data: settings, isLoading } = useQuery({
     queryKey: ['admin-settings'],
     queryFn: async () => {
+      console.log('Loading admin settings...');
+      
       // Check for stored settings in localStorage
       const getStoredSetting = (key: string, defaultValue: any) => {
-        const stored = localStorage.getItem(`admin_setting_${key}`);
-        return stored ? JSON.parse(stored) : defaultValue;
+        try {
+          const stored = localStorage.getItem(`admin_setting_${key}`);
+          const result = stored ? JSON.parse(stored) : defaultValue;
+          console.log(`Loaded setting ${key}:`, result);
+          return result;
+        } catch (error) {
+          console.error(`Error loading setting ${key}:`, error);
+          return defaultValue;
+        }
       };
 
       // Real settings based on actual platform needs
@@ -101,7 +109,7 @@ export const useAdminSettings = () => {
           setting_value: getStoredSetting('external_programs', {
             enabled: false,
             link: '',
-            description: 'External program platform link'
+            description: ''
           }),
           description: 'External program platform link management',
           updated_by: null,
@@ -110,14 +118,24 @@ export const useAdminSettings = () => {
         }
       ];
 
+      console.log('All settings loaded:', defaultSettings);
       return defaultSettings;
     }
   });
 
   const updateSettingMutation = useMutation({
     mutationFn: async ({ key, value }: { key: string; value: any }) => {
+      console.log(`Updating setting ${key} with value:`, value);
+      
       const storageKey = `admin_setting_${key}`;
-      localStorage.setItem(storageKey, JSON.stringify(value));
+      
+      try {
+        localStorage.setItem(storageKey, JSON.stringify(value));
+        console.log(`Successfully saved ${key} to localStorage`);
+      } catch (error) {
+        console.error(`Error saving ${key} to localStorage:`, error);
+        throw new Error('Failed to save setting to local storage');
+      }
       
       // Validate security limits
       if (key === 'security_limits') {
@@ -137,17 +155,32 @@ export const useAdminSettings = () => {
       
       // Validate external programs
       if (key === 'external_programs') {
-        if (value.enabled && !value.link.trim()) {
+        console.log('Validating external programs setting:', value);
+        
+        if (value.enabled && !value.link?.trim()) {
           throw new Error('Program link is required when external programs are enabled');
         }
-        if (value.link && !value.link.startsWith('http')) {
-          throw new Error('Program link must be a valid URL starting with http:// or https://');
+        
+        if (value.link && value.link.trim()) {
+          const urlPattern = /^https?:\/\/.+\..+/;
+          if (!urlPattern.test(value.link)) {
+            throw new Error('Program link must be a valid URL starting with http:// or https://');
+          }
+          
+          try {
+            new URL(value.link);
+          } catch {
+            throw new Error('Program link must be a valid URL');
+          }
         }
+        
+        console.log('External programs validation passed');
       }
       
       return { setting_key: key, setting_value: value };
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log('Setting update successful:', data);
       queryClient.invalidateQueries({ queryKey: ['admin-settings'] });
       toast({
         title: "Settings updated",
@@ -165,10 +198,13 @@ export const useAdminSettings = () => {
   });
 
   const getSetting = (key: string) => {
-    return settings?.find(setting => setting.setting_key === key)?.setting_value;
+    const setting = settings?.find(setting => setting.setting_key === key)?.setting_value;
+    console.log(`Getting setting ${key}:`, setting);
+    return setting;
   };
 
   const updateSetting = (key: string, value: any) => {
+    console.log(`Request to update setting ${key}:`, value);
     updateSettingMutation.mutate({ key, value });
   };
 
@@ -199,15 +235,21 @@ export const useAdminSettings = () => {
 
   // External programs helper functions
   const isExternalProgramsEnabled = () => {
-    return getSetting('external_programs')?.enabled || false;
+    const enabled = getSetting('external_programs')?.enabled || false;
+    console.log('isExternalProgramsEnabled:', enabled);
+    return enabled;
   };
 
   const getExternalProgramsLink = () => {
-    return getSetting('external_programs')?.link || '';
+    const link = getSetting('external_programs')?.link || '';
+    console.log('getExternalProgramsLink:', link);
+    return link;
   };
 
   const getExternalProgramsDescription = () => {
-    return getSetting('external_programs')?.description || '';
+    const description = getSetting('external_programs')?.description || '';
+    console.log('getExternalProgramsDescription:', description);
+    return description;
   };
 
   return {

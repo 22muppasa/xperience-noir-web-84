@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import DashboardCard from './DashboardCard';
-import { BookOpen, MessageSquare, Bell, TrendingUp } from 'lucide-react';
+import { MessageSquare, Bell, Users, FileText } from 'lucide-react';
 
 const StatsOverview = () => {
   const { user } = useAuth();
@@ -13,11 +13,7 @@ const StatsOverview = () => {
     queryFn: async () => {
       if (!user?.id) return null;
 
-      const [enrollmentsResult, messagesResult, notificationsResult, kidsWorkResult] = await Promise.all([
-        supabase
-          .from('enrollments')
-          .select('id, status')
-          .eq('customer_id', user.id),
+      const [messagesResult, notificationsResult, customersResult, contactFormsResult] = await Promise.all([
         supabase
           .from('messages')
           .select('id, status, recipient_id')
@@ -27,21 +23,20 @@ const StatsOverview = () => {
           .select('id, read')
           .eq('user_id', user.id),
         supabase
-          .from('kids_work')
+          .from('profiles')
           .select('id')
-          .eq('parent_customer_id', user.id)
+          .eq('role', 'customer'),
+        supabase
+          .from('contact_forms')
+          .select('id, status')
       ]);
 
-      const enrollments = enrollmentsResult.data || [];
       const messages = messagesResult.data || [];
       const notifications = notificationsResult.data || [];
-      const kidsWork = kidsWorkResult.data || [];
+      const customers = customersResult.data || [];
+      const contactForms = contactFormsResult.data || [];
 
       return {
-        enrollments: {
-          total: enrollments.length,
-          active: enrollments.filter(e => e.status === 'active').length
-        },
         messages: {
           total: messages.length,
           unread: messages.filter(m => m.status === 'unread' && m.recipient_id === user.id).length
@@ -50,8 +45,12 @@ const StatsOverview = () => {
           total: notifications.length,
           unread: notifications.filter(n => !n.read).length
         },
-        kidsWork: {
-          total: kidsWork.length
+        customers: {
+          total: customers.length
+        },
+        contactForms: {
+          total: contactForms.length,
+          pending: contactForms.filter(cf => cf.status === 'pending').length
         }
       };
     },
@@ -91,11 +90,10 @@ const StatsOverview = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <DashboardCard
-        title="Active Programs"
-        value={stats.enrollments?.active || 0}
-        description={`${stats.enrollments?.total || 0} total enrollments`}
-        icon={<BookOpen className="h-5 w-5" />}
-        trend={stats.enrollments?.active > 0 ? { value: 12, isPositive: true } : undefined}
+        title="Total Customers"
+        value={stats.customers?.total || 0}
+        description="Registered users"
+        icon={<Users className="h-5 w-5" />}
       />
       
       <DashboardCard
@@ -113,10 +111,10 @@ const StatsOverview = () => {
       />
 
       <DashboardCard
-        title="Kids Work"
-        value={stats.kidsWork?.total || 0}
-        description={stats.kidsWork?.total > 0 ? "Creative projects uploaded" : "No projects yet"}
-        icon={<TrendingUp className="h-5 w-5" />}
+        title="Contact Forms"
+        value={stats.contactForms?.pending || 0}
+        description={`${stats.contactForms?.total || 0} total submissions`}
+        icon={<FileText className="h-5 w-5" />}
       />
     </div>
   );

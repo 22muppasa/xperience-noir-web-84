@@ -1,4 +1,3 @@
-
 import React from 'react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
@@ -118,10 +117,6 @@ const AdminDashboard = () => {
             <Button variant="secondary" size="sm" className="bg-white text-black hover:bg-gray-100">
               <Shield className="h-4 w-4 mr-2" />
               System Health: Good
-            </Button>
-            <Button variant="secondary" size="sm" className="bg-white text-black hover:bg-gray-100">
-              <BarChart3 className="h-4 w-4 mr-2" />
-              View Analytics
             </Button>
           </div>
         </div>

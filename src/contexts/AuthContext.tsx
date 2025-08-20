@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 interface AuthContextType {
   user: User | null;
   session: Session | null;
-  userRole: 'admin' | 'customer' | null;
+  userRole: 'admin' | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string, userData?: any) => Promise<{ error: any }>;
@@ -27,7 +27,7 @@ export const useAuth = () => {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
-  const [userRole, setUserRole] = useState<'admin' | 'customer' | null>(null);
+  const [userRole, setUserRole] = useState<'admin' | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -49,15 +49,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 .eq('id', session.user.id)
                 .single();
               
-              setUserRole(profile?.role || 'customer');
+              setUserRole(profile?.role === 'admin' ? 'admin' : null);
               
-              // ONLY redirect on explicit sign in from auth page - not on refresh or token refresh
+              // Redirect to admin dashboard on sign in from auth page
               if (event === 'SIGNED_IN' && window.location.pathname === '/auth') {
-                navigate('/');
+                navigate('/admin');
               }
             } catch (error) {
               console.error('Error fetching user role:', error);
-              setUserRole('customer');
+              setUserRole(null);
             }
           }, 0);
         } else {
@@ -83,10 +83,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               .eq('id', session.user.id)
               .single();
             
-            setUserRole(profile?.role || 'customer');
+            setUserRole(profile?.role === 'admin' ? 'admin' : null);
           } catch (error) {
             console.error('Error fetching user role:', error);
-            setUserRole('customer');
+            setUserRole(null);
           }
           setLoading(false);
         }, 0);
@@ -114,7 +114,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       password,
       options: {
         emailRedirectTo: redirectUrl,
-        data: userData
+        data: {
+          ...userData,
+          role: 'admin' // Default all new users to admin
+        }
       }
     });
     return { error };

@@ -17,7 +17,7 @@ const DashboardHeader = () => {
         <div className="flex items-center space-x-4">
           <div>
             <h1 className="text-2xl font-bold text-gray-900 font-poppins">
-              {userRole === 'admin' ? 'Admin Dashboard' : 'Dashboard'}
+              Admin Dashboard
             </h1>
             <p className="text-gray-600">
               Welcome back, <span className="font-medium">{user?.email?.split('@')[0]}</span>
@@ -26,8 +26,6 @@ const DashboardHeader = () => {
         </div>
         
         <div className="flex items-center space-x-4">
-          
-
           {/* Notifications */}
           <div className="relative">
             <NotificationBell />
@@ -39,7 +37,7 @@ const DashboardHeader = () => {
               <User className="h-4 w-4 text-white" />
             </div>
             <div className="hidden sm:block">
-              <div className="text-sm font-medium text-gray-900 capitalize">{userRole}</div>
+              <div className="text-sm font-medium text-gray-900">Admin</div>
               <div className="text-xs text-gray-500">{user?.email}</div>
             </div>
           </div>

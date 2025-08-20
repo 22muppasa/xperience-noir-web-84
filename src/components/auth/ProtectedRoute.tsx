@@ -5,10 +5,9 @@ import Loader from '@/components/ui/Loader';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: 'admin' | 'customer';
 }
 
-const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
+const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { user, loading, userRole } = useAuth();
   const location = useLocation();
 
@@ -25,8 +24,8 @@ const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
-  // If a specific role is required and user doesn't have it, show access denied
-  if (requiredRole && userRole !== requiredRole) {
+  // If user doesn't have admin role, show access denied
+  if (userRole !== 'admin') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="text-center">

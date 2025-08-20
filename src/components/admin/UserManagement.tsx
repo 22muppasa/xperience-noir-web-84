@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -13,7 +14,7 @@ interface User {
   last_name: string | null;
   role: string;
   created_at: string;
-  last_sign_in_at?: string | null; // Make this optional since it might not be available
+  last_sign_in_at?: string | null;
 }
 
 const UserManagement = () => {

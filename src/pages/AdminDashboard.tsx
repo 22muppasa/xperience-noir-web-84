@@ -17,7 +17,6 @@ import {
   Shield,
   Activity,
   Calendar,
-  UserCheck,
   Heart
 } from 'lucide-react';
 
@@ -33,8 +32,6 @@ const AdminDashboard = () => {
         pendingWorkResult,
         messagesResult,
         programsResult,
-        enrollmentsResult,
-        pendingEnrollmentsResult,
         volunteerApplicationsResult,
         pendingVolunteersResult
       ] = await Promise.all([
@@ -42,8 +39,6 @@ const AdminDashboard = () => {
         supabase.from('kids_work').select('id', { count: 'exact' }),
         supabase.from('messages').select('id', { count: 'exact' }),
         supabase.from('programs').select('id', { count: 'exact' }),
-        supabase.from('enrollments').select('id', { count: 'exact' }),
-        supabase.from('enrollments').select('id', { count: 'exact' }).eq('status', 'pending'),
         supabase.from('volunteer_applications').select('id', { count: 'exact' }),
         supabase.from('volunteer_applications').select('id', { count: 'exact' }).eq('status', 'pending')
       ]);
@@ -53,8 +48,6 @@ const AdminDashboard = () => {
         pendingReviews: pendingWorkResult.count || 0,
         totalMessages: messagesResult.count || 0,
         activePrograms: programsResult.count || 0,
-        totalEnrollments: enrollmentsResult.count || 0,
-        pendingEnrollments: pendingEnrollmentsResult.count || 0,
         totalVolunteers: volunteerApplicationsResult.count || 0,
         pendingVolunteers: pendingVolunteersResult.count || 0
       };
@@ -68,14 +61,6 @@ const AdminDashboard = () => {
       icon: Users,
       href: '/admin/customers',
       color: 'bg-white border-black'
-    },
-    {
-      title: 'Review Enrollments',
-      description: 'Approve pending enrollment requests',
-      icon: UserCheck,
-      href: '/admin/enrollments',
-      color: 'bg-white border-black',
-      badge: stats?.pendingEnrollments > 0 ? stats.pendingEnrollments : undefined
     },
     {
       title: 'Review Volunteers',
@@ -101,13 +86,6 @@ const AdminDashboard = () => {
       change: stats?.totalUsers > 0 ? '+12%' : 'No users yet',
       icon: Users,
       trend: 'up'
-    },
-    {
-      title: 'Pending Enrollments',
-      value: isLoading ? '...' : stats?.pendingEnrollments.toString() || '0',
-      change: stats?.pendingEnrollments > 0 ? 'Needs approval' : 'All approved',
-      icon: UserCheck,
-      trend: stats?.pendingEnrollments > 0 ? 'up' : 'stable'
     },
     {
       title: 'Pending Volunteers',
@@ -149,7 +127,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {adminStats.map((stat, index) => (
             <Card key={index} className="bg-white border-2 border-black">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -176,7 +154,7 @@ const AdminDashboard = () => {
             <CardTitle className="text-black">Quick Actions</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {quickActions.map((action, index) => (
                 <Button
                   key={index}

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -14,7 +13,7 @@ interface User {
   last_name: string | null;
   role: string;
   created_at: string;
-  last_sign_in_at: string | null;
+  last_sign_in_at?: string | null; // Make this optional since it might not be available
 }
 
 const UserManagement = () => {
@@ -29,7 +28,16 @@ const UserManagement = () => {
         .order('created_at', { ascending: false });
       
       if (error) throw error;
-      return data as User[];
+      // Transform the data to match our User interface
+      return data.map(profile => ({
+        id: profile.id,
+        email: profile.email,
+        first_name: profile.first_name,
+        last_name: profile.last_name,
+        role: profile.role,
+        created_at: profile.created_at,
+        last_sign_in_at: null // We don't have this data from profiles table
+      })) as User[];
     }
   });
 

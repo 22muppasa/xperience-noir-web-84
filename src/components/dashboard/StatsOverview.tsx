@@ -13,7 +13,7 @@ const StatsOverview = () => {
     queryFn: async () => {
       if (!user?.id) return null;
 
-      const [messagesResult, notificationsResult, customersResult, contactFormsResult] = await Promise.all([
+      const [messagesResult, notificationsResult, customersResult, contactSubmissionsResult] = await Promise.all([
         supabase
           .from('messages')
           .select('id, status, recipient_id')
@@ -27,14 +27,14 @@ const StatsOverview = () => {
           .select('id')
           .eq('role', 'customer'),
         supabase
-          .from('contact_forms')
+          .from('contact_submissions')
           .select('id, status')
       ]);
 
       const messages = messagesResult.data || [];
       const notifications = notificationsResult.data || [];
       const customers = customersResult.data || [];
-      const contactForms = contactFormsResult.data || [];
+      const contactSubmissions = contactSubmissionsResult.data || [];
 
       return {
         messages: {
@@ -48,9 +48,9 @@ const StatsOverview = () => {
         customers: {
           total: customers.length
         },
-        contactForms: {
-          total: contactForms.length,
-          pending: contactForms.filter(cf => cf.status === 'pending').length
+        contactSubmissions: {
+          total: contactSubmissions.length,
+          pending: contactSubmissions.filter(cs => cs.status === 'unread').length
         }
       };
     },
@@ -112,8 +112,8 @@ const StatsOverview = () => {
 
       <DashboardCard
         title="Contact Forms"
-        value={stats.contactForms?.pending || 0}
-        description={`${stats.contactForms?.total || 0} total submissions`}
+        value={stats.contactSubmissions?.pending || 0}
+        description={`${stats.contactSubmissions?.total || 0} total submissions`}
         icon={<FileText className="h-5 w-5" />}
       />
     </div>

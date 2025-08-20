@@ -1,14 +1,13 @@
+
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, Users, DollarSign, BookOpen, ArrowRight, AlertTriangle } from 'lucide-react';
+import { Calendar, Clock, Users, DollarSign, BookOpen, ArrowRight, Mail } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
-import ProgramEnrollment from '@/components/programs/ProgramEnrollment';
 
 interface Program {
   id: string;
@@ -21,48 +20,28 @@ interface Program {
   max_participants: number;
   image_url?: string;
   status: string;
-  current_enrollments: number;
-  is_full: boolean;
 }
 
 const Programs = () => {
-  const { user } = useAuth();
-
   const { data: programs = [], isLoading } = useQuery({
     queryKey: ['public-programs'],
     queryFn: async () => {
-      console.log('Fetching published programs with capacity...');
+      console.log('Fetching published programs...');
       
-      const { data, error } = await supabase.rpc('get_programs_with_capacity');
+      const { data, error } = await supabase
+        .from('programs')
+        .select('*')
+        .eq('status', 'published')
+        .order('created_at', { ascending: false });
       
       if (error) {
         console.error('Error fetching programs:', error);
         throw error;
       }
       
-      // Filter only published programs
-      const publishedPrograms = data.filter(program => program.status === 'published');
-      
-      console.log('Fetched programs with capacity:', publishedPrograms);
-      return publishedPrograms as Program[];
+      console.log('Fetched programs:', data);
+      return data as Program[];
     }
-  });
-
-  const { data: activeEnrollments = [] } = useQuery({
-    queryKey: ['user-active-enrollments', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return [];
-      
-      const { data, error } = await supabase
-        .from('enrollments')
-        .select('program_id')
-        .eq('customer_id', user.id)
-        .neq('status', 'cancelled'); // Only get non-cancelled enrollments
-      
-      if (error) throw error;
-      return data.map(e => e.program_id);
-    },
-    enabled: !!user?.id
   });
 
   return (
@@ -79,15 +58,9 @@ const Programs = () => {
             <p className="text-xl text-gray-300 mb-8 animate-fade-in animate-delay-100">
               Discover our comprehensive programs designed to nurture growth, creativity, and learning in children of all ages.
             </p>
-            {user ? (
-              <Button asChild size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-black animate-fade-in animate-delay-200">
-                <Link to="/customer/programs">View My Enrollments</Link>
-              </Button>
-            ) : (
-              <Button asChild size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-black animate-fade-in animate-delay-200">
-                <Link to="/auth">Sign In to Enroll</Link>
-              </Button>
-            )}
+            <Button asChild size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-black animate-fade-in animate-delay-200">
+              <Link to="/contact">Learn More About Our Programs</Link>
+            </Button>
           </div>
         </div>
       </section>
@@ -96,15 +69,13 @@ const Programs = () => {
       <section className="py-20 px-4 md:px-6 bg-white">
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-12">
-            <h2 className="text-3xl md:text-4xl font-medium text-black">Available Programs</h2>
-            {user && (
-              <Button variant="outline" asChild>
-                <Link to="/customer/programs" className="flex items-center gap-2">
-                  Manage Enrollments
-                  <ArrowRight size={16} />
-                </Link>
-              </Button>
-            )}
+            <h2 className="text-3xl md:text-4xl font-medium text-black">Our Programs</h2>
+            <Button variant="outline" asChild>
+              <Link to="/contact" className="flex items-center gap-2">
+                Get Program Information
+                <ArrowRight size={16} />
+              </Link>
+            </Button>
           </div>
           
           {isLoading ? (
@@ -137,124 +108,80 @@ const Programs = () => {
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {programs.map((program) => {
-                const isEnrolled = activeEnrollments.includes(program.id);
-                const remainingSpots = program.max_participants ? 
-                  program.max_participants - program.current_enrollments : null;
-                
-                return (
-                  <Card key={program.id} className="overflow-hidden bg-white border border-gray-200 rounded-xl shadow-soft hover:shadow-lg transition-all duration-300 group">
-                    {program.image_url ? (
-                      <div className="h-48 relative overflow-hidden">
-                        <img
-                          src={program.image_url}
-                          alt={program.title}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                        />
-                        <div className="absolute top-4 right-4 flex flex-col gap-2">
-                          <Badge className="bg-white text-black border border-black">
-                            {program.status}
-                          </Badge>
-                          {program.is_full && (
-                            <Badge className="bg-red-100 text-red-700 border border-red-300">
-                              <AlertTriangle className="h-3 w-3 mr-1" />
-                              Full
-                            </Badge>
-                          )}
-                          {remainingSpots && remainingSpots <= 5 && !program.is_full && (
-                            <Badge className="bg-orange-100 text-orange-700 border border-orange-300">
-                              {remainingSpots} left
-                            </Badge>
-                          )}
-                        </div>
+              {programs.map((program) => (
+                <Card key={program.id} className="overflow-hidden bg-white border border-gray-200 rounded-xl shadow-soft hover:shadow-lg transition-all duration-300 group">
+                  {program.image_url ? (
+                    <div className="h-48 relative overflow-hidden">
+                      <img
+                        src={program.image_url}
+                        alt={program.title}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute top-4 right-4">
+                        <Badge className="bg-white text-black border border-black">
+                          {program.status}
+                        </Badge>
                       </div>
-                    ) : (
-                      <div className="h-48 bg-gradient-to-r from-black to-gray-800 flex items-center justify-center relative overflow-hidden">
-                        <BookOpen className="h-16 w-16 text-white transition-transform duration-300 group-hover:scale-110" />
-                        <div className="absolute top-4 right-4 flex flex-col gap-2">
-                          <Badge className="bg-white text-black border border-black">
-                            {program.status}
-                          </Badge>
-                          {program.is_full && (
-                            <Badge className="bg-red-100 text-red-700 border border-red-300">
-                              <AlertTriangle className="h-3 w-3 mr-1" />
-                              Full
-                            </Badge>
-                          )}
-                          {remainingSpots && remainingSpots <= 5 && !program.is_full && (
-                            <Badge className="bg-orange-100 text-orange-700 border border-orange-300">
-                              {remainingSpots} left
-                            </Badge>
-                          )}
-                        </div>
+                    </div>
+                  ) : (
+                    <div className="h-48 bg-gradient-to-r from-black to-gray-800 flex items-center justify-center relative overflow-hidden">
+                      <BookOpen className="h-16 w-16 text-white transition-transform duration-300 group-hover:scale-110" />
+                      <div className="absolute top-4 right-4">
+                        <Badge className="bg-white text-black border border-black">
+                          {program.status}
+                        </Badge>
                       </div>
-                    )}
+                    </div>
+                  )}
+                  
+                  <CardHeader className="pb-4">
+                    <CardTitle className="line-clamp-2 text-black text-xl font-medium">{program.title}</CardTitle>
+                  </CardHeader>
+                  
+                  <CardContent className="space-y-4 pt-0">
+                    <p className="text-gray-600 line-clamp-3 leading-relaxed">{program.description}</p>
                     
-                    <CardHeader className="pb-4">
-                      <CardTitle className="line-clamp-2 text-black text-xl font-medium">{program.title}</CardTitle>
-                    </CardHeader>
-                    
-                    <CardContent className="space-y-4 pt-0">
-                      <p className="text-gray-600 line-clamp-3 leading-relaxed">{program.description}</p>
-                      
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        {program.price && (
-                          <div className="flex items-center space-x-2">
-                            <DollarSign className="h-4 w-4 text-gray-500" />
-                            <span className="text-black font-medium">${program.price}</span>
-                          </div>
-                        )}
-                        
-                        {program.duration && (
-                          <div className="flex items-center space-x-2">
-                            <Clock className="h-4 w-4 text-gray-500" />
-                            <span className="text-gray-600">{program.duration}</span>
-                          </div>
-                        )}
-                        
-                        {program.start_date && (
-                          <div className="flex items-center space-x-2">
-                            <Calendar className="h-4 w-4 text-gray-500" />
-                            <span className="text-gray-600">{new Date(program.start_date).toLocaleDateString()}</span>
-                          </div>
-                        )}
-                        
-                        {program.max_participants && (
-                          <div className="flex items-center space-x-2">
-                            <Users className="h-4 w-4 text-gray-500" />
-                            <span className="text-gray-600">
-                              {program.current_enrollments} / {program.max_participants}
-                            </span>
-                          </div>
-                        )}
-                      </div>
-
-                      {program.is_full && (
-                        <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-                          <div className="flex items-center text-red-700">
-                            <AlertTriangle className="h-4 w-4 mr-2" />
-                            <span className="text-sm font-medium">This program is currently full</span>
-                          </div>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      {program.price && (
+                        <div className="flex items-center space-x-2">
+                          <DollarSign className="h-4 w-4 text-gray-500" />
+                          <span className="text-black font-medium">${program.price}</span>
                         </div>
                       )}
                       
-                      <div className="pt-2">
-                        {user ? (
-                          <ProgramEnrollment
-                            programId={program.id}
-                            programTitle={program.title}
-                            isEnrolled={isEnrolled}
-                          />
-                        ) : (
-                          <Button asChild className="w-full bg-black text-white hover:bg-gray-800 transition-colors">
-                            <Link to="/auth">Sign In to Enroll</Link>
-                          </Button>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                      {program.duration && (
+                        <div className="flex items-center space-x-2">
+                          <Clock className="h-4 w-4 text-gray-500" />
+                          <span className="text-gray-600">{program.duration}</span>
+                        </div>
+                      )}
+                      
+                      {program.start_date && (
+                        <div className="flex items-center space-x-2">
+                          <Calendar className="h-4 w-4 text-gray-500" />
+                          <span className="text-gray-600">{new Date(program.start_date).toLocaleDateString()}</span>
+                        </div>
+                      )}
+                      
+                      {program.max_participants && (
+                        <div className="flex items-center space-x-2">
+                          <Users className="h-4 w-4 text-gray-500" />
+                          <span className="text-gray-600">Max {program.max_participants}</span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="pt-2">
+                      <Button asChild className="w-full bg-black text-white hover:bg-gray-800 transition-colors">
+                        <Link to="/contact">
+                          <Mail className="h-4 w-4 mr-2" />
+                          Inquire About Program
+                        </Link>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           )}
         </div>
@@ -267,30 +194,30 @@ const Programs = () => {
           
           <div className="space-y-6">
             <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-soft">
-              <h3 className="text-xl font-medium mb-2 text-black">How do I enroll my child in a program?</h3>
+              <h3 className="text-xl font-medium mb-2 text-black">What programs do you offer?</h3>
               <p className="text-gray-600">
-                First, create an account and link your children to your profile. Then browse available programs and click "Enroll Now" to select which children you'd like to enroll.
+                We offer a variety of educational programs designed for different age groups and interests. Each program focuses on specific skills and learning objectives to help children grow and develop.
               </p>
             </div>
             
             <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-soft">
-              <h3 className="text-xl font-medium mb-2 text-black">Can I enroll multiple children in the same program?</h3>
+              <h3 className="text-xl font-medium mb-2 text-black">How can I learn more about a specific program?</h3>
               <p className="text-gray-600">
-                Yes! Our enrollment system allows you to select multiple children for the same program, making it easy for families with multiple kids.
+                You can contact us directly through our contact form or give us a call. Our team will provide detailed information about any program you're interested in and answer all your questions.
               </p>
             </div>
             
             <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-soft">
-              <h3 className="text-xl font-medium mb-2 text-black">What happens after I submit an enrollment?</h3>
+              <h3 className="text-xl font-medium mb-2 text-black">What age groups do your programs serve?</h3>
               <p className="text-gray-600">
-                Your enrollment will be reviewed by our team. You'll receive a confirmation email and can track the status in your customer dashboard.
+                Our programs are designed for various age groups, from young children to teenagers. Each program listing includes the recommended age range and any specific requirements.
               </p>
             </div>
             
             <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-soft">
-              <h3 className="text-xl font-medium mb-2 text-black">Are there any prerequisites for the programs?</h3>
+              <h3 className="text-xl font-medium mb-2 text-black">Do you offer scholarships or financial assistance?</h3>
               <p className="text-gray-600">
-                Each program has its own requirements which are listed in the program description. Most programs are designed to be accessible to children of various skill levels.
+                We believe in making our programs accessible to all families. Please contact us to discuss available financial assistance options and scholarship opportunities.
               </p>
             </div>
           </div>
@@ -300,19 +227,13 @@ const Programs = () => {
       {/* CTA Section */}
       <section className="py-20 px-4 md:px-6 bg-black text-white text-center">
         <div className="container mx-auto max-w-3xl">
-          <h2 className="text-3xl md:text-4xl font-medium mb-6">Ready to Get Started?</h2>
+          <h2 className="text-3xl md:text-4xl font-medium mb-6">Ready to Learn More?</h2>
           <p className="text-xl text-gray-300 mb-8">
-            Join our community and give your children access to high-quality educational programs designed to foster growth and creativity.
+            Contact us today to discover how our educational programs can benefit your child's growth and development.
           </p>
-          {user ? (
-            <Button size="lg" variant="outline" asChild className="text-white border-white hover:bg-white hover:text-black">
-              <Link to="/customer/programs">View My Dashboard</Link>
-            </Button>
-          ) : (
-            <Button size="lg" variant="outline" asChild className="text-white border-white hover:bg-white hover:text-black">
-              <Link to="/auth">Create Account</Link>
-            </Button>
-          )}
+          <Button size="lg" variant="outline" asChild className="text-white border-white hover:bg-white hover:text-black">
+            <Link to="/contact">Contact Us Today</Link>
+          </Button>
         </div>
       </section>
     </div>

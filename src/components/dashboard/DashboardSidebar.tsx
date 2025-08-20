@@ -1,143 +1,64 @@
 
-import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { cn } from '@/lib/utils';
-import {
-  Users,
-  Baby,
-  MessageSquare,
-  Settings,
-  User,
-  BookOpen,
+import { Button } from '@/components/ui/button';
+import { 
+  LayoutDashboard, 
+  Calendar, 
+  MessageSquare, 
   FileText,
-  UserPlus,
-  Instagram,
-  Briefcase,
-  Layout
+  Users,
+  Image,
+  Send,
+  UserCheck,
+  Heart,
+  Briefcase
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const DashboardSidebar = () => {
-  const { user } = useAuth();
+  const { userRole } = useAuth();
   const location = useLocation();
-  
-  const isAdmin = user?.user_metadata?.role === 'admin';
-  
-  const customerMenuItems = [
-    {
-      title: "Dashboard",
-      href: "/customer",
-      icon: Layout,
-    },
-    {
-      title: "Profile", 
-      href: "/customer/profile",
-      icon: User,
-    },
-    {
-      title: "Children",
-      href: "/customer/children", 
-      icon: Baby,
-    },
-    {
-      title: "Messages",
-      href: "/customer/messages",
-      icon: MessageSquare,
-    },
-    {
-      title: "Kids Work",
-      href: "/customer/kids-work",
-      icon: BookOpen,
-    },
-  ];
+  const navigate = useNavigate();
 
-  const adminMenuItems = [
-    {
-      title: "Dashboard",
-      href: "/admin",
-      icon: Layout,
-    },
-    {
-      title: "Customers",
-      href: "/admin/customers",
-      icon: Users,
-    },
-    {
-      title: "Children", 
-      href: "/admin/children",
-      icon: Baby,
-    },
-    {
-      title: "Programs",
-      href: "/admin/programs",
-      icon: BookOpen,
-    },
-    {
-      title: "Messages",
-      href: "/admin/messages", 
-      icon: MessageSquare,
-    },
-    {
-      title: "Kids Work",
-      href: "/admin/kids-work",
-      icon: FileText,
-    },
-    {
-      title: "Contact Forms",
-      href: "/admin/contact-forms",
-      icon: MessageSquare,
-    },
-    {
-      title: "Volunteers",
-      href: "/admin/volunteers",
-      icon: UserPlus,
-    },
-    {
-      title: "Social Posts",
-      href: "/admin/social-posts",
-      icon: Instagram,
-    },
-    {
-      title: "Portfolio",
-      href: "/admin/portfolio",
-      icon: Briefcase,
-    },
-    {
-      title: "Settings",
-      href: "/admin/settings",
-      icon: Settings,
-    },
+  const menuItems = [
+    { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
+    { icon: Users, label: 'Customers', path: '/admin/customers' },
+    { icon: Calendar, label: 'Programs', path: '/admin/programs' },
+    { icon: UserCheck, label: 'Enrollments', path: '/admin/enrollments' },
+    { icon: Heart, label: 'Volunteers', path: '/admin/volunteers' },
+    { icon: MessageSquare, label: 'Messages', path: '/admin/messages' },
+    { icon: Send, label: 'Social Posts', path: '/admin/social-posts' },
+    { icon: FileText, label: 'Contact Forms', path: '/admin/contact-forms' },
+    { icon: Briefcase, label: 'Portfolio', path: '/admin/portfolio' },
   ];
-
-  const menuItems = isAdmin ? adminMenuItems : customerMenuItems;
 
   return (
-    <div className="w-64 bg-white border-r border-gray-200 min-h-screen">
-      <div className="p-6">
-        <h2 className="text-lg font-semibold text-black">
-          {isAdmin ? 'Admin Dashboard' : 'My Dashboard'}
+    <div className="w-64 bg-white border-r border-black h-screen flex flex-col">
+      <div className="p-6 border-b border-black">
+        <h2 className="text-xl font-bold text-black">
+          Admin Dashboard
         </h2>
       </div>
       
-      <nav className="px-4 space-y-1">
+      <nav className="flex-1 p-4 space-y-2">
         {menuItems.map((item) => {
           const Icon = item.icon;
-          const isActive = location.pathname === item.href;
+          const isActive = location.pathname === item.path;
           
           return (
-            <Link
-              key={item.href}
-              to={item.href}
-              className={cn(
-                "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                isActive
-                  ? "bg-black text-white"
-                  : "text-gray-700 hover:bg-gray-100 hover:text-black"
-              )}
+            <Button
+              key={item.path}
+              variant={isActive ? "default" : "ghost"}
+              className={`w-full justify-start text-left ${
+                isActive 
+                  ? 'bg-black text-white' 
+                  : 'text-black hover:bg-gray-100 hover:text-black'
+              }`}
+              onClick={() => navigate(item.path)}
             >
-              <Icon className="mr-3 h-5 w-5" />
-              {item.title}
-            </Link>
+              <Icon className="mr-3 h-4 w-4" />
+              {item.label}
+            </Button>
           );
         })}
       </nav>

@@ -24,7 +24,6 @@ import NotFound from "./pages/NotFound";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminCustomers from "./pages/admin/Customers";
 import AdminPrograms from "./pages/admin/Programs";
-import AdminEnrollments from "./pages/admin/Enrollments";
 import AdminVolunteers from "./pages/admin/Volunteers";
 import AdminMessages from "./pages/admin/Messages";
 import AdminSocialPosts from "./pages/admin/SocialPosts";
@@ -70,7 +69,6 @@ function App() {
               <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
               <Route path="/admin/customers" element={<ProtectedRoute><AdminCustomers /></ProtectedRoute>} />
               <Route path="/admin/programs" element={<ProtectedRoute><AdminPrograms /></ProtectedRoute>} />
-              <Route path="/admin/enrollments" element={<ProtectedRoute><AdminEnrollments /></ProtectedRoute>} />
               <Route path="/admin/volunteers" element={<ProtectedRoute><AdminVolunteers /></ProtectedRoute>} />
               <Route path="/admin/messages" element={<ProtectedRoute><AdminMessages /></ProtectedRoute>} />
               <Route path="/admin/social-posts" element={<ProtectedRoute><AdminSocialPosts /></ProtectedRoute>} />

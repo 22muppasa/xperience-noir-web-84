@@ -8,7 +8,6 @@ import {
   Users,
   Image,
   Send,
-  UserCheck,
   Heart,
   Briefcase
 } from 'lucide-react';
@@ -24,7 +23,6 @@ const DashboardSidebar = () => {
     { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
     { icon: Users, label: 'Customers', path: '/admin/customers' },
     { icon: Calendar, label: 'Programs', path: '/admin/programs' },
-    { icon: UserCheck, label: 'Enrollments', path: '/admin/enrollments' },
     { icon: Heart, label: 'Volunteers', path: '/admin/volunteers' },
     { icon: MessageSquare, label: 'Messages', path: '/admin/messages' },
     { icon: Send, label: 'Social Posts', path: '/admin/social-posts' },

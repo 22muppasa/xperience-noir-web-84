@@ -13,7 +13,7 @@ import {
   FileText,
   UserPlus,
   Instagram,
-  Portfolio,
+  Briefcase,
   Layout
 } from 'lucide-react';
 
@@ -100,7 +100,7 @@ const DashboardSidebar = () => {
     {
       title: "Portfolio",
       href: "/admin/portfolio",
-      icon: Portfolio,
+      icon: Briefcase,
     },
     {
       title: "Settings",

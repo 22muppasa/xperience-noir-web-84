@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import StatsOverview from '@/components/dashboard/StatsOverview';
 import ActivityTimeline from '@/components/dashboard/ActivityTimeline';
@@ -7,47 +8,49 @@ import QuickActionCard from '@/components/dashboard/QuickActionCard';
 import { Users, Baby, BookOpen, MessageSquare, Settings, UserPlus } from 'lucide-react';
 
 const AdminDashboard = () => {
+  const navigate = useNavigate();
+
   const quickActions = [
     {
       title: 'Manage Customers',
       description: 'View and manage customer accounts',
       icon: Users,
-      href: '/admin/customers',
+      onClick: () => navigate('/admin/customers'),
       color: 'bg-blue-500'
     },
     {
       title: 'Manage Children',
       description: 'View and manage children profiles',
       icon: Baby,
-      href: '/admin/children',
+      onClick: () => navigate('/admin/children'),
       color: 'bg-green-500'
     },
     {
       title: 'Manage Programs',
       description: 'Create and edit programs',
       icon: BookOpen,
-      href: '/admin/programs',
+      onClick: () => navigate('/admin/programs'),
       color: 'bg-purple-500'
     },
     {
       title: 'Messages',
       description: 'Send and manage messages',
       icon: MessageSquare,
-      href: '/admin/messages',
+      onClick: () => navigate('/admin/messages'),
       color: 'bg-orange-500'
     },
     {
       title: 'Volunteers',
       description: 'Manage volunteer applications',
       icon: UserPlus,
-      href: '/admin/volunteers',
+      onClick: () => navigate('/admin/volunteers'),
       color: 'bg-pink-500'
     },
     {
       title: 'Settings',
       description: 'Configure system settings',
       icon: Settings,
-      href: '/admin/settings',
+      onClick: () => navigate('/admin/settings'),
       color: 'bg-gray-500'
     }
   ];

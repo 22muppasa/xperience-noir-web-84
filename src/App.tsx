@@ -66,84 +66,84 @@ const App = () => (
             
             {/* Customer Dashboard Routes */}
             <Route path="/customer" element={
-              <ProtectedRoute requiredRole="customer">
+              <ProtectedRoute>
                 <CustomerDashboard />
               </ProtectedRoute>
             } />
             <Route path="/customer/profile" element={
-              <ProtectedRoute requiredRole="customer">
+              <ProtectedRoute>
                 <CustomerProfile />
               </ProtectedRoute>
             } />
             <Route path="/customer/children" element={
-              <ProtectedRoute requiredRole="customer">
+              <ProtectedRoute>
                 <CustomerChildren />
               </ProtectedRoute>
             } />
             <Route path="/customer/messages" element={
-              <ProtectedRoute requiredRole="customer">
+              <ProtectedRoute>
                 <CustomerMessages />
               </ProtectedRoute>
             } />
             <Route path="/customer/kids-work" element={
-              <ProtectedRoute requiredRole="customer">
+              <ProtectedRoute>
                 <CustomerKidsWork />
               </ProtectedRoute>
             } />
 
             {/* Admin Dashboard Routes */}
             <Route path="/admin" element={
-              <ProtectedRoute requiredRole="admin">
+              <ProtectedRoute>
                 <AdminDashboard />
               </ProtectedRoute>
             } />
             <Route path="/admin/customers" element={
-              <ProtectedRoute requiredRole="admin">
+              <ProtectedRoute>
                 <AdminCustomers />
               </ProtectedRoute>
             } />
             <Route path="/admin/children" element={
-              <ProtectedRoute requiredRole="admin">
+              <ProtectedRoute>
                 <AdminChildren />
               </ProtectedRoute>
             } />
             <Route path="/admin/programs" element={
-              <ProtectedRoute requiredRole="admin">
+              <ProtectedRoute>
                 <AdminPrograms />
               </ProtectedRoute>
             } />
             <Route path="/admin/messages" element={
-              <ProtectedRoute requiredRole="admin">
+              <ProtectedRoute>
                 <AdminMessages />
               </ProtectedRoute>
             } />
             <Route path="/admin/kids-work" element={
-              <ProtectedRoute requiredRole="admin">
+              <ProtectedRoute>
                 <AdminKidsWork />
               </ProtectedRoute>
             } />
             <Route path="/admin/contact-forms" element={
-              <ProtectedRoute requiredRole="admin">
+              <ProtectedRoute>
                 <AdminContactForms />
               </ProtectedRoute>
             } />
             <Route path="/admin/volunteers" element={
-              <ProtectedRoute requiredRole="admin">
+              <ProtectedRoute>
                 <AdminVolunteers />
               </ProtectedRoute>
             } />
             <Route path="/admin/social-posts" element={
-              <ProtectedRoute requiredRole="admin">
+              <ProtectedRoute>
                 <AdminSocialPosts />
               </ProtectedRoute>
             } />
             <Route path="/admin/portfolio" element={
-              <ProtectedRoute requiredRole="admin">
+              <ProtectedRoute>
                 <AdminPortfolio />
               </ProtectedRoute>
             } />
             <Route path="/admin/settings" element={
-              <ProtectedRoute requiredRole="admin">
+              <ProtectedRoute>
                 <AdminSettings />
               </ProtectedRoute>
             } />

@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import DashboardCard from './DashboardCard';
-import { MessageSquare, Bell, Users, FileText } from 'lucide-react';
+import { BookOpen, MessageSquare, Bell, TrendingUp } from 'lucide-react';
 
 const StatsOverview = () => {
   const { user } = useAuth();
@@ -13,7 +13,11 @@ const StatsOverview = () => {
     queryFn: async () => {
       if (!user?.id) return null;
 
-      const [messagesResult, notificationsResult, customersResult, contactSubmissionsResult] = await Promise.all([
+      const [enrollmentsResult, messagesResult, notificationsResult, kidsWorkResult] = await Promise.all([
+        supabase
+          .from('enrollments')
+          .select('id, status')
+          .eq('customer_id', user.id),
         supabase
           .from('messages')
           .select('id, status, recipient_id')
@@ -23,20 +27,21 @@ const StatsOverview = () => {
           .select('id, read')
           .eq('user_id', user.id),
         supabase
-          .from('profiles')
+          .from('kids_work')
           .select('id')
-          .eq('role', 'customer'),
-        supabase
-          .from('contact_submissions')
-          .select('id, status')
+          .eq('parent_customer_id', user.id)
       ]);
 
+      const enrollments = enrollmentsResult.data || [];
       const messages = messagesResult.data || [];
       const notifications = notificationsResult.data || [];
-      const customers = customersResult.data || [];
-      const contactSubmissions = contactSubmissionsResult.data || [];
+      const kidsWork = kidsWorkResult.data || [];
 
       return {
+        enrollments: {
+          total: enrollments.length,
+          active: enrollments.filter(e => e.status === 'active').length
+        },
         messages: {
           total: messages.length,
           unread: messages.filter(m => m.status === 'unread' && m.recipient_id === user.id).length
@@ -45,12 +50,8 @@ const StatsOverview = () => {
           total: notifications.length,
           unread: notifications.filter(n => !n.read).length
         },
-        customers: {
-          total: customers.length
-        },
-        contactSubmissions: {
-          total: contactSubmissions.length,
-          pending: contactSubmissions.filter(cs => cs.status === 'unread').length
+        kidsWork: {
+          total: kidsWork.length
         }
       };
     },
@@ -90,10 +91,11 @@ const StatsOverview = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <DashboardCard
-        title="Total Customers"
-        value={stats.customers?.total || 0}
-        description="Registered users"
-        icon={<Users className="h-5 w-5" />}
+        title="Active Programs"
+        value={stats.enrollments?.active || 0}
+        description={`${stats.enrollments?.total || 0} total enrollments`}
+        icon={<BookOpen className="h-5 w-5" />}
+        trend={stats.enrollments?.active > 0 ? { value: 12, isPositive: true } : undefined}
       />
       
       <DashboardCard
@@ -111,10 +113,10 @@ const StatsOverview = () => {
       />
 
       <DashboardCard
-        title="Contact Forms"
-        value={stats.contactSubmissions?.pending || 0}
-        description={`${stats.contactSubmissions?.total || 0} total submissions`}
-        icon={<FileText className="h-5 w-5" />}
+        title="Kids Work"
+        value={stats.kidsWork?.total || 0}
+        description={stats.kidsWork?.total > 0 ? "Creative projects uploaded" : "No projects yet"}
+        icon={<TrendingUp className="h-5 w-5" />}
       />
     </div>
   );

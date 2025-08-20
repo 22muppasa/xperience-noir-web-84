@@ -77,28 +77,31 @@ const ExternalProgramLinkDialog = ({ open, onOpenChange }: ExternalProgramLinkDi
     }
   };
 
-  const handleEnabledChange = (enabled: boolean) => {
-    console.log('Enabled changed to:', enabled);
-    setFormData(prev => ({ ...prev, enabled }));
+  const handleEnabledChange = (checked: boolean) => {
+    console.log('Switch toggled - new value:', checked);
+    setFormData(prev => {
+      const newData = { ...prev, enabled: checked };
+      console.log('Updated form data after toggle:', newData);
+      return newData;
+    });
   };
 
   const handleLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const link = e.target.value;
-    console.log('Link changed to:', link);
+    console.log('Link input changed:', link);
     setFormData(prev => ({ ...prev, link }));
   };
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const description = e.target.value;
-    console.log('Description changed to:', description);
+    console.log('Description changed:', description);
     setFormData(prev => ({ ...prev, description }));
   };
 
   const canSave = !formData.enabled || (formData.enabled && formData.link.trim() && isValidUrl(formData.link));
 
-  console.log('Current form data:', formData);
-  console.log('Can save:', canSave);
-  console.log('Is URL valid:', isValidUrl(formData.link));
+  console.log('Render - Current form data:', formData);
+  console.log('Render - Can save:', canSave);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -115,7 +118,7 @@ const ExternalProgramLinkDialog = ({ open, onOpenChange }: ExternalProgramLinkDi
         
         {isLoading ? (
           <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-black"></div>
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
             <span className="ml-2 text-sm">Loading settings...</span>
           </div>
         ) : (
@@ -123,36 +126,37 @@ const ExternalProgramLinkDialog = ({ open, onOpenChange }: ExternalProgramLinkDi
             {/* Enable/Disable Toggle */}
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <Label htmlFor="enabled">Enable External Programs</Label>
-                <p className="text-sm text-gray-600">
+                <Label htmlFor="enabled-switch">Enable External Programs</Label>
+                <p className="text-sm text-muted-foreground">
                   Show link to external program platform on public programs page
                 </p>
               </div>
               <Switch
-                id="enabled"
+                id="enabled-switch"
                 checked={formData.enabled}
                 onCheckedChange={handleEnabledChange}
                 aria-describedby="enabled-description"
+                className="data-[state=checked]:bg-primary"
               />
             </div>
 
             {/* Program Link Input */}
             <div className="space-y-2">
-              <Label htmlFor="link">Program Link URL {formData.enabled && '*'}</Label>
+              <Label htmlFor="link-input">Program Link URL {formData.enabled && '*'}</Label>
               <Input
-                id="link"
+                id="link-input"
                 type="url"
                 placeholder="https://example.com/programs"
                 value={formData.link}
                 onChange={handleLinkChange}
                 disabled={!formData.enabled}
                 className={
-                  !isValidUrl(formData.link) && formData.link ? 'border-red-500 focus:border-red-500' : ''
+                  !isValidUrl(formData.link) && formData.link ? 'border-destructive focus:border-destructive' : ''
                 }
                 aria-describedby="link-error"
               />
               {formData.link && !isValidUrl(formData.link) && (
-                <p id="link-error" className="text-sm text-red-600">
+                <p id="link-error" className="text-sm text-destructive">
                   Please enter a valid URL starting with http:// or https://
                 </p>
               )}
@@ -165,29 +169,29 @@ const ExternalProgramLinkDialog = ({ open, onOpenChange }: ExternalProgramLinkDi
 
             {/* Description */}
             <div className="space-y-2">
-              <Label htmlFor="description">Internal Notes (optional)</Label>
+              <Label htmlFor="description-input">Internal Notes (optional)</Label>
               <Textarea
-                id="description"
+                id="description-input"
                 placeholder="Notes about this external program platform..."
                 value={formData.description}
                 onChange={handleDescriptionChange}
                 rows={3}
                 aria-describedby="description-help"
               />
-              <p id="description-help" className="text-xs text-gray-500">
+              <p id="description-help" className="text-xs text-muted-foreground">
                 These notes are only visible to administrators
               </p>
             </div>
 
             {/* Preview */}
             {formData.enabled && formData.link && isValidUrl(formData.link) && (
-              <div className="border rounded-lg p-4 bg-gray-50">
+              <div className="border rounded-lg p-4 bg-muted/50">
                 <p className="text-sm font-medium mb-2">Preview:</p>
-                <Button className="w-full bg-black text-white hover:bg-gray-800" type="button">
+                <Button className="w-full" type="button" variant="default">
                   <ExternalLink className="h-4 w-4 mr-2" />
                   See Our Programs
                 </Button>
-                <p className="text-xs text-gray-500 mt-2">This button will open: {formData.link}</p>
+                <p className="text-xs text-muted-foreground mt-2">This button will open: {formData.link}</p>
               </div>
             )}
 
@@ -205,7 +209,7 @@ const ExternalProgramLinkDialog = ({ open, onOpenChange }: ExternalProgramLinkDi
               <Button
                 onClick={handleSave}
                 disabled={!canSave || isUpdating}
-                className="flex-1 bg-black text-white hover:bg-gray-800"
+                className="flex-1"
                 type="button"
               >
                 <Save className="h-4 w-4 mr-2" />

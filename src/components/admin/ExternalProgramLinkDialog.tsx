@@ -23,10 +23,12 @@ const ExternalProgramLinkDialog = ({ open, onOpenChange }: ExternalProgramLinkDi
     description: ''
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [linkError, setLinkError] = useState('');
 
+  // Load settings when dialog opens
   useEffect(() => {
     if (open) {
-      console.log('Dialog opened, loading settings...');
+      console.log('Dialog opened, loading external program settings...');
       setIsLoading(true);
       
       const externalPrograms = getSetting('external_programs') || { 
@@ -36,72 +38,114 @@ const ExternalProgramLinkDialog = ({ open, onOpenChange }: ExternalProgramLinkDi
       };
       
       console.log('Loaded external programs setting:', externalPrograms);
-      setFormData(externalPrograms);
+      
+      setFormData({
+        enabled: Boolean(externalPrograms.enabled),
+        link: externalPrograms.link || '',
+        description: externalPrograms.description || ''
+      });
+      
+      setLinkError('');
       setIsLoading(false);
     }
   }, [open, getSetting]);
 
-  // Reset form when dialog closes
+  // Reset form when dialog closes without saving
   useEffect(() => {
     if (!open) {
-      console.log('Dialog closed, resetting form');
+      console.log('Dialog closed, resetting form state');
       setFormData({
         enabled: false,
         link: '',
         description: ''
       });
+      setLinkError('');
     }
   }, [open]);
 
-  const handleSave = () => {
-    console.log('Saving form data:', formData);
-    updateSetting('external_programs', formData);
-    onOpenChange(false);
-  };
-
-  const isValidUrl = (url: string) => {
+  const validateUrl = (url: string): boolean => {
     if (!url || url.trim() === '') return true; // Allow empty URLs when disabled
     
-    // Basic URL validation
-    const urlPattern = /^https?:\/\/.+\..+/;
-    
     try {
-      const parsedUrl = new URL(url);
-      return (
-        (parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:') &&
-        parsedUrl.hostname.includes('.') &&
-        urlPattern.test(url)
-      );
+      const urlObj = new URL(url.trim());
+      return urlObj.protocol === 'http:' || urlObj.protocol === 'https:';
     } catch {
       return false;
     }
   };
 
-  const handleEnabledChange = (checked: boolean) => {
-    console.log('Switch toggled - new value:', checked);
+  const handleEnabledToggle = (checked: boolean) => {
+    console.log('Toggle clicked - new enabled state:', checked);
+    
     setFormData(prev => {
       const newData = { ...prev, enabled: checked };
-      console.log('Updated form data after toggle:', newData);
+      console.log('Form data after toggle:', newData);
       return newData;
     });
+    
+    // Clear link error when disabling
+    if (!checked) {
+      setLinkError('');
+    }
   };
 
   const handleLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const link = e.target.value;
-    console.log('Link input changed:', link);
-    setFormData(prev => ({ ...prev, link }));
+    const newLink = e.target.value;
+    console.log('Link input changed to:', newLink);
+    
+    setFormData(prev => ({ ...prev, link: newLink }));
+    
+    // Validate URL in real-time
+    if (newLink && !validateUrl(newLink)) {
+      setLinkError('Please enter a valid URL starting with http:// or https://');
+    } else {
+      setLinkError('');
+    }
   };
 
   const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const description = e.target.value;
-    console.log('Description changed:', description);
-    setFormData(prev => ({ ...prev, description }));
+    const newDescription = e.target.value;
+    console.log('Description changed to:', newDescription);
+    
+    setFormData(prev => ({ ...prev, description: newDescription }));
   };
 
-  const canSave = !formData.enabled || (formData.enabled && formData.link.trim() && isValidUrl(formData.link));
+  const handleSave = () => {
+    console.log('Save button clicked with form data:', formData);
+    
+    // Final validation
+    if (formData.enabled && (!formData.link.trim() || !validateUrl(formData.link))) {
+      console.log('Save blocked - validation failed');
+      if (!formData.link.trim()) {
+        setLinkError('URL is required when external programs are enabled');
+      }
+      return;
+    }
+    
+    console.log('Saving external programs setting...');
+    updateSetting('external_programs', formData);
+    onOpenChange(false);
+  };
 
-  console.log('Render - Current form data:', formData);
-  console.log('Render - Can save:', canSave);
+  const handleCancel = () => {
+    console.log('Cancel button clicked');
+    onOpenChange(false);
+  };
+
+  // Determine if save button should be enabled
+  const canSave = () => {
+    if (!formData.enabled) {
+      return true; // Can always save when disabled
+    }
+    
+    // When enabled, need valid URL
+    const hasValidLink = formData.link.trim() && validateUrl(formData.link);
+    console.log('Can save check - enabled:', formData.enabled, 'hasValidLink:', hasValidLink, 'linkError:', linkError);
+    return hasValidLink && !linkError;
+  };
+
+  const saveEnabled = canSave();
+  console.log('Render - Form data:', formData, 'Save enabled:', saveEnabled);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -126,42 +170,37 @@ const ExternalProgramLinkDialog = ({ open, onOpenChange }: ExternalProgramLinkDi
             {/* Enable/Disable Toggle */}
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <Label htmlFor="enabled-switch">Enable External Programs</Label>
+                <Label htmlFor="external-programs-toggle">Enable External Programs</Label>
                 <p className="text-sm text-muted-foreground">
                   Show link to external program platform on public programs page
                 </p>
               </div>
               <Switch
-                id="enabled-switch"
+                id="external-programs-toggle"
                 checked={formData.enabled}
-                onCheckedChange={handleEnabledChange}
-                aria-describedby="enabled-description"
-                className="data-[state=checked]:bg-primary"
+                onCheckedChange={handleEnabledToggle}
               />
             </div>
 
             {/* Program Link Input */}
             <div className="space-y-2">
-              <Label htmlFor="link-input">Program Link URL {formData.enabled && '*'}</Label>
+              <Label htmlFor="program-link-input">
+                Program Link URL {formData.enabled && <span className="text-red-500">*</span>}
+              </Label>
               <Input
-                id="link-input"
+                id="program-link-input"
                 type="url"
                 placeholder="https://example.com/programs"
                 value={formData.link}
                 onChange={handleLinkChange}
                 disabled={!formData.enabled}
-                className={
-                  !isValidUrl(formData.link) && formData.link ? 'border-destructive focus:border-destructive' : ''
-                }
-                aria-describedby="link-error"
+                className={linkError ? 'border-red-500 focus:border-red-500' : ''}
               />
-              {formData.link && !isValidUrl(formData.link) && (
-                <p id="link-error" className="text-sm text-destructive">
-                  Please enter a valid URL starting with http:// or https://
-                </p>
+              {linkError && (
+                <p className="text-sm text-red-600">{linkError}</p>
               )}
-              {formData.enabled && !formData.link.trim() && (
-                <p className="text-sm text-orange-600">
+              {formData.enabled && !formData.link.trim() && !linkError && (
+                <p className="text-sm text-amber-600">
                   URL is required when external programs are enabled
                 </p>
               )}
@@ -169,29 +208,30 @@ const ExternalProgramLinkDialog = ({ open, onOpenChange }: ExternalProgramLinkDi
 
             {/* Description */}
             <div className="space-y-2">
-              <Label htmlFor="description-input">Internal Notes (optional)</Label>
+              <Label htmlFor="program-description-input">Internal Notes (optional)</Label>
               <Textarea
-                id="description-input"
+                id="program-description-input"
                 placeholder="Notes about this external program platform..."
                 value={formData.description}
                 onChange={handleDescriptionChange}
                 rows={3}
-                aria-describedby="description-help"
               />
-              <p id="description-help" className="text-xs text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 These notes are only visible to administrators
               </p>
             </div>
 
             {/* Preview */}
-            {formData.enabled && formData.link && isValidUrl(formData.link) && (
+            {formData.enabled && formData.link && validateUrl(formData.link) && (
               <div className="border rounded-lg p-4 bg-muted/50">
                 <p className="text-sm font-medium mb-2">Preview:</p>
                 <Button className="w-full" type="button" variant="default">
                   <ExternalLink className="h-4 w-4 mr-2" />
                   See Our Programs
                 </Button>
-                <p className="text-xs text-muted-foreground mt-2">This button will open: {formData.link}</p>
+                <p className="text-xs text-muted-foreground mt-2">
+                  This button will open: {formData.link}
+                </p>
               </div>
             )}
 
@@ -199,7 +239,7 @@ const ExternalProgramLinkDialog = ({ open, onOpenChange }: ExternalProgramLinkDi
             <div className="flex gap-3">
               <Button
                 variant="outline"
-                onClick={() => onOpenChange(false)}
+                onClick={handleCancel}
                 className="flex-1"
                 type="button"
               >
@@ -208,7 +248,7 @@ const ExternalProgramLinkDialog = ({ open, onOpenChange }: ExternalProgramLinkDi
               </Button>
               <Button
                 onClick={handleSave}
-                disabled={!canSave || isUpdating}
+                disabled={!saveEnabled || isUpdating}
                 className="flex-1"
                 type="button"
               >

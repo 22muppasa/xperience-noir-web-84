@@ -1,5 +1,6 @@
-
 import { useEffect, useState } from 'react';
+import AnimatedButton from './AnimatedButton';
+import { ArrowRight } from 'lucide-react';
 
 interface ProcessStep {
   id: number;
@@ -110,6 +111,18 @@ const ConsultingProcess = () => {
             </p>
           </div>
         ))}
+      </div>
+      
+      <div className="mt-12 flex justify-center">
+        <AnimatedButton 
+          sparkleColor="black" 
+          textColor="black"
+          icon={ArrowRight}
+          invertOnHover={true}
+          linkToContact={true}
+        >
+          Start Your Project
+        </AnimatedButton>
       </div>
     </div>
   );

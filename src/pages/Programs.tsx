@@ -1,18 +1,48 @@
 
 import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { ExternalLink, BookOpen, ArrowRight, Mail } from 'lucide-react';
-import { useAdminSettings } from '@/hooks/useAdminSettings';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Calendar, Clock, Users, DollarSign, BookOpen, ArrowRight, Mail } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 
-const Programs = () => {
-  const { isLoading, isExternalProgramsEnabled, getExternalProgramsLink } = useAdminSettings();
+interface Program {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  duration: string;
+  start_date: string;
+  end_date: string;
+  max_participants: number;
+  image_url?: string;
+  status: string;
+}
 
-  const handleExternalLinkClick = () => {
-    window.open(getExternalProgramsLink(), '_blank', 'noopener,noreferrer');
-  };
+const Programs = () => {
+  const { data: programs = [], isLoading } = useQuery({
+    queryKey: ['public-programs'],
+    queryFn: async () => {
+      console.log('Fetching published programs...');
+      
+      const { data, error } = await supabase
+        .from('programs')
+        .select('*')
+        .eq('status', 'published')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Error fetching programs:', error);
+        throw error;
+      }
+      
+      console.log('Fetched programs:', data);
+      return data as Program[];
+    }
+  });
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -49,35 +79,21 @@ const Programs = () => {
           </div>
           
           {isLoading ? (
-            <div className="flex items-center justify-center py-16">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-black"></div>
-              <span className="ml-3 text-black">Loading programs...</span>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Card key={i} className="animate-pulse bg-white border border-gray-200 rounded-xl shadow-soft">
+                  <div className="h-48 bg-gray-200 rounded-t-xl"></div>
+                  <CardContent className="p-6">
+                    <div className="space-y-3">
+                      <div className="h-6 bg-gray-200 rounded"></div>
+                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
-          ) : isExternalProgramsEnabled() && getExternalProgramsLink() ? (
-            /* External Program Link Active */
-            <Card className="text-center py-16 bg-white border border-gray-200 rounded-xl shadow-soft">
-              <CardContent>
-                <BookOpen className="h-16 w-16 mx-auto text-black mb-6" />
-                <h3 className="text-2xl font-semibold mb-4 text-black">Ready to Explore Our Programs?</h3>
-                <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-                  We've partnered with a specialized platform to bring you the best educational programs. 
-                  Click below to browse our current offerings, schedules, and enrollment options.
-                </p>
-                <Button 
-                  size="lg" 
-                  onClick={handleExternalLinkClick}
-                  className="bg-black text-white hover:bg-gray-800 transition-colors"
-                >
-                  <ExternalLink className="h-5 w-5 mr-2" />
-                  See Our Programs
-                </Button>
-                <p className="text-sm text-gray-500 mt-4">
-                  Opens in a new window
-                </p>
-              </CardContent>
-            </Card>
-          ) : (
-            /* No Programs Available */
+          ) : programs.length === 0 ? (
             <Card className="text-center py-16 bg-white border border-gray-200 rounded-xl shadow-soft">
               <CardContent>
                 <BookOpen className="h-16 w-16 mx-auto text-gray-400 mb-4" />
@@ -90,6 +106,83 @@ const Programs = () => {
                 </Button>
               </CardContent>
             </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {programs.map((program) => (
+                <Card key={program.id} className="overflow-hidden bg-white border border-gray-200 rounded-xl shadow-soft hover:shadow-lg transition-all duration-300 group">
+                  {program.image_url ? (
+                    <div className="h-48 relative overflow-hidden">
+                      <img
+                        src={program.image_url}
+                        alt={program.title}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute top-4 right-4">
+                        <Badge className="bg-white text-black border border-black">
+                          {program.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="h-48 bg-gradient-to-r from-black to-gray-800 flex items-center justify-center relative overflow-hidden">
+                      <BookOpen className="h-16 w-16 text-white transition-transform duration-300 group-hover:scale-110" />
+                      <div className="absolute top-4 right-4">
+                        <Badge className="bg-white text-black border border-black">
+                          {program.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  )}
+                  
+                  <CardHeader className="pb-4">
+                    <CardTitle className="line-clamp-2 text-black text-xl font-medium">{program.title}</CardTitle>
+                  </CardHeader>
+                  
+                  <CardContent className="space-y-4 pt-0">
+                    <p className="text-gray-600 line-clamp-3 leading-relaxed">{program.description}</p>
+                    
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      {program.price && (
+                        <div className="flex items-center space-x-2">
+                          <DollarSign className="h-4 w-4 text-gray-500" />
+                          <span className="text-black font-medium">${program.price}</span>
+                        </div>
+                      )}
+                      
+                      {program.duration && (
+                        <div className="flex items-center space-x-2">
+                          <Clock className="h-4 w-4 text-gray-500" />
+                          <span className="text-gray-600">{program.duration}</span>
+                        </div>
+                      )}
+                      
+                      {program.start_date && (
+                        <div className="flex items-center space-x-2">
+                          <Calendar className="h-4 w-4 text-gray-500" />
+                          <span className="text-gray-600">{new Date(program.start_date).toLocaleDateString()}</span>
+                        </div>
+                      )}
+                      
+                      {program.max_participants && (
+                        <div className="flex items-center space-x-2">
+                          <Users className="h-4 w-4 text-gray-500" />
+                          <span className="text-gray-600">Max {program.max_participants}</span>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="pt-2">
+                      <Button asChild className="w-full bg-black text-white hover:bg-gray-800 transition-colors">
+                        <Link to="/contact">
+                          <Mail className="h-4 w-4 mr-2" />
+                          Inquire About Program
+                        </Link>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           )}
         </div>
       </section>

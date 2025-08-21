@@ -83,16 +83,15 @@ const Consulting = () => {
                 through strategic design and development.
               </p>
               <div className="flex flex-wrap gap-4 animate-fade-in animate-delay-200">
-                <a href="#portfolio">
-                  <AnimatedButton
-                    className="flex items-center gap-2 bg-white hover:bg-gray-100 transition text-black font-semibold rounded-md px-6 py-3 shadow-lg"
-                    sparkleColor="black"
-                    textColor="black"
-                    icon={ArrowRight}
-                  >
-                    Start Your Project
-                  </AnimatedButton>
-                </a>
+                <AnimatedButton
+                  className="flex items-center gap-2 bg-white hover:bg-gray-100 transition text-black font-semibold rounded-md px-6 py-3 shadow-lg"
+                  sparkleColor="black"
+                  textColor="black"
+                  icon={ArrowRight}
+                  linkToContact={true}
+                >
+                  Start Your Project
+                </AnimatedButton>
                 <a href="#portfolio">
                   <Button
                     variant="outline"

@@ -47,7 +47,15 @@ const Programs = () => {
     }
   });
 
-  const shouldShowExternalLink = externalPrograms.enabled && externalPrograms.link && programs.length === 0;
+  // Show external link when enabled, has a link, and no internal programs exist
+  const shouldShowExternalLink = externalPrograms?.enabled && 
+                                externalPrograms?.link && 
+                                externalPrograms.link.trim() !== '' &&
+                                programs.length === 0;
+
+  console.log('External programs config:', externalPrograms);
+  console.log('Should show external link:', shouldShowExternalLink);
+  console.log('Programs count:', programs.length);
 
   return (
     <div className="flex flex-col min-h-screen">

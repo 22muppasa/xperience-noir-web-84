@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -21,21 +21,34 @@ const ExternalProgramLinkDialog = () => {
     description: ''
   });
   const [isValidUrl, setIsValidUrl] = useState(true);
+  const [hasLoadedSettings, setHasLoadedSettings] = useState(false);
 
-  // Load settings only when dialog opens
+  // Memoized callback to get current settings
+  const getCurrentSettings = useCallback(() => {
+    return getSetting('external_programs') || {
+      enabled: false,
+      link: '',
+      description: ''
+    };
+  }, [getSetting]);
+
+  // Load settings only when dialog opens and hasn't loaded yet
   useEffect(() => {
-    if (isOpen) {
-      const externalProgramsSettings = getSetting('external_programs') || {
-        enabled: false,
-        link: '',
-        description: ''
-      };
-      
+    if (isOpen && !hasLoadedSettings) {
+      const externalProgramsSettings = getCurrentSettings();
       console.log('Loading external programs setting:', externalProgramsSettings);
       setFormData(externalProgramsSettings);
       setIsValidUrl(true);
+      setHasLoadedSettings(true);
     }
-  }, [isOpen, getSetting]);
+  }, [isOpen, hasLoadedSettings, getCurrentSettings]);
+
+  // Reset loading state when dialog closes
+  useEffect(() => {
+    if (!isOpen) {
+      setHasLoadedSettings(false);
+    }
+  }, [isOpen]);
 
   const validateUrl = (url: string) => {
     if (!url) return true;
@@ -92,17 +105,21 @@ const ExternalProgramLinkDialog = () => {
   };
 
   const handleReset = () => {
-    const currentSettings = getSetting('external_programs') || {
-      enabled: false,
-      link: '',
-      description: ''
-    };
+    const currentSettings = getCurrentSettings();
     setFormData(currentSettings);
     setIsValidUrl(true);
   };
 
+  const handleDialogChange = (open: boolean) => {
+    setIsOpen(open);
+    if (!open) {
+      // Reset form state when closing
+      setHasLoadedSettings(false);
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={handleDialogChange}>
       <DialogTrigger asChild>
         <Button variant="outline" className="flex items-center gap-2">
           <Settings className="h-4 w-4" />
@@ -187,7 +204,7 @@ const ExternalProgramLinkDialog = () => {
               </Button>
             </div>
           </div>
-        </div>
+        </</div>
       </DialogContent>
     </Dialog>
   );

@@ -69,13 +69,6 @@ const AdminDashboard = () => {
       href: '/admin/volunteers',
       color: 'bg-white border-black',
       badge: stats?.pendingVolunteers > 0 ? stats.pendingVolunteers : undefined
-    },
-    {
-      title: 'Review Kids Work',
-      description: 'Review and approve submitted work',
-      icon: FileText,
-      href: '/admin/kids-work',
-      color: 'bg-white border-black'
     }
   ];
 

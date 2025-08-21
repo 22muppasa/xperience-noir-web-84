@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { LucideIcon } from 'lucide-react';
 
@@ -12,6 +13,7 @@ interface AnimatedButtonProps {
   type?: 'button' | 'submit' | 'reset';
   icon?: LucideIcon;
   invertOnHover?: boolean;
+  linkToContact?: boolean;
 }
 
 const AnimatedButton = ({ 
@@ -22,10 +24,21 @@ const AnimatedButton = ({
   textColor = "white",
   type = "button",
   icon,
-  invertOnHover = false
+  invertOnHover = false,
+  linkToContact = false
 }: AnimatedButtonProps) => {
+  const navigate = useNavigate();
+  
   // Determine if we should use the default (dark) or original style
   const isOriginalStyle = sparkleColor === 'black' && textColor === 'black';
+  
+  const handleClick = () => {
+    if (linkToContact) {
+      navigate('/contact');
+    } else if (onClick) {
+      onClick();
+    }
+  };
   
   return (
     <div className="animated-button-wrapper">
@@ -36,7 +49,7 @@ const AnimatedButton = ({
           invertOnHover ? "invert-on-hover" : "",
           className
         )}
-        onClick={onClick}
+        onClick={handleClick}
       >
         <div className="dots_border" />
         {icon ? (

@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -19,104 +20,26 @@ export const useAdminSettings = () => {
   const { data: settings, isLoading } = useQuery({
     queryKey: ['admin-settings'],
     queryFn: async () => {
-      // Check for stored settings in localStorage
-      const getStoredSetting = (key: string, defaultValue: any) => {
-        const stored = localStorage.getItem(`admin_setting_${key}`);
-        return stored ? JSON.parse(stored) : defaultValue;
-      };
+      console.log('Fetching admin settings from Supabase...');
+      
+      const { data, error } = await supabase
+        .from('admin_settings')
+        .select('*')
+        .order('created_at', { ascending: true });
 
-      // Real settings based on actual platform needs
-      const defaultSettings: AdminSetting[] = [
-        {
-          id: '1',
-          setting_key: 'enrollment_auto_approval',
-          setting_value: getStoredSetting('enrollment_auto_approval', { enabled: false }),
-          description: 'Automatically approve new program enrollments',
-          updated_by: null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: '2',
-          setting_key: 'work_upload_notifications',
-          setting_value: getStoredSetting('work_upload_notifications', { 
-            enabled: true, 
-            notify_admins: true,
-            notify_parents: true 
-          }),
-          description: 'Send notifications when kids work is uploaded',
-          updated_by: null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: '3',
-          setting_key: 'parent_child_requests',
-          setting_value: getStoredSetting('parent_child_requests', { 
-            require_admin_approval: true, 
-            auto_notify_admins: true,
-            allow_self_association: false 
-          }),
-          description: 'Parent-child association request settings',
-          updated_by: null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: '4',
-          setting_key: 'security_limits',
-          setting_value: getStoredSetting('security_limits', { 
-            max_children_per_parent: 5,
-            max_work_items_per_child: 50,
-            max_programs_per_season: 15,
-            session_timeout_hours: 24,
-            max_login_attempts: 5,
-            password_min_length: 8,
-            require_email_verification: true,
-            enforce_strong_passwords: true
-          }),
-          description: 'Security and platform usage limits',
-          updated_by: null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: '5',
-          setting_key: 'content_moderation',
-          setting_value: getStoredSetting('content_moderation', {
-            require_approval_for_work: false,
-            auto_scan_uploaded_content: true,
-            blocked_file_types: ['exe', 'bat', 'cmd'],
-            max_file_size_mb: 50
-          }),
-          description: 'Content moderation and safety settings',
-          updated_by: null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        },
-        {
-          id: '6',
-          setting_key: 'external_programs',
-          setting_value: getStoredSetting('external_programs', {
-            enabled: false,
-            link: '',
-            description: ''
-          }),
-          description: 'External program link configuration',
-          updated_by: null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        }
-      ];
+      if (error) {
+        console.error('Error fetching admin settings:', error);
+        throw error;
+      }
 
-      return defaultSettings;
+      console.log('Fetched admin settings:', data);
+      return data as AdminSetting[];
     }
   });
 
   const updateSettingMutation = useMutation({
     mutationFn: async ({ key, value }: { key: string; value: any }) => {
-      const storageKey = `admin_setting_${key}`;
-      localStorage.setItem(storageKey, JSON.stringify(value));
+      console.log('Updating setting:', key, 'with value:', value);
       
       // Validate security limits
       if (key === 'security_limits') {
@@ -133,8 +56,27 @@ export const useAdminSettings = () => {
           throw new Error('Max login attempts must be between 3 and 10');
         }
       }
-      
-      return { setting_key: key, setting_value: value };
+
+      // Update or insert the setting in Supabase
+      const { data, error } = await supabase
+        .from('admin_settings')
+        .upsert({
+          setting_key: key,
+          setting_value: value,
+          updated_by: (await supabase.auth.getUser()).data.user?.id
+        }, {
+          onConflict: 'setting_key'
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error updating setting:', error);
+        throw error;
+      }
+
+      console.log('Setting updated successfully:', data);
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-settings'] });
@@ -154,7 +96,9 @@ export const useAdminSettings = () => {
   });
 
   const getSetting = (key: string) => {
-    return settings?.find(setting => setting.setting_key === key)?.setting_value;
+    const setting = settings?.find(setting => setting.setting_key === key);
+    console.log(`Getting setting ${key}:`, setting?.setting_value);
+    return setting?.setting_value;
   };
 
   const updateSetting = (key: string, value: any) => {
@@ -187,7 +131,9 @@ export const useAdminSettings = () => {
   };
 
   const getExternalProgramsSettings = () => {
-    return getSetting('external_programs') || {
+    const setting = getSetting('external_programs');
+    console.log('External programs setting retrieved:', setting);
+    return setting || {
       enabled: false,
       link: '',
       description: ''

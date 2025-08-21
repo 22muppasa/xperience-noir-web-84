@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -94,6 +93,19 @@ export const useAdminSettings = () => {
           updated_by: null,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
+        },
+        {
+          id: '6',
+          setting_key: 'external_programs',
+          setting_value: getStoredSetting('external_programs', {
+            enabled: false,
+            link: '',
+            description: ''
+          }),
+          description: 'External program link configuration',
+          updated_by: null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
         }
       ];
 
@@ -174,6 +186,14 @@ export const useAdminSettings = () => {
     return getSetting('security_limits')?.max_login_attempts || 5;
   };
 
+  const getExternalProgramsSettings = () => {
+    return getSetting('external_programs') || {
+      enabled: false,
+      link: '',
+      description: ''
+    };
+  };
+
   return {
     settings,
     isLoading,
@@ -186,6 +206,7 @@ export const useAdminSettings = () => {
     getMaxWorkItemsPerChild,
     requiresEmailVerification,
     getPasswordMinLength,
-    getMaxLoginAttempts
+    getMaxLoginAttempts,
+    getExternalProgramsSettings
   };
 };

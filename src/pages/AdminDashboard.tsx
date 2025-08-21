@@ -18,6 +18,7 @@ import {
   Calendar,
   Heart
 } from 'lucide-react';
+import ExternalProgramLinkDialog from '@/components/admin/ExternalProgramLinkDialog';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
@@ -171,6 +172,12 @@ const AdminDashboard = () => {
                   </div>
                 </Button>
               ))}
+            </div>
+            
+            {/* External Program Link Management */}
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <h3 className="text-lg font-semibold mb-4 text-black">Program Management</h3>
+              <ExternalProgramLinkDialog />
             </div>
           </CardContent>
         </Card>

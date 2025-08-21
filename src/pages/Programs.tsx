@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -6,8 +5,9 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, Users, DollarSign, BookOpen, ArrowRight, Mail } from 'lucide-react';
+import { Calendar, Clock, Users, DollarSign, BookOpen, ArrowRight, Mail, ExternalLink } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
+import { useAdminSettings } from '@/hooks/useAdminSettings';
 
 interface Program {
   id: string;
@@ -23,6 +23,9 @@ interface Program {
 }
 
 const Programs = () => {
+  const { getExternalProgramsSettings } = useAdminSettings();
+  const externalPrograms = getExternalProgramsSettings();
+
   const { data: programs = [], isLoading } = useQuery({
     queryKey: ['public-programs'],
     queryFn: async () => {
@@ -44,6 +47,8 @@ const Programs = () => {
     }
   });
 
+  const shouldShowExternalLink = externalPrograms.enabled && externalPrograms.link && programs.length === 0;
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar />
@@ -58,9 +63,18 @@ const Programs = () => {
             <p className="text-xl text-gray-300 mb-8 animate-fade-in animate-delay-100">
               Discover our comprehensive programs designed to nurture growth, creativity, and learning in children of all ages.
             </p>
-            <Button asChild size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-black animate-fade-in animate-delay-200">
-              <Link to="/contact">Learn More About Our Programs</Link>
-            </Button>
+            {shouldShowExternalLink ? (
+              <Button asChild size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-black animate-fade-in animate-delay-200">
+                <a href={externalPrograms.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                  <ExternalLink className="h-5 w-5" />
+                  See Our Programs
+                </a>
+              </Button>
+            ) : (
+              <Button asChild size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-black animate-fade-in animate-delay-200">
+                <Link to="/contact">Learn More About Our Programs</Link>
+              </Button>
+            )}
           </div>
         </div>
       </section>
@@ -70,12 +84,21 @@ const Programs = () => {
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-12">
             <h2 className="text-3xl md:text-4xl font-medium text-black">Our Programs</h2>
-            <Button variant="outline" asChild>
-              <Link to="/contact" className="flex items-center gap-2">
-                Get Program Information
-                <ArrowRight size={16} />
-              </Link>
-            </Button>
+            {shouldShowExternalLink ? (
+              <Button variant="outline" asChild>
+                <a href={externalPrograms.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                  <ExternalLink className="h-4 w-4" />
+                  See Our Programs
+                </a>
+              </Button>
+            ) : (
+              <Button variant="outline" asChild>
+                <Link to="/contact" className="flex items-center gap-2">
+                  Get Program Information
+                  <ArrowRight size={16} />
+                </Link>
+              </Button>
+            )}
           </div>
           
           {isLoading ? (
@@ -97,13 +120,30 @@ const Programs = () => {
             <Card className="text-center py-16 bg-white border border-gray-200 rounded-xl shadow-soft">
               <CardContent>
                 <BookOpen className="h-16 w-16 mx-auto text-gray-400 mb-4" />
-                <h3 className="text-lg font-semibold mb-2 text-black">No Programs Available</h3>
-                <p className="text-gray-600 mb-6">
-                  We're currently preparing new programs. Check back soon for exciting opportunities!
-                </p>
-                <Button variant="outline" asChild className="text-black border-black hover:bg-black hover:text-white">
-                  <Link to="/contact">Get Notified</Link>
-                </Button>
+                {shouldShowExternalLink ? (
+                  <>
+                    <h3 className="text-lg font-semibold mb-2 text-black">Programs Available Elsewhere</h3>
+                    <p className="text-gray-600 mb-6">
+                      {externalPrograms.description || "We have exciting programs available! Click below to explore them."}
+                    </p>
+                    <Button asChild className="bg-black text-white hover:bg-gray-800 transition-colors">
+                      <a href={externalPrograms.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                        <ExternalLink className="h-4 w-4" />
+                        See Our Programs
+                      </a>
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="text-lg font-semibold mb-2 text-black">No Programs Available</h3>
+                    <p className="text-gray-600 mb-6">
+                      We're currently preparing new programs. Check back soon for exciting opportunities!
+                    </p>
+                    <Button variant="outline" asChild className="text-black border-black hover:bg-black hover:text-white">
+                      <Link to="/contact">Get Notified</Link>
+                    </Button>
+                  </>
+                )}
               </CardContent>
             </Card>
           ) : (
@@ -231,9 +271,18 @@ const Programs = () => {
           <p className="text-xl text-gray-300 mb-8">
             Contact us today to discover how our educational programs can benefit your child's growth and development.
           </p>
-          <Button size="lg" variant="outline" asChild className="text-white border-white hover:bg-white hover:text-black">
-            <Link to="/contact">Contact Us Today</Link>
-          </Button>
+          {shouldShowExternalLink ? (
+            <Button size="lg" variant="outline" asChild className="text-white border-white hover:bg-white hover:text-black">
+              <a href={externalPrograms.link} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2">
+                <ExternalLink className="h-5 w-5" />
+                See Our Programs
+              </a>
+            </Button>
+          ) : (
+            <Button size="lg" variant="outline" asChild className="text-white border-white hover:bg-white hover:text-black">
+              <Link to="/contact">Contact Us Today</Link>
+            </Button>
+          )}
         </div>
       </section>
     </div>

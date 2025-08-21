@@ -33,7 +33,9 @@ const AnimatedButton = ({
   const isOriginalStyle = sparkleColor === 'black' && textColor === 'black';
   
   const handleClick = () => {
+    console.log('AnimatedButton clicked, linkToContact:', linkToContact);
     if (linkToContact) {
+      console.log('Navigating to /contact');
       navigate('/contact');
     } else if (onClick) {
       onClick();
@@ -59,8 +61,6 @@ const AnimatedButton = ({
             color: sparkleColor,
             style: invertOnHover ? { 
               color: sparkleColor,
-              // Fix: Use proper syntax for CSS custom properties in React
-              // The correct way is to use camelCase with the 'var' prefix
               ['--hover-color' as string]: 'white',
             } : undefined,
             strokeWidth: 1.5

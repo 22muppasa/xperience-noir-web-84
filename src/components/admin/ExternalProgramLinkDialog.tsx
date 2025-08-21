@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { useAdminSettings } from '@/hooks/useAdminSettings';
-import { ExternalLink, Link, Settings } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const ExternalProgramLinkDialog = () => {
@@ -22,22 +22,23 @@ const ExternalProgramLinkDialog = () => {
   });
   const [isValidUrl, setIsValidUrl] = useState(true);
 
+  // Load settings only when dialog opens
   useEffect(() => {
     if (isOpen) {
-      console.log('Dialog opened, loading external program settings...');
       const externalProgramsSettings = getSetting('external_programs') || {
         enabled: false,
         link: '',
         description: ''
       };
       
-      console.log('Loaded external programs setting:', externalProgramsSettings);
+      console.log('Loading external programs setting:', externalProgramsSettings);
       setFormData(externalProgramsSettings);
+      setIsValidUrl(true);
     }
   }, [isOpen, getSetting]);
 
   const validateUrl = (url: string) => {
-    if (!url) return true; // Empty URL is valid (disabled state)
+    if (!url) return true;
     try {
       new URL(url);
       return true;
@@ -46,10 +47,19 @@ const ExternalProgramLinkDialog = () => {
     }
   };
 
+  const handleEnabledToggle = (checked: boolean) => {
+    console.log('Toggle enabled changed to:', checked);
+    setFormData(prev => ({ ...prev, enabled: checked }));
+  };
+
   const handleLinkChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newLink = e.target.value;
     setFormData(prev => ({ ...prev, link: newLink }));
     setIsValidUrl(validateUrl(newLink));
+  };
+
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFormData(prev => ({ ...prev, description: e.target.value }));
   };
 
   const handleSave = () => {
@@ -115,10 +125,7 @@ const ExternalProgramLinkDialog = () => {
             <Switch
               id="external-programs-enabled"
               checked={formData.enabled}
-              onCheckedChange={(checked) => {
-                console.log('Toggle changed to:', checked);
-                setFormData(prev => ({ ...prev, enabled: checked }));
-              }}
+              onCheckedChange={handleEnabledToggle}
             />
           </div>
 
@@ -150,7 +157,7 @@ const ExternalProgramLinkDialog = () => {
                     id="external-description"
                     placeholder="Brief description of the external programs..."
                     value={formData.description}
-                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                    onChange={handleDescriptionChange}
                     rows={3}
                   />
                 </div>

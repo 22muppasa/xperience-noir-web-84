@@ -2,7 +2,6 @@
 import { Button } from '@/components/ui/button';
 import { 
   LayoutDashboard, 
-  Calendar, 
   MessageSquare, 
   FileText,
   Users,
@@ -22,7 +21,6 @@ const DashboardSidebar = () => {
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
     { icon: Users, label: 'Customers', path: '/admin/customers' },
-    { icon: Calendar, label: 'Programs', path: '/admin/programs' },
     { icon: Heart, label: 'Volunteers', path: '/admin/volunteers' },
     { icon: MessageSquare, label: 'Messages', path: '/admin/messages' },
     { icon: Send, label: 'Social Posts', path: '/admin/social-posts' },

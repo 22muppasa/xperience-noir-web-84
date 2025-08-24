@@ -336,7 +336,7 @@ const UserDetailsDialog = ({ user, isOpen, onClose, onUserUpdated }: UserDetails
             <Button
               variant="outline"
               onClick={onClose}
-              className="border-black text-black hover:bg-gray-50"
+              className="bg-white border-2 border-black text-black hover:bg-gray-100 font-medium"
             >
               Cancel
             </Button>
@@ -379,7 +379,7 @@ const UserDetailsDialog = ({ user, isOpen, onClose, onUserUpdated }: UserDetails
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="border-black text-black hover:bg-gray-50">
+            <AlertDialogCancel className="bg-white border-2 border-black text-black hover:bg-gray-100 font-medium">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction

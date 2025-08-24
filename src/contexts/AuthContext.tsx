@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -33,6 +32,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const createUserProfile = async (userId: string, userEmail: string): Promise<boolean> => {
+    try {
+      console.log('Creating profile for user:', userId, userEmail);
+      
+      const { data, error } = await supabase
+        .from('profiles')
+        .insert({
+          id: userId,
+          email: userEmail,
+          role: 'admin', // Default role for new users
+          approval_status: 'pending'
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Error creating user profile:', error);
+        return false;
+      }
+
+      console.log('Profile created successfully:', data);
+      return true;
+    } catch (error) {
+      console.error('Error in createUserProfile:', error);
+      return false;
+    }
+  };
+
   const fetchUserProfile = async (userId: string): Promise<boolean> => {
     try {
       console.log('Fetching profile for user:', userId);
@@ -45,7 +72,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       if (error) {
         console.error('Error fetching user profile:', error);
-        // Set defaults for error cases
+        
+        // If profile doesn't exist, try to create it
+        if (error.code === 'PGRST116') {
+          console.log('Profile not found, attempting to create...');
+          const user = await supabase.auth.getUser();
+          if (user.data.user?.email) {
+            const created = await createUserProfile(userId, user.data.user.email);
+            if (created) {
+              // Retry fetching after creation
+              return await fetchUserProfile(userId);
+            }
+          }
+        }
+        
         setUserRole(null);
         setIsApproved(false);
         return false;

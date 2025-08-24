@@ -1139,6 +1139,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_own_profile: {
+        Args: { profile_id: string }
+        Returns: boolean
+      }
       check_child_name_exists: {
         Args: { first_name_param: string; last_name_param: string }
         Returns: boolean
@@ -1194,7 +1198,7 @@ export type Database = {
         Returns: boolean
       }
       is_approved_admin: {
-        Args: { user_id: string }
+        Args: { user_id?: string }
         Returns: boolean
       }
     }

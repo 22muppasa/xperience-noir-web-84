@@ -46,7 +46,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.error('Error fetching user profile:', error);
         setUserRole(null);
         setIsApproved(false);
-        return;
+        return false;
       }
 
       console.log('User profile data:', profile);
@@ -58,57 +58,89 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       console.log('User role:', isAdmin ? 'admin' : null);
       console.log('User approved:', isUserApproved);
+      return true;
     } catch (error) {
       console.error('Error in fetchUserProfile:', error);
       setUserRole(null);
       setIsApproved(false);
+      return false;
     }
   };
 
   useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.email);
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (session?.user) {
-          // Fetch user role and approval status
-          await fetchUserProfile(session.user.id);
-          
-          // Redirect to admin dashboard on sign in from auth page if user is approved admin
-          if (event === 'SIGNED_IN' && window.location.pathname === '/auth') {
-            // Wait a bit to ensure profile data is loaded
-            setTimeout(() => {
-              navigate('/admin');
-            }, 100);
-          }
-        } else {
-          setUserRole(null);
-          setIsApproved(false);
-        }
-        
-        setLoading(false);
-      }
-    );
+    let isMounted = true;
 
-    // Check for existing session
-    const initializeAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+    const handleAuthStateChange = async (event: any, session: Session | null) => {
+      console.log('Auth state changed:', event, session?.user?.email);
+      
+      if (!isMounted) return;
+
       setSession(session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        await fetchUserProfile(session.user.id);
+        const profileFetched = await fetchUserProfile(session.user.id);
+        
+        // Only navigate if we're on the auth page and profile was successfully fetched
+        if (event === 'SIGNED_IN' && window.location.pathname === '/auth' && profileFetched) {
+          setTimeout(() => {
+            if (isMounted) {
+              navigate('/admin');
+            }
+          }, 100);
+        }
+      } else {
+        setUserRole(null);
+        setIsApproved(false);
       }
       
-      setLoading(false);
+      if (isMounted) {
+        setLoading(false);
+      }
+    };
+
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);
+
+    // Check for existing session
+    const initializeAuth = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error getting session:', error);
+          if (isMounted) {
+            setLoading(false);
+          }
+          return;
+        }
+
+        if (!isMounted) return;
+
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          await fetchUserProfile(session.user.id);
+        }
+        
+        if (isMounted) {
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('Error in initializeAuth:', error);
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
     };
 
     initializeAuth();
 
-    return () => subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   const signIn = async (email: string, password: string) => {

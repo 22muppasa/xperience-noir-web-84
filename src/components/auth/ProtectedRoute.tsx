@@ -16,10 +16,14 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   console.log('ProtectedRoute - User Role:', userRole);
   console.log('ProtectedRoute - Is Approved:', isApproved);
 
+  // Show loading screen while authentication is being determined
   if (loading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black z-50">
-        <Loader />
+        <div className="text-center">
+          <Loader />
+          <p className="text-white mt-4">Loading your account...</p>
+        </div>
       </div>
     );
   }
@@ -38,6 +42,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">Access Denied</h1>
           <p className="text-xl text-gray-600 mb-4">You don't have permission to access this page</p>
+          <p className="text-sm text-gray-500 mb-4">Current role: {userRole || 'No role assigned'}</p>
           <a href="/" className="text-blue-500 hover:text-blue-700 underline">
             Return to Home
           </a>

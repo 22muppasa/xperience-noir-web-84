@@ -8,6 +8,7 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   userRole: 'admin' | null;
+  approvalStatus: 'pending' | 'approved' | 'rejected' | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string, userData?: any) => Promise<{ error: any }>;
@@ -28,6 +29,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [userRole, setUserRole] = useState<'admin' | null>(null);
+  const [approvalStatus, setApprovalStatus] = useState<'pending' | 'approved' | 'rejected' | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -40,28 +42,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Fetch user role
+          // Fetch user profile including approval status
           setTimeout(async () => {
             try {
               const { data: profile } = await supabase
                 .from('profiles')
-                .select('role')
+                .select('role, approval_status')
                 .eq('id', session.user.id)
                 .single();
               
-              setUserRole(profile?.role === 'admin' ? 'admin' : null);
+              console.log('Profile data:', profile);
+              setApprovalStatus(profile?.approval_status || 'pending');
               
-              // Redirect to admin dashboard on sign in from auth page
-              if (event === 'SIGNED_IN' && window.location.pathname === '/auth') {
+              // Only set userRole to admin if both role is admin AND approval_status is approved
+              if (profile?.role === 'admin' && profile?.approval_status === 'approved') {
+                setUserRole('admin');
+              } else {
+                setUserRole(null);
+              }
+              
+              // Redirect to admin dashboard on sign in from auth page if approved admin
+              if (event === 'SIGNED_IN' && window.location.pathname === '/auth' && 
+                  profile?.role === 'admin' && profile?.approval_status === 'approved') {
                 navigate('/admin');
               }
             } catch (error) {
-              console.error('Error fetching user role:', error);
+              console.error('Error fetching user profile:', error);
               setUserRole(null);
+              setApprovalStatus(null);
             }
           }, 0);
         } else {
           setUserRole(null);
+          setApprovalStatus(null);
         }
         
         setLoading(false);
@@ -74,19 +87,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        // Fetch user role for existing session
+        // Fetch user profile for existing session
         setTimeout(async () => {
           try {
             const { data: profile } = await supabase
               .from('profiles')
-              .select('role')
+              .select('role, approval_status')
               .eq('id', session.user.id)
               .single();
             
-            setUserRole(profile?.role === 'admin' ? 'admin' : null);
+            console.log('Existing session profile:', profile);
+            setApprovalStatus(profile?.approval_status || 'pending');
+            
+            // Only set userRole to admin if both role is admin AND approval_status is approved
+            if (profile?.role === 'admin' && profile?.approval_status === 'approved') {
+              setUserRole('admin');
+            } else {
+              setUserRole(null);
+            }
           } catch (error) {
-            console.error('Error fetching user role:', error);
+            console.error('Error fetching user profile:', error);
             setUserRole(null);
+            setApprovalStatus(null);
           }
           setLoading(false);
         }, 0);
@@ -128,6 +150,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     setSession(null);
     setUserRole(null);
+    setApprovalStatus(null);
     navigate('/');
   };
 
@@ -135,6 +158,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     session,
     userRole,
+    approvalStatus,
     loading,
     signIn,
     signUp,

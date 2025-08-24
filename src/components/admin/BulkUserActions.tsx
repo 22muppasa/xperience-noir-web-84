@@ -6,7 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Users, Mail, Shield, Trash2 } from 'lucide-react';
+import { Users, Mail, Shield, Trash2, Check, X } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +24,7 @@ interface Profile {
   first_name: string;
   last_name: string;
   role: 'admin' | 'customer';
+  approval_status: 'pending' | 'approved' | 'rejected';
 }
 
 interface BulkUserActionsProps {
@@ -51,6 +52,26 @@ const BulkUserActions = ({ selectedUsers, onClearSelection }: BulkUserActionsPro
           await Promise.all(
             userIds.map(id =>
               supabase.from('profiles').update({ role: 'customer' }).eq('id', id)
+            )
+          );
+          break;
+        case 'approve_users':
+          await Promise.all(
+            userIds.map(id =>
+              supabase.rpc('update_user_approval_status', {
+                target_user_id: id,
+                new_status: 'approved'
+              })
+            )
+          );
+          break;
+        case 'reject_users':
+          await Promise.all(
+            userIds.map(id =>
+              supabase.rpc('update_user_approval_status', {
+                target_user_id: id,
+                new_status: 'rejected'
+              })
             )
           );
           break;
@@ -108,6 +129,8 @@ const BulkUserActions = ({ selectedUsers, onClearSelection }: BulkUserActionsPro
     switch (action) {
       case 'role_admin': return 'Set as Admin';
       case 'role_customer': return 'Set as Customer';
+      case 'approve_users': return 'Approve Users';
+      case 'reject_users': return 'Reject Users';
       case 'send_email': return 'Send Email';
       case 'delete': return 'Delete Users';
       default: return '';
@@ -133,6 +156,18 @@ const BulkUserActions = ({ selectedUsers, onClearSelection }: BulkUserActionsPro
                 <SelectValue placeholder="Choose action..." />
               </SelectTrigger>
               <SelectContent className="bg-white border-black">
+                <SelectItem value="approve_users" className="text-black">
+                  <div className="flex items-center space-x-2">
+                    <Check className="h-4 w-4" />
+                    <span>Approve Users</span>
+                  </div>
+                </SelectItem>
+                <SelectItem value="reject_users" className="text-black">
+                  <div className="flex items-center space-x-2">
+                    <X className="h-4 w-4" />
+                    <span>Reject Users</span>
+                  </div>
+                </SelectItem>
                 <SelectItem value="role_admin" className="text-black">
                   <div className="flex items-center space-x-2">
                     <Shield className="h-4 w-4" />
@@ -191,6 +226,16 @@ const BulkUserActions = ({ selectedUsers, onClearSelection }: BulkUserActionsPro
               {confirmDialog.action === 'delete' && (
                 <span className="block mt-2 text-red-600 font-medium">
                   This action cannot be undone.
+                </span>
+              )}
+              {confirmDialog.action === 'approve_users' && (
+                <span className="block mt-2 text-green-600 font-medium">
+                  This will grant admin access to approved users.
+                </span>
+              )}
+              {confirmDialog.action === 'reject_users' && (
+                <span className="block mt-2 text-red-600 font-medium">
+                  This will prevent users from accessing admin features.
                 </span>
               )}
             </AlertDialogDescription>

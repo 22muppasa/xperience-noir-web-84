@@ -1,3 +1,4 @@
+
 import React from 'react';
 import DashboardLayout from '@/components/dashboard/DashboardLayout';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
@@ -16,7 +17,8 @@ import {
   Shield,
   Activity,
   Calendar,
-  Heart
+  Heart,
+  Clock
 } from 'lucide-react';
 import ExternalProgramLinkDialog from '@/components/admin/ExternalProgramLinkDialog';
 
@@ -33,14 +35,16 @@ const AdminDashboard = () => {
         messagesResult,
         programsResult,
         volunteerApplicationsResult,
-        pendingVolunteersResult
+        pendingVolunteersResult,
+        pendingApprovalsResult
       ] = await Promise.all([
         supabase.from('profiles').select('id', { count: 'exact' }),
         supabase.from('kids_work').select('id', { count: 'exact' }),
         supabase.from('messages').select('id', { count: 'exact' }),
         supabase.from('programs').select('id', { count: 'exact' }),
         supabase.from('volunteer_applications').select('id', { count: 'exact' }),
-        supabase.from('volunteer_applications').select('id', { count: 'exact' }).eq('status', 'pending')
+        supabase.from('volunteer_applications').select('id', { count: 'exact' }).eq('status', 'pending'),
+        supabase.from('profiles').select('id', { count: 'exact' }).eq('approval_status', 'pending')
       ]);
 
       return {
@@ -49,7 +53,8 @@ const AdminDashboard = () => {
         totalMessages: messagesResult.count || 0,
         activePrograms: programsResult.count || 0,
         totalVolunteers: volunteerApplicationsResult.count || 0,
-        pendingVolunteers: pendingVolunteersResult.count || 0
+        pendingVolunteers: pendingVolunteersResult.count || 0,
+        pendingApprovals: pendingApprovalsResult.count || 0
       };
     }
   });
@@ -60,7 +65,8 @@ const AdminDashboard = () => {
       description: 'View and manage all user accounts',
       icon: Users,
       href: '/admin/customers',
-      color: 'bg-white border-black'
+      color: 'bg-white border-black',
+      badge: stats?.pendingApprovals > 0 ? stats.pendingApprovals : undefined
     },
     {
       title: 'Review Volunteers',
@@ -79,6 +85,13 @@ const AdminDashboard = () => {
       change: stats?.totalUsers > 0 ? '+12%' : 'No users yet',
       icon: Users,
       trend: 'up'
+    },
+    {
+      title: 'Pending User Approvals',
+      value: isLoading ? '...' : stats?.pendingApprovals.toString() || '0',
+      change: stats?.pendingApprovals > 0 ? 'Needs review' : 'All approved',
+      icon: Clock,
+      trend: stats?.pendingApprovals > 0 ? 'up' : 'stable'
     },
     {
       title: 'Pending Volunteers',
@@ -112,11 +125,22 @@ const AdminDashboard = () => {
               <Shield className="h-4 w-4 mr-2" />
               System Health: Good
             </Button>
+            {stats?.pendingApprovals > 0 && (
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                className="bg-yellow-500 text-black hover:bg-yellow-400"
+                onClick={() => window.location.href = '/admin/customers?filter=pending'}
+              >
+                <Clock className="h-4 w-4 mr-2" />
+                {stats.pendingApprovals} Pending Approval{stats.pendingApprovals !== 1 ? 's' : ''}
+              </Button>
+            )}
           </div>
         </div>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {adminStats.map((stat, index) => (
             <Card key={index} className="bg-white border-2 border-black">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

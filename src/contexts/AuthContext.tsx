@@ -1,14 +1,15 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 
+type ApprovalStatus = 'pending' | 'approved' | 'rejected';
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   userRole: 'admin' | null;
-  approvalStatus: 'pending' | 'approved' | 'rejected' | null;
+  approvalStatus: ApprovalStatus | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string, userData?: any) => Promise<{ error: any }>;
@@ -29,7 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [userRole, setUserRole] = useState<'admin' | null>(null);
-  const [approvalStatus, setApprovalStatus] = useState<'pending' | 'approved' | 'rejected' | null>(null);
+  const [approvalStatus, setApprovalStatus] = useState<ApprovalStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -52,7 +53,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 .single();
               
               console.log('Profile data:', profile);
-              setApprovalStatus(profile?.approval_status || 'pending');
+              const status = profile?.approval_status as ApprovalStatus || 'pending';
+              setApprovalStatus(status);
               
               // Only set userRole to admin if both role is admin AND approval_status is approved
               if (profile?.role === 'admin' && profile?.approval_status === 'approved') {
@@ -97,7 +99,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               .single();
             
             console.log('Existing session profile:', profile);
-            setApprovalStatus(profile?.approval_status || 'pending');
+            const status = profile?.approval_status as ApprovalStatus || 'pending';
+            setApprovalStatus(status);
             
             // Only set userRole to admin if both role is admin AND approval_status is approved
             if (profile?.role === 'admin' && profile?.approval_status === 'approved') {

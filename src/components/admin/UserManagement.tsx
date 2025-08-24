@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Mail, Calendar, Shield, User, Check, Clock, X, CheckCircle, XCircle } from 'lucide-react';
+import { Mail, Calendar, Shield, User, Check, Clock, X, CheckCircle, XCircle, Settings } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -21,6 +20,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import BulkUserActions from './BulkUserActions';
 import UserFilters from './UserFilters';
+import UserDetailsDialog from './UserDetailsDialog';
 
 interface Profile {
   id: string;
@@ -38,6 +38,8 @@ interface Profile {
 
 const UserManagement = () => {
   const [selectedUsers, setSelectedUsers] = useState<Profile[]>([]);
+  const [selectedUser, setSelectedUser] = useState<Profile | null>(null);
+  const [showUserDetails, setShowUserDetails] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'customer'>('all');
   const [approvalFilter, setApprovalFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
@@ -149,6 +151,11 @@ const UserManagement = () => {
         newStatus
       });
     }
+  };
+
+  const handleUserClick = (user: Profile) => {
+    setSelectedUser(user);
+    setShowUserDetails(true);
   };
 
   const confirmRoleChange = () => {
@@ -380,6 +387,16 @@ const UserManagement = () => {
                 </div>
                 
                 <div className="flex items-center space-x-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleUserClick(user)}
+                    className="border-black text-black hover:bg-gray-50"
+                  >
+                    <Settings className="h-4 w-4 mr-1" />
+                    Manage
+                  </Button>
+
                   <Select
                     value={user.role}
                     onValueChange={(value: 'admin' | 'customer') => handleRoleChange(user, value)}
@@ -441,6 +458,19 @@ const UserManagement = () => {
           </CardContent>
         </Card>
       )}
+
+      {/* User Details Dialog */}
+      <UserDetailsDialog
+        user={selectedUser}
+        isOpen={showUserDetails}
+        onClose={() => {
+          setShowUserDetails(false);
+          setSelectedUser(null);
+        }}
+        onUserUpdated={() => {
+          queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+        }}
+      />
 
       {/* Role Change Confirmation Dialog */}
       <AlertDialog open={roleChangeDialog.isOpen} onOpenChange={(open) => 

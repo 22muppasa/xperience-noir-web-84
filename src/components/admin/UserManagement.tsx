@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { Mail, Calendar, Shield, User, Check, X, Clock } from 'lucide-react';
+import { Mail, Calendar, Shield, User, Check } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import {
@@ -31,9 +30,6 @@ interface Profile {
   created_at: string;
   phone?: string;
   date_of_birth?: string;
-  approval_status: 'pending' | 'approved' | 'denied';
-  approved_by?: string;
-  approved_at?: string;
 }
 
 const UserManagement = () => {
@@ -41,17 +37,12 @@ const UserManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'customer'>('all');
   const [dateFilter, setDateFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'approved' | 'denied'>('all');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
   const [roleChangeDialog, setRoleChangeDialog] = useState<{
     isOpen: boolean;
     user: Profile | null;
     newRole: 'admin' | 'customer' | null;
   }>({ isOpen: false, user: null, newRole: null });
-  const [approvalDialog, setApprovalDialog] = useState<{
-    isOpen: boolean;
-    user: Profile | null;
-    action: 'approve' | 'deny' | null;
-  }>({ isOpen: false, user: null, action: null });
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -102,40 +93,6 @@ const UserManagement = () => {
     }
   });
 
-  const updateApprovalStatusMutation = useMutation({
-    mutationFn: async ({ userId, status }: { userId: string; status: 'approved' | 'denied' }) => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .update({ 
-          approval_status: status,
-          approved_by: status === 'approved' ? (await supabase.auth.getUser()).data.user?.id : null,
-          approved_at: status === 'approved' ? new Date().toISOString() : null
-        })
-        .eq('id', userId)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: (data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
-      toast({
-        title: `User ${variables.status}`,
-        description: `User has been ${variables.status} successfully`,
-      });
-      setApprovalDialog({ isOpen: false, user: null, action: null });
-    },
-    onError: (error) => {
-      console.error('Approval status update error:', error);
-      toast({
-        title: "Error updating approval status",
-        description: "Failed to update user approval status. Please try again.",
-        variant: "destructive",
-      });
-    }
-  });
-
   const handleRoleChange = (user: Profile, newRole: 'admin' | 'customer') => {
     if (user.role !== newRole) {
       setRoleChangeDialog({
@@ -146,28 +103,11 @@ const UserManagement = () => {
     }
   };
 
-  const handleApprovalAction = (user: Profile, action: 'approve' | 'deny') => {
-    setApprovalDialog({
-      isOpen: true,
-      user,
-      action
-    });
-  };
-
   const confirmRoleChange = () => {
     if (roleChangeDialog.user && roleChangeDialog.newRole) {
       updateUserRoleMutation.mutate({
         userId: roleChangeDialog.user.id,
         role: roleChangeDialog.newRole
-      });
-    }
-  };
-
-  const confirmApprovalAction = () => {
-    if (approvalDialog.user && approvalDialog.action) {
-      updateApprovalStatusMutation.mutate({
-        userId: approvalDialog.user.id,
-        status: approvalDialog.action === 'approve' ? 'approved' : 'denied'
       });
     }
   };
@@ -195,18 +135,6 @@ const UserManagement = () => {
     setStatusFilter('all');
   };
 
-  const getApprovalStatusBadge = (status: string) => {
-    switch (status) {
-      case 'approved':
-        return <Badge className="bg-green-100 text-green-800 border-green-300"><Check className="h-3 w-3 mr-1" />Approved</Badge>;
-      case 'denied':
-        return <Badge className="bg-red-100 text-red-800 border-red-300"><X className="h-3 w-3 mr-1" />Denied</Badge>;
-      case 'pending':
-      default:
-        return <Badge className="bg-yellow-100 text-yellow-800 border-yellow-300"><Clock className="h-3 w-3 mr-1" />Pending</Badge>;
-    }
-  };
-
   const filteredUsers = users?.filter(user => {
     const matchesSearch = searchTerm === '' ||
       user.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -218,9 +146,7 @@ const UserManagement = () => {
     const matchesDate = dateFilter === '' || 
       new Date(user.created_at) >= new Date(dateFilter);
 
-    const matchesStatus = statusFilter === 'all' || user.approval_status === statusFilter;
-
-    return matchesSearch && matchesRole && matchesDate && matchesStatus;
+    return matchesSearch && matchesRole && matchesDate;
   });
 
   if (isLoading) {
@@ -324,14 +250,13 @@ const UserManagement = () => {
                 </div>
                 
                 <div className="flex-1">
-                  <div className="flex items-center space-x-2 mb-1">
+                  <div className="flex items-center space-x-2">
                     <h3 className="font-semibold text-black">
                       {user.first_name} {user.last_name}
                     </h3>
                     <Badge variant={user.role === 'admin' ? 'default' : 'secondary'} className="bg-white text-black border border-black">
                       {user.role}
                     </Badge>
-                    {getApprovalStatusBadge(user.approval_status)}
                   </div>
                   <div className="flex items-center space-x-4 text-sm text-black">
                     <div className="flex items-center space-x-1">
@@ -346,33 +271,9 @@ const UserManagement = () => {
                 </div>
                 
                 <div className="flex items-center space-x-2">
-                  {user.approval_status === 'pending' && (
-                    <>
-                      <Button
-                        size="sm"
-                        onClick={() => handleApprovalAction(user, 'approve')}
-                        className="bg-green-600 text-white hover:bg-green-700"
-                        disabled={updateApprovalStatusMutation.isPending}
-                      >
-                        <Check className="h-4 w-4 mr-1" />
-                        Approve
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => handleApprovalAction(user, 'deny')}
-                        disabled={updateApprovalStatusMutation.isPending}
-                      >
-                        <X className="h-4 w-4 mr-1" />
-                        Deny
-                      </Button>
-                    </>
-                  )}
-                  
                   <Select
                     value={user.role}
                     onValueChange={(value: 'admin' | 'customer') => handleRoleChange(user, value)}
-                    disabled={user.approval_status !== 'approved'}
                   >
                     <SelectTrigger className="w-32 bg-white border-black text-black">
                       <SelectValue />
@@ -421,44 +322,6 @@ const UserManagement = () => {
               className="bg-black text-white hover:bg-gray-800"
             >
               {updateUserRoleMutation.isPending ? 'Updating...' : 'Confirm Change'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Approval Action Confirmation Dialog */}
-      <AlertDialog open={approvalDialog.isOpen} onOpenChange={(open) => 
-        setApprovalDialog(prev => ({ ...prev, isOpen: open }))
-      }>
-        <AlertDialogContent className="bg-white border-black">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-black">
-              Confirm {approvalDialog.action === 'approve' ? 'Approval' : 'Denial'}
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-black">
-              Are you sure you want to {approvalDialog.action} {approvalDialog.user?.first_name} {approvalDialog.user?.last_name}?
-              {approvalDialog.action === 'deny' && (
-                <span className="block mt-2 text-red-600 font-medium">
-                  This user will not be able to access admin functions.
-                </span>
-              )}
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="border-black text-black hover:bg-gray-50">
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={confirmApprovalAction}
-              disabled={updateApprovalStatusMutation.isPending}
-              className={approvalDialog.action === 'approve' 
-                ? "bg-green-600 text-white hover:bg-green-700" 
-                : "bg-red-600 text-white hover:bg-red-700"
-              }
-            >
-              {updateApprovalStatusMutation.isPending ? 'Processing...' : 
-                (approvalDialog.action === 'approve' ? 'Approve User' : 'Deny User')
-              }
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

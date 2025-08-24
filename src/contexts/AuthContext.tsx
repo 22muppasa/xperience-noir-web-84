@@ -8,7 +8,6 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   userRole: 'admin' | null;
-  isApproved: boolean;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signUp: (email: string, password: string, userData?: any) => Promise<{ error: any }>;
@@ -29,153 +28,74 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [userRole, setUserRole] = useState<'admin' | null>(null);
-  const [isApproved, setIsApproved] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const fetchUserProfile = async (userId: string): Promise<boolean> => {
-    try {
-      console.log('Fetching profile for user:', userId);
-      
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('role, approval_status')
-        .eq('id', userId)
-        .single();
-      
-      if (error) {
-        console.error('Error fetching user profile:', error);
-        // Set defaults for error cases
-        setUserRole(null);
-        setIsApproved(false);
-        return false;
-      }
-
-      console.log('User profile data:', profile);
-      
-      if (!profile) {
-        console.warn('No profile found for user:', userId);
-        setUserRole(null);
-        setIsApproved(false);
-        return false;
-      }
-
-      const isUserApproved = profile?.approval_status === 'approved';
-      const isAdmin = profile?.role === 'admin';
-      
-      setUserRole(isAdmin ? 'admin' : null);
-      setIsApproved(isUserApproved);
-      
-      console.log('User role:', isAdmin ? 'admin' : null);
-      console.log('User approved:', isUserApproved);
-      return true;
-    } catch (error) {
-      console.error('Error in fetchUserProfile:', error);
-      setUserRole(null);
-      setIsApproved(false);
-      return false;
-    }
-  };
-
   useEffect(() => {
-    let isMounted = true;
-    let loadingTimeout: NodeJS.Timeout;
-
-    // Set a maximum loading time
-    loadingTimeout = setTimeout(() => {
-      if (isMounted) {
-        console.warn('Auth loading timeout reached');
-        setLoading(false);
-      }
-    }, 10000);
-
-    const handleAuthStateChange = async (event: any, session: Session | null) => {
-      console.log('Auth state changed:', event, session?.user?.email);
-      
-      if (!isMounted) return;
-
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        try {
-          const profileFetched = await fetchUserProfile(session.user.id);
-          
-          if (event === 'SIGNED_IN' && window.location.pathname === '/auth' && profileFetched) {
-            setTimeout(() => {
-              if (isMounted) {
-                navigate('/admin');
-              }
-            }, 100);
-          }
-        } catch (error) {
-          console.error('Error in auth state change handler:', error);
-        }
-      } else {
-        setUserRole(null);
-        setIsApproved(false);
-      }
-      
-      if (isMounted) {
-        clearTimeout(loadingTimeout);
-        setLoading(false);
-      }
-    };
-
     // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(handleAuthStateChange);
-
-    // Check for existing session
-    const initializeAuth = async () => {
-      try {
-        console.log('Initializing auth...');
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error('Error getting session:', error);
-          if (isMounted) {
-            clearTimeout(loadingTimeout);
-            setLoading(false);
-          }
-          return;
-        }
-
-        if (!isMounted) return;
-
-        console.log('Session found:', !!session);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          try {
-            await fetchUserProfile(session.user.id);
-          } catch (error) {
-            console.error('Error fetching profile during initialization:', error);
-          }
+          // Fetch user role
+          setTimeout(async () => {
+            try {
+              const { data: profile } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', session.user.id)
+                .single();
+              
+              setUserRole(profile?.role === 'admin' ? 'admin' : null);
+              
+              // Redirect to admin dashboard on sign in from auth page
+              if (event === 'SIGNED_IN' && window.location.pathname === '/auth') {
+                navigate('/admin');
+              }
+            } catch (error) {
+              console.error('Error fetching user role:', error);
+              setUserRole(null);
+            }
+          }, 0);
+        } else {
+          setUserRole(null);
         }
         
-        if (isMounted) {
-          clearTimeout(loadingTimeout);
-          setLoading(false);
-        }
-      } catch (error) {
-        console.error('Error in initializeAuth:', error);
-        if (isMounted) {
-          clearTimeout(loadingTimeout);
-          setLoading(false);
-        }
+        setLoading(false);
       }
-    };
+    );
 
-    initializeAuth();
-
-    return () => {
-      isMounted = false;
-      if (loadingTimeout) {
-        clearTimeout(loadingTimeout);
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      
+      if (session?.user) {
+        // Fetch user role for existing session
+        setTimeout(async () => {
+          try {
+            const { data: profile } = await supabase
+              .from('profiles')
+              .select('role')
+              .eq('id', session.user.id)
+              .single();
+            
+            setUserRole(profile?.role === 'admin' ? 'admin' : null);
+          } catch (error) {
+            console.error('Error fetching user role:', error);
+            setUserRole(null);
+          }
+          setLoading(false);
+        }, 0);
+      } else {
+        setLoading(false);
       }
-      subscription.unsubscribe();
-    };
+    });
+
+    return () => subscription.unsubscribe();
   }, [navigate]);
 
   const signIn = async (email: string, password: string) => {
@@ -196,7 +116,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         emailRedirectTo: redirectUrl,
         data: {
           ...userData,
-          role: 'admin'
+          role: 'admin' // Default all new users to admin
         }
       }
     });
@@ -208,7 +128,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     setSession(null);
     setUserRole(null);
-    setIsApproved(false);
     navigate('/');
   };
 
@@ -216,7 +135,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     session,
     userRole,
-    isApproved,
     loading,
     signIn,
     signUp,

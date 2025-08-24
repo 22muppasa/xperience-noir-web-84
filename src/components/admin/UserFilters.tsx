@@ -7,13 +7,13 @@ import { Search, Filter, X } from 'lucide-react';
 
 interface UserFiltersProps {
   searchTerm: string;
-  setSearchTerm: (value: string) => void;
+  setSearchTerm: (term: string) => void;
   roleFilter: 'all' | 'admin' | 'customer';
-  setRoleFilter: (value: 'all' | 'admin' | 'customer') => void;
+  setRoleFilter: (role: 'all' | 'admin' | 'customer') => void;
   dateFilter: string;
-  setDateFilter: (value: string) => void;
-  statusFilter: 'all' | 'pending' | 'approved' | 'denied';
-  setStatusFilter: (value: 'all' | 'pending' | 'approved' | 'denied') => void;
+  setDateFilter: (date: string) => void;
+  statusFilter: 'all' | 'active' | 'inactive';
+  setStatusFilter: (status: 'all' | 'active' | 'inactive') => void;
   onClearFilters: () => void;
 }
 
@@ -31,84 +31,63 @@ const UserFilters = ({
   const hasActiveFilters = searchTerm || roleFilter !== 'all' || dateFilter || statusFilter !== 'all';
 
   return (
-    <div className="bg-white border border-black rounded-lg p-4 space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <Filter className="h-4 w-4 text-black" />
-          <span className="font-medium text-black">Filters</span>
-        </div>
+    <div className="bg-white border border-black rounded-lg p-4 mb-6">
+      <div className="flex items-center space-x-2 mb-4">
+        <Filter className="h-4 w-4 text-black" />
+        <h3 className="font-medium text-black">Filters</h3>
         {hasActiveFilters && (
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
             onClick={onClearFilters}
-            className="border-black text-black hover:bg-gray-50"
+            className="text-gray-500 hover:text-black"
           >
-            <X className="h-4 w-4 mr-1" />
-            Clear All
+            <X className="h-3 w-3 mr-1" />
+            Clear all
           </Button>
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        {/* Search */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black h-4 w-4" />
           <Input
             placeholder="Search users..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 bg-white border-black text-black"
+            className="pl-10 bg-white border-black text-black placeholder:text-gray-500"
           />
         </div>
 
-        {/* Role Filter */}
-        <Select value={roleFilter} onValueChange={setRoleFilter}>
+        <Select value={roleFilter} onValueChange={(value: 'all' | 'admin' | 'customer') => setRoleFilter(value)}>
           <SelectTrigger className="bg-white border-black text-black">
-            <SelectValue placeholder="All Roles" />
+            <SelectValue placeholder="Filter by role" />
           </SelectTrigger>
           <SelectContent className="bg-white border-black">
             <SelectItem value="all" className="text-black">All Roles</SelectItem>
-            <SelectItem value="admin" className="text-black">Admin</SelectItem>
-            <SelectItem value="customer" className="text-black">Customer</SelectItem>
+            <SelectItem value="admin" className="text-black">Admins</SelectItem>
+            <SelectItem value="customer" className="text-black">Customers</SelectItem>
           </SelectContent>
         </Select>
 
-        {/* Approval Status Filter */}
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
+        <Select value={statusFilter} onValueChange={(value: 'all' | 'active' | 'inactive') => setStatusFilter(value)}>
           <SelectTrigger className="bg-white border-black text-black">
-            <SelectValue placeholder="All Status" />
+            <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
           <SelectContent className="bg-white border-black">
             <SelectItem value="all" className="text-black">All Status</SelectItem>
-            <SelectItem value="pending" className="text-black">Pending</SelectItem>
-            <SelectItem value="approved" className="text-black">Approved</SelectItem>
-            <SelectItem value="denied" className="text-black">Denied</SelectItem>
+            <SelectItem value="active" className="text-black">Active</SelectItem>
+            <SelectItem value="inactive" className="text-black">Inactive</SelectItem>
           </SelectContent>
         </Select>
 
-        {/* Date Filter */}
         <Input
           type="date"
-          placeholder="Registration date from"
+          placeholder="Created after..."
           value={dateFilter}
           onChange={(e) => setDateFilter(e.target.value)}
           className="bg-white border-black text-black"
         />
-
-        {/* Filter Summary */}
-        <div className="flex items-center text-sm text-black">
-          {hasActiveFilters && (
-            <span className="bg-gray-100 px-2 py-1 rounded border border-black">
-              {[
-                searchTerm && 'Search',
-                roleFilter !== 'all' && 'Role',
-                statusFilter !== 'all' && 'Status',
-                dateFilter && 'Date'
-              ].filter(Boolean).join(', ')} active
-            </span>
-          )}
-        </div>
       </div>
     </div>
   );

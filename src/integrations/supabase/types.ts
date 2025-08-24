@@ -828,9 +828,6 @@ export type Database = {
       profiles: {
         Row: {
           address: string | null
-          approval_status: string
-          approved_at: string | null
-          approved_by: string | null
           avatar_url: string | null
           created_at: string | null
           email: string
@@ -845,9 +842,6 @@ export type Database = {
         }
         Insert: {
           address?: string | null
-          approval_status?: string
-          approved_at?: string | null
-          approved_by?: string | null
           avatar_url?: string | null
           created_at?: string | null
           email: string
@@ -862,9 +856,6 @@ export type Database = {
         }
         Update: {
           address?: string | null
-          approval_status?: string
-          approved_at?: string | null
-          approved_by?: string | null
           avatar_url?: string | null
           created_at?: string | null
           email?: string
@@ -877,15 +868,7 @@ export type Database = {
           storage_path?: string | null
           updated_at?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "profiles_approved_by_fkey"
-            columns: ["approved_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       programs: {
         Row: {
@@ -1139,10 +1122,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      can_access_own_profile: {
-        Args: { profile_id: string }
-        Returns: boolean
-      }
       check_child_name_exists: {
         Args: { first_name_param: string; last_name_param: string }
         Returns: boolean
@@ -1195,10 +1174,6 @@ export type Database = {
       }
       is_admin: {
         Args: { user_id: string }
-        Returns: boolean
-      }
-      is_approved_admin: {
-        Args: { user_id?: string }
         Returns: boolean
       }
     }

@@ -40,30 +40,17 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="text-center max-w-md p-6 bg-white rounded-lg shadow-lg">
-          <h1 className="text-2xl font-bold mb-4 text-red-600">Profile Setup Required</h1>
+          <h1 className="text-2xl font-bold mb-4 text-red-600">Access Denied</h1>
           <p className="text-gray-600 mb-4">
-            There was an issue setting up your profile. This could be due to permissions or your account may need manual approval.
+            You don't have permission to access this page. Only admin users can access the admin dashboard.
           </p>
-          <p className="text-sm text-gray-500 mb-4">
-            User ID: {user.id}<br/>
-            Email: {user.email}<br/>
-            Current role: {userRole || 'Not assigned'}<br/>
-            Profile status: {userRole ? 'Found' : 'Missing'}
-          </p>
-          <div className="space-y-2">
-            <button
-              onClick={() => window.location.reload()}
-              className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-2"
-            >
-              Retry Loading Profile
-            </button>
-            <button
-              onClick={() => window.location.href = '/'}
-              className="w-full bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-            >
-              Return to Home
-            </button>
-          </div>
+          <p className="text-sm text-gray-500 mb-4">Current role: {userRole || 'No admin role assigned'}</p>
+          <button
+            onClick={() => window.location.href = '/'}
+            className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
+          >
+            Return to Home
+          </button>
         </div>
       </div>
     );

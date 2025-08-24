@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,6 +20,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   Mail, 
   Calendar, 
@@ -48,7 +50,7 @@ interface Profile {
   email: string;
   first_name: string;
   last_name: string;
-  role: 'admin' | 'customer';
+  role: 'admin';
   approval_status: 'pending' | 'approved' | 'rejected';
   approved_at: string;
   approved_by: string;
@@ -65,16 +67,15 @@ interface UserDetailsDialogProps {
 }
 
 const UserDetailsDialog = ({ user, isOpen, onClose, onUserUpdated }: UserDetailsDialogProps) => {
-  const [newRole, setNewRole] = useState<'admin' | 'customer'>('customer');
   const [newApprovalStatus, setNewApprovalStatus] = useState<'pending' | 'approved' | 'rejected'>('pending');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const { toast } = useToast();
+  const { user: currentUser, signOut } = useAuth();
   const queryClient = useQueryClient();
 
   // Initialize form values when user changes
   React.useEffect(() => {
     if (user) {
-      setNewRole(user.role);
       setNewApprovalStatus(user.approval_status);
     }
   }, [user]);
@@ -85,38 +86,19 @@ const UserDetailsDialog = ({ user, isOpen, onClose, onUserUpdated }: UserDetails
       updates 
     }: { 
       userId: string; 
-      updates: { role?: 'admin' | 'customer'; approval_status?: 'pending' | 'approved' | 'rejected' } 
+      updates: { approval_status?: 'pending' | 'approved' | 'rejected' } 
     }) => {
-      const promises = [];
-      
-      // Update role if changed
-      if (updates.role) {
-        promises.push(
-          supabase
-            .from('profiles')
-            .update({ role: updates.role })
-            .eq('id', userId)
-        );
-      }
-      
-      // Update approval status if changed
+      // Update approval status
       if (updates.approval_status) {
-        promises.push(
-          supabase.rpc('update_user_approval_status', {
-            target_user_id: userId,
-            new_status: updates.approval_status
-          })
-        );
+        const { error } = await supabase.rpc('update_user_approval_status', {
+          target_user_id: userId,
+          new_status: updates.approval_status
+        });
+        
+        if (error) throw error;
       }
       
-      const results = await Promise.all(promises);
-      
-      // Check for errors
-      results.forEach(result => {
-        if (result.error) throw result.error;
-      });
-      
-      return results;
+      return updates;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
@@ -139,12 +121,13 @@ const UserDetailsDialog = ({ user, isOpen, onClose, onUserUpdated }: UserDetails
 
   const deleteUserMutation = useMutation({
     mutationFn: async (userId: string) => {
-      const { error } = await supabase
-        .from('profiles')
-        .delete()
-        .eq('id', userId);
+      // Call our edge function for complete user deletion
+      const { data, error } = await supabase.functions.invoke('delete-user', {
+        body: { userId }
+      });
       
       if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
@@ -152,6 +135,13 @@ const UserDetailsDialog = ({ user, isOpen, onClose, onUserUpdated }: UserDetails
         title: "User deleted successfully",
         description: "The user has been permanently removed from the system.",
       });
+      
+      // If the current user deleted themselves, sign them out
+      if (user?.id === currentUser?.id) {
+        signOut();
+        return;
+      }
+      
       onUserUpdated();
       onClose();
       setShowDeleteConfirm(false);
@@ -160,7 +150,7 @@ const UserDetailsDialog = ({ user, isOpen, onClose, onUserUpdated }: UserDetails
       console.error('User deletion error:', error);
       toast({
         title: "Error deleting user",
-        description: "Failed to delete user. Please try again.",
+        description: error.message || "Failed to delete user. Please try again.",
         variant: "destructive",
       });
     }
@@ -169,11 +159,7 @@ const UserDetailsDialog = ({ user, isOpen, onClose, onUserUpdated }: UserDetails
   const handleSaveChanges = () => {
     if (!user) return;
     
-    const updates: { role?: 'admin' | 'customer'; approval_status?: 'pending' | 'approved' | 'rejected' } = {};
-    
-    if (newRole !== user.role) {
-      updates.role = newRole;
-    }
+    const updates: { approval_status?: 'pending' | 'approved' | 'rejected' } = {};
     
     if (newApprovalStatus !== user.approval_status) {
       updates.approval_status = newApprovalStatus;
@@ -224,11 +210,7 @@ const UserDetailsDialog = ({ user, isOpen, onClose, onUserUpdated }: UserDetails
           <DialogHeader>
             <DialogTitle className="text-black flex items-center space-x-2">
               <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center border border-black">
-                {user.role === 'admin' ? (
-                  <Shield className="h-5 w-5 text-black" />
-                ) : (
-                  <User className="h-5 w-5 text-black" />
-                )}
+                <Shield className="h-5 w-5 text-black" />
               </div>
               <div>
                 <span>{user.first_name} {user.last_name}</span>
@@ -259,22 +241,9 @@ const UserDetailsDialog = ({ user, isOpen, onClose, onUserUpdated }: UserDetails
                   Approved on: {new Date(user.approved_at).toLocaleDateString()}
                 </div>
               )}
-            </div>
-
-            {/* Role Management */}
-            <div className="space-y-3">
-              <h3 className="text-lg font-semibold text-black">Role Management</h3>
-              <div className="flex items-center space-x-4">
-                <label className="text-sm font-medium text-black">Role:</label>
-                <Select value={newRole} onValueChange={(value: 'admin' | 'customer') => setNewRole(value)}>
-                  <SelectTrigger className="w-48 bg-white border-black text-black">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-white border-black">
-                    <SelectItem value="customer" className="text-black">Customer</SelectItem>
-                    <SelectItem value="admin" className="text-black">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
+              <div className="flex items-center space-x-2 text-black">
+                <Shield className="h-4 w-4" />
+                <span>Administrator</span>
               </div>
             </div>
 
@@ -318,7 +287,7 @@ const UserDetailsDialog = ({ user, isOpen, onClose, onUserUpdated }: UserDetails
                 <span>Danger Zone</span>
               </h3>
               <p className="text-sm text-red-600 mt-2">
-                Permanently delete this user and all associated data. This action cannot be undone.
+                Permanently delete this administrator and all associated data. This action cannot be undone.
               </p>
               <Button
                 variant="destructive"
@@ -327,7 +296,7 @@ const UserDetailsDialog = ({ user, isOpen, onClose, onUserUpdated }: UserDetails
                 disabled={deleteUserMutation.isPending}
               >
                 <Trash2 className="h-4 w-4 mr-2" />
-                Delete User
+                Delete Administrator
               </Button>
             </div>
           </div>
@@ -357,18 +326,19 @@ const UserDetailsDialog = ({ user, isOpen, onClose, onUserUpdated }: UserDetails
           <AlertDialogHeader>
             <AlertDialogTitle className="text-red-600 flex items-center space-x-2">
               <AlertTriangle className="h-5 w-5" />
-              <span>Delete User Account</span>
+              <span>Delete Administrator Account</span>
             </AlertDialogTitle>
             <AlertDialogDescription className="text-black">
-              Are you sure you want to permanently delete <strong>{user.first_name} {user.last_name}</strong>'s account?
+              Are you sure you want to permanently delete <strong>{user.first_name} {user.last_name}</strong>'s administrator account?
               <br />
               <br />
               <span className="text-red-600 font-medium">
                 This will permanently remove:
               </span>
               <ul className="list-disc list-inside mt-2 text-sm">
-                <li>User profile and account data</li>
-                <li>All associated enrollments</li>
+                <li>Administrator profile and account data</li>
+                <li>Authentication credentials</li>
+                <li>All associated enrollments and relationships</li>
                 <li>All messages and notifications</li>
                 <li>Any uploaded work or files</li>
               </ul>
@@ -376,6 +346,13 @@ const UserDetailsDialog = ({ user, isOpen, onClose, onUserUpdated }: UserDetails
               <span className="text-red-600 font-medium">
                 This action cannot be undone.
               </span>
+              {user.id === currentUser?.id && (
+                <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded">
+                  <span className="text-red-800 font-medium text-sm">
+                    Warning: You are about to delete your own account. You will be signed out immediately.
+                  </span>
+                </div>
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -387,7 +364,7 @@ const UserDetailsDialog = ({ user, isOpen, onClose, onUserUpdated }: UserDetails
               disabled={deleteUserMutation.isPending}
               className="bg-red-600 text-white hover:bg-red-700"
             >
-              {deleteUserMutation.isPending ? 'Deleting...' : 'Delete User'}
+              {deleteUserMutation.isPending ? 'Deleting...' : 'Delete Administrator'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

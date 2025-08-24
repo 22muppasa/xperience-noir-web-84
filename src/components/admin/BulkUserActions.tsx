@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
 import { useToast } from '@/hooks/use-toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,7 +22,7 @@ interface Profile {
   email: string;
   first_name: string;
   last_name: string;
-  role: 'admin' | 'customer';
+  role: 'admin';
   approval_status: 'pending' | 'approved' | 'rejected';
 }
 
@@ -41,20 +40,6 @@ const BulkUserActions = ({ selectedUsers, onClearSelection }: BulkUserActionsPro
   const bulkUpdateMutation = useMutation({
     mutationFn: async ({ action, userIds }: { action: string; userIds: string[] }) => {
       switch (action) {
-        case 'role_admin':
-          await Promise.all(
-            userIds.map(id =>
-              supabase.from('profiles').update({ role: 'admin' }).eq('id', id)
-            )
-          );
-          break;
-        case 'role_customer':
-          await Promise.all(
-            userIds.map(id =>
-              supabase.from('profiles').update({ role: 'customer' }).eq('id', id)
-            )
-          );
-          break;
         case 'approve_users':
           await Promise.all(
             userIds.map(id =>
@@ -77,12 +62,15 @@ const BulkUserActions = ({ selectedUsers, onClearSelection }: BulkUserActionsPro
           break;
         case 'send_email':
           // In a real implementation, this would trigger an email service
-          console.log('Sending emails to:', userIds);
+          console.log('Sending emails to administrators:', userIds);
           break;
         case 'delete':
+          // Use edge function for bulk deletion
           await Promise.all(
             userIds.map(id =>
-              supabase.from('profiles').delete().eq('id', id)
+              supabase.functions.invoke('delete-user', {
+                body: { userId: id }
+              })
             )
           );
           break;
@@ -94,7 +82,7 @@ const BulkUserActions = ({ selectedUsers, onClearSelection }: BulkUserActionsPro
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
       toast({
         title: "Bulk action completed",
-        description: `Successfully performed ${variables.action} on ${variables.userIds.length} users`,
+        description: `Successfully performed ${variables.action} on ${variables.userIds.length} administrators`,
       });
       onClearSelection();
       setBulkAction('');
@@ -127,12 +115,10 @@ const BulkUserActions = ({ selectedUsers, onClearSelection }: BulkUserActionsPro
 
   const getActionLabel = (action: string) => {
     switch (action) {
-      case 'role_admin': return 'Set as Admin';
-      case 'role_customer': return 'Set as Customer';
-      case 'approve_users': return 'Approve Users';
-      case 'reject_users': return 'Reject Users';
+      case 'approve_users': return 'Approve Administrators';
+      case 'reject_users': return 'Reject Administrators';
       case 'send_email': return 'Send Email';
-      case 'delete': return 'Delete Users';
+      case 'delete': return 'Delete Administrators';
       default: return '';
     }
   };
@@ -147,7 +133,7 @@ const BulkUserActions = ({ selectedUsers, onClearSelection }: BulkUserActionsPro
             <div className="flex items-center space-x-2">
               <Users className="h-4 w-4 text-black" />
               <span className="text-black font-medium">
-                {selectedUsers.length} user{selectedUsers.length !== 1 ? 's' : ''} selected
+                {selectedUsers.length} administrator{selectedUsers.length !== 1 ? 's' : ''} selected
               </span>
             </div>
             
@@ -159,25 +145,13 @@ const BulkUserActions = ({ selectedUsers, onClearSelection }: BulkUserActionsPro
                 <SelectItem value="approve_users" className="text-black">
                   <div className="flex items-center space-x-2">
                     <Check className="h-4 w-4" />
-                    <span>Approve Users</span>
+                    <span>Approve Administrators</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="reject_users" className="text-black">
                   <div className="flex items-center space-x-2">
                     <X className="h-4 w-4" />
-                    <span>Reject Users</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="role_admin" className="text-black">
-                  <div className="flex items-center space-x-2">
-                    <Shield className="h-4 w-4" />
-                    <span>Set as Admin</span>
-                  </div>
-                </SelectItem>
-                <SelectItem value="role_customer" className="text-black">
-                  <div className="flex items-center space-x-2">
-                    <Users className="h-4 w-4" />
-                    <span>Set as Customer</span>
+                    <span>Reject Administrators</span>
                   </div>
                 </SelectItem>
                 <SelectItem value="send_email" className="text-black">
@@ -189,7 +163,7 @@ const BulkUserActions = ({ selectedUsers, onClearSelection }: BulkUserActionsPro
                 <SelectItem value="delete" className="text-red-600">
                   <div className="flex items-center space-x-2">
                     <Trash2 className="h-4 w-4" />
-                    <span>Delete Users</span>
+                    <span>Delete Administrators</span>
                   </div>
                 </SelectItem>
               </SelectContent>
@@ -222,7 +196,7 @@ const BulkUserActions = ({ selectedUsers, onClearSelection }: BulkUserActionsPro
           <AlertDialogHeader>
             <AlertDialogTitle className="text-black">Confirm Bulk Action</AlertDialogTitle>
             <AlertDialogDescription className="text-black">
-              Are you sure you want to {getActionLabel(confirmDialog.action).toLowerCase()} for {confirmDialog.count} user{confirmDialog.count !== 1 ? 's' : ''}?
+              Are you sure you want to {getActionLabel(confirmDialog.action).toLowerCase()} for {confirmDialog.count} administrator{confirmDialog.count !== 1 ? 's' : ''}?
               {confirmDialog.action === 'delete' && (
                 <span className="block mt-2 text-red-600 font-medium">
                   This action cannot be undone.
@@ -230,18 +204,18 @@ const BulkUserActions = ({ selectedUsers, onClearSelection }: BulkUserActionsPro
               )}
               {confirmDialog.action === 'approve_users' && (
                 <span className="block mt-2 text-green-600 font-medium">
-                  This will grant admin access to approved users.
+                  This will grant full admin access to approved administrators.
                 </span>
               )}
               {confirmDialog.action === 'reject_users' && (
                 <span className="block mt-2 text-red-600 font-medium">
-                  This will prevent users from accessing admin features.
+                  This will prevent administrators from accessing admin features.
                 </span>
               )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="border-black text-black hover:bg-gray-50">
+            <AlertDialogCancel className="bg-white border-2 border-black text-black hover:bg-gray-100 font-medium">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction

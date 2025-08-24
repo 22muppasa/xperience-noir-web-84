@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -56,7 +57,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               const status = profile?.approval_status as ApprovalStatus || 'pending';
               setApprovalStatus(status);
               
-              // Only set userRole to admin if both role is admin AND approval_status is approved
+              // Only set userRole to admin if approval_status is approved
               if (profile?.role === 'admin' && profile?.approval_status === 'approved') {
                 setUserRole('admin');
               } else {
@@ -102,7 +103,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             const status = profile?.approval_status as ApprovalStatus || 'pending';
             setApprovalStatus(status);
             
-            // Only set userRole to admin if both role is admin AND approval_status is approved
+            // Only set userRole to admin if approval_status is approved
             if (profile?.role === 'admin' && profile?.approval_status === 'approved') {
               setUserRole('admin');
             } else {
@@ -141,7 +142,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         emailRedirectTo: redirectUrl,
         data: {
           ...userData,
-          role: 'admin' // Default all new users to admin
+          role: 'admin' // All users are admins (pending approval)
         }
       }
     });

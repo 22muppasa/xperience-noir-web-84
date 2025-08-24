@@ -20,7 +20,7 @@ const DashboardSidebar = () => {
 
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', path: '/admin' },
-    { icon: Users, label: 'Customers', path: '/admin/customers' },
+    { icon: Users, label: 'Users', path: '/admin/customers' },
     { icon: Heart, label: 'Volunteers', path: '/admin/volunteers' },
     { icon: MessageSquare, label: 'Messages', path: '/admin/messages' },
     { icon: Send, label: 'Social Posts', path: '/admin/social-posts' },

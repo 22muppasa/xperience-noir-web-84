@@ -271,7 +271,7 @@ const UserManagement = () => {
             <Button
               variant="outline"
               onClick={clearFilters}
-              className="border-black text-black hover:bg-gray-50"
+              className="bg-white border-2 border-black text-black hover:bg-black hover:text-white transition-colors font-semibold"
             >
               Clear Filters
             </Button>

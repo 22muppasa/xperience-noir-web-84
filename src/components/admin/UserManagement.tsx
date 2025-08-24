@@ -391,7 +391,7 @@ const UserManagement = () => {
                     size="sm"
                     variant="outline"
                     onClick={() => handleUserClick(user)}
-                    className="border-black text-black hover:bg-gray-50"
+                    className="bg-white border-2 border-black text-black hover:bg-black hover:text-white transition-colors font-medium"
                   >
                     <Settings className="h-4 w-4 mr-1" />
                     Manage
@@ -401,12 +401,12 @@ const UserManagement = () => {
                     value={user.role}
                     onValueChange={(value: 'admin' | 'customer') => handleRoleChange(user, value)}
                   >
-                    <SelectTrigger className="w-32 bg-white border-black text-black">
+                    <SelectTrigger className="w-32 bg-white border-2 border-black text-black hover:bg-gray-50">
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent className="bg-white border-black">
-                      <SelectItem value="customer" className="text-black">Customer</SelectItem>
-                      <SelectItem value="admin" className="text-black">Admin</SelectItem>
+                    <SelectContent className="bg-white border-black z-50">
+                      <SelectItem value="customer" className="text-black hover:bg-gray-100">Customer</SelectItem>
+                      <SelectItem value="admin" className="text-black hover:bg-gray-100">Admin</SelectItem>
                     </SelectContent>
                   </Select>
 
@@ -415,15 +415,15 @@ const UserManagement = () => {
                       <Button
                         size="sm"
                         onClick={() => handleApprovalChange(user, 'approved')}
-                        className="bg-green-600 text-white hover:bg-green-700"
+                        className="bg-green-600 text-white hover:bg-green-700 border-0"
                         disabled={updateApprovalStatusMutation.isPending}
                       >
                         <Check className="h-4 w-4" />
                       </Button>
                       <Button
                         size="sm"
-                        variant="destructive"
                         onClick={() => handleApprovalChange(user, 'rejected')}
+                        className="bg-red-600 text-white hover:bg-red-700 border-0"
                         disabled={updateApprovalStatusMutation.isPending}
                       >
                         <X className="h-4 w-4" />
@@ -435,7 +435,7 @@ const UserManagement = () => {
                     <Button
                       size="sm"
                       onClick={() => handleApprovalChange(user, 'approved')}
-                      className="bg-green-600 text-white hover:bg-green-700"
+                      className="bg-green-600 text-white hover:bg-green-700 border-0"
                       disabled={updateApprovalStatusMutation.isPending}
                     >
                       <Check className="h-4 w-4" />

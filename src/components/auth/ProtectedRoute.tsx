@@ -11,6 +11,11 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { user, loading, userRole, isApproved } = useAuth();
   const location = useLocation();
 
+  console.log('ProtectedRoute - User:', user?.email);
+  console.log('ProtectedRoute - Loading:', loading);
+  console.log('ProtectedRoute - User Role:', userRole);
+  console.log('ProtectedRoute - Is Approved:', isApproved);
+
   if (loading) {
     return (
       <div className="fixed inset-0 flex items-center justify-center w-full h-full bg-black z-50">
@@ -21,11 +26,13 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
   // If user is not authenticated, redirect to auth page
   if (!user) {
+    console.log('ProtectedRoute - No user, redirecting to auth');
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
   // If user doesn't have admin role, show access denied
   if (userRole !== 'admin') {
+    console.log('ProtectedRoute - User is not admin, showing access denied');
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="text-center">
@@ -41,6 +48,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
   // If user is admin but not approved, show pending approval message
   if (userRole === 'admin' && !isApproved) {
+    console.log('ProtectedRoute - Admin user not approved, showing pending message');
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="text-center max-w-md p-6 bg-white rounded-lg shadow-lg">
@@ -59,6 +67,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     );
   }
 
+  console.log('ProtectedRoute - All checks passed, rendering children');
   return <>{children}</>;
 };
 

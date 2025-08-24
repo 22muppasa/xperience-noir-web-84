@@ -33,6 +33,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const fetchUserProfile = async (userId: string) => {
+    try {
+      console.log('Fetching profile for user:', userId);
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('role, approval_status')
+        .eq('id', userId)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching user profile:', error);
+        setUserRole(null);
+        setIsApproved(false);
+        return;
+      }
+
+      console.log('User profile data:', profile);
+      const isUserApproved = profile?.approval_status === 'approved';
+      const isAdmin = profile?.role === 'admin';
+      
+      setUserRole(isAdmin ? 'admin' : null);
+      setIsApproved(isUserApproved);
+      
+      console.log('User role:', isAdmin ? 'admin' : null);
+      console.log('User approved:', isUserApproved);
+    } catch (error) {
+      console.error('Error in fetchUserProfile:', error);
+      setUserRole(null);
+      setIsApproved(false);
+    }
+  };
+
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -43,34 +75,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         if (session?.user) {
           // Fetch user role and approval status
-          setTimeout(async () => {
-            try {
-              const { data: profile } = await supabase
-                .from('profiles')
-                .select('role, approval_status')
-                .eq('id', session.user.id)
-                .single();
-              
-              const isUserApproved = profile?.approval_status === 'approved';
-              const isAdmin = profile?.role === 'admin';
-              
-              setUserRole(isAdmin ? 'admin' : null);
-              setIsApproved(isUserApproved);
-              
-              // Redirect to admin dashboard on sign in from auth page if user is approved admin
-              if (event === 'SIGNED_IN' && window.location.pathname === '/auth') {
-                if (isAdmin && isUserApproved) {
-                  navigate('/admin');
-                } else {
-                  navigate('/');
-                }
-              }
-            } catch (error) {
-              console.error('Error fetching user profile:', error);
-              setUserRole(null);
-              setIsApproved(false);
-            }
-          }, 0);
+          await fetchUserProfile(session.user.id);
+          
+          // Redirect to admin dashboard on sign in from auth page if user is approved admin
+          if (event === 'SIGNED_IN' && window.location.pathname === '/auth') {
+            // Wait a bit to ensure profile data is loaded
+            setTimeout(() => {
+              navigate('/admin');
+            }, 100);
+          }
         } else {
           setUserRole(null);
           setIsApproved(false);
@@ -81,36 +94,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 
     // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    const initializeAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       setSession(session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        // Fetch user role and approval status for existing session
-        setTimeout(async () => {
-          try {
-            const { data: profile } = await supabase
-              .from('profiles')
-              .select('role, approval_status')
-              .eq('id', session.user.id)
-              .single();
-            
-            const isUserApproved = profile?.approval_status === 'approved';
-            const isAdmin = profile?.role === 'admin';
-            
-            setUserRole(isAdmin ? 'admin' : null);
-            setIsApproved(isUserApproved);
-          } catch (error) {
-            console.error('Error fetching user profile:', error);
-            setUserRole(null);
-            setIsApproved(false);
-          }
-          setLoading(false);
-        }, 0);
-      } else {
-        setLoading(false);
+        await fetchUserProfile(session.user.id);
       }
-    });
+      
+      setLoading(false);
+    };
+
+    initializeAuth();
 
     return () => subscription.unsubscribe();
   }, [navigate]);

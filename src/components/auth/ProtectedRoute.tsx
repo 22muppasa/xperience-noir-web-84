@@ -8,7 +8,7 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
-  const { user, loading, userRole } = useAuth();
+  const { user, loading, userRole, isApproved } = useAuth();
   const location = useLocation();
 
   if (loading) {
@@ -34,6 +34,26 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           <a href="/" className="text-blue-500 hover:text-blue-700 underline">
             Return to Home
           </a>
+        </div>
+      </div>
+    );
+  }
+
+  // If user is admin but not approved, show pending approval message
+  if (userRole === 'admin' && !isApproved) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-center max-w-md p-6 bg-white rounded-lg shadow-lg">
+          <h1 className="text-2xl font-bold mb-4 text-yellow-600">Account Pending Approval</h1>
+          <p className="text-gray-600 mb-4">
+            Your admin account is currently pending approval. Please wait for an existing admin to approve your account before you can access the admin dashboard.
+          </p>
+          <button
+            onClick={() => window.location.href = '/'}
+            className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
+          >
+            Return to Home
+          </button>
         </div>
       </div>
     );

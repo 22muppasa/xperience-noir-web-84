@@ -828,6 +828,9 @@ export type Database = {
       profiles: {
         Row: {
           address: string | null
+          approval_status: string
+          approved_at: string | null
+          approved_by: string | null
           avatar_url: string | null
           created_at: string | null
           email: string
@@ -842,6 +845,9 @@ export type Database = {
         }
         Insert: {
           address?: string | null
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
           avatar_url?: string | null
           created_at?: string | null
           email: string
@@ -856,6 +862,9 @@ export type Database = {
         }
         Update: {
           address?: string | null
+          approval_status?: string
+          approved_at?: string | null
+          approved_by?: string | null
           avatar_url?: string | null
           created_at?: string | null
           email?: string
@@ -868,7 +877,15 @@ export type Database = {
           storage_path?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       programs: {
         Row: {
@@ -1173,6 +1190,10 @@ export type Database = {
         }[]
       }
       is_admin: {
+        Args: { user_id: string }
+        Returns: boolean
+      }
+      is_approved_admin: {
         Args: { user_id: string }
         Returns: boolean
       }

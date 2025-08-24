@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -86,7 +85,7 @@ const UserDetailsDialog = ({ user, isOpen, onClose, onUserUpdated }: UserDetails
       updates 
     }: { 
       userId: string; 
-      updates: { role?: string; approval_status?: string } 
+      updates: { role?: 'admin' | 'customer'; approval_status?: 'pending' | 'approved' | 'rejected' } 
     }) => {
       const promises = [];
       
@@ -170,7 +169,7 @@ const UserDetailsDialog = ({ user, isOpen, onClose, onUserUpdated }: UserDetails
   const handleSaveChanges = () => {
     if (!user) return;
     
-    const updates: { role?: string; approval_status?: string } = {};
+    const updates: { role?: 'admin' | 'customer'; approval_status?: 'pending' | 'approved' | 'rejected' } = {};
     
     if (newRole !== user.role) {
       updates.role = newRole;

@@ -71,7 +71,8 @@ serve(async (req) => {
 
     // First, call our database function to handle profile and related data deletion
     const { error: dbError } = await supabaseAdmin.rpc('delete_user_complete', {
-      target_user_id: userId
+      target_user_id: userId,
+      admin_user_id: user.id
     })
 
     if (dbError) {

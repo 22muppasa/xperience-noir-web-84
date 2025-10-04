@@ -1164,7 +1164,9 @@ export type Database = {
         Returns: undefined
       }
       delete_user_complete: {
-        Args: { target_user_id: string }
+        Args:
+          | { admin_user_id: string; target_user_id: string }
+          | { target_user_id: string }
         Returns: undefined
       }
       get_admin_profiles: {

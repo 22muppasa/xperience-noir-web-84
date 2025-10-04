@@ -102,14 +102,15 @@ const AdminMessages = () => {
     }
   });
 
-  // Fetch customers for recipient selection
+  // Fetch all users (customers and admins) for recipient selection
   const { data: customers = [] } = useQuery({
-    queryKey: ['customers'],
+    queryKey: ['all-users-for-messaging'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, first_name, last_name, email')
-        .eq('role', 'customer');
+        .select('id, first_name, last_name, email, role')
+        .in('role', ['customer', 'admin'])
+        .order('first_name');
 
       if (error) throw error;
       return (data || []) as CustomerProfile[];
@@ -364,7 +365,7 @@ const AdminMessages = () => {
                 </div>
                 <div className="text-left">
                   <div className="text-2xl font-bold text-gray-900">{customers.length}</div>
-                  <div className="text-sm text-gray-600">Total Customers</div>
+                  <div className="text-sm text-gray-600">Total Users</div>
                 </div>
               </div>
             </CardContent>
@@ -391,7 +392,7 @@ const AdminMessages = () => {
                   <option value="">Select recipient...</option>
                   {customers.map(customer => (
                     <option key={customer.id} value={customer.id}>
-                      {customer.first_name} {customer.last_name} ({customer.email})
+                      {customer.first_name} {customer.last_name} ({customer.email}) - {(customer as any).role === 'admin' ? 'Admin' : 'Customer'}
                     </option>
                   ))}
                 </select>

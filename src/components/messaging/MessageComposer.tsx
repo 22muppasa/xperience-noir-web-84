@@ -47,7 +47,13 @@ const MessageComposer = ({ replyTo }: MessageComposerProps) => {
   const { data: admins = [] } = useQuery({
     queryKey: ['admin-profiles'],
     queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_admin_profiles');
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, first_name, last_name, email')
+        .eq('role', 'admin')
+        .eq('approval_status', 'approved')
+        .order('first_name');
+      
       if (error) throw error;
       return data as AdminProfile[];
     }

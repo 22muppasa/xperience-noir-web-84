@@ -1163,6 +1163,10 @@ export type Database = {
         Args: { child_id_param: string }
         Returns: undefined
       }
+      delete_user_complete: {
+        Args: { target_user_id: string }
+        Returns: undefined
+      }
       get_admin_profiles: {
         Args: Record<PropertyKey, never>
         Returns: {
